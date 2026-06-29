@@ -7,7 +7,7 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
@@ -31,6 +31,11 @@
     font-family:var(--body);font-size:.82rem;font-weight:600;letter-spacing:.04em;
     padding:5px 11px;border-radius:999px}
   .lang-btn.active{background:var(--accent);color:#0b0d12}
+  .langsel{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 11px;font-family:var(--body);font-size:.82rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
 
   .wrap{max-width:600px;margin:0 auto;padding:72px 24px 60px}
   .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px}
@@ -86,10 +91,11 @@
 
 <div class="topbar">
   <a class="back" href="index.html" data-i18n="back"></a>
-  <nav class="lang" aria-label="Idioma / Language">
-    <button class="lang-btn" data-lang="es">ES</button>
-    <button class="lang-btn" data-lang="en">EN</button>
-  </nav>
+  <select class="langsel" id="langsel" aria-label="Idioma / Language">
+    <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+    <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+    <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
 </div>
 
 <div class="wrap">
@@ -183,23 +189,139 @@ const I18N = {
     listener:"Listener", wall_all:"All", ov_close:"Close", ov_follow:"Follow", ov_following:"Following", ov_empty:"Nothing here yet.",
     ty_musica:"Music", ty_audiolibro:"Audiobooks", ty_podcast:"Podcasts", ty_radio:"Radio",
     t_now:"just now", t_min:"# min ago", t_hour:"# h ago"
+  },
+  pt: {
+    _title:"Cadence — Comunidade", back:"← Início",
+    sub:"Comunidade de ouvintes", prompt:"Inicie sessão para ver a comunidade.",
+    login_btn:"Iniciar sessão com Google",
+    bio_label:"Sobre si", bio_ph:"Conte algo sobre os seus gostos musicais...",
+    save_bio:"Guardar biografia", logout_btn:"Terminar sessão",
+    wall_title:"Mural", wall_sub:"O que a comunidade anda a ouvir.",
+    wall_loading:"A carregar...", wall_empty:"Ainda não há atividade.",
+    m_opening:"A abrir o Google...", m_login_fail:"Não foi possível iniciar sessão: ",
+    m_saving:"A guardar...", m_saved:"Biografia guardada ✓", m_save_fail:"Não foi possível guardar: ",
+    listener:"Ouvinte", wall_all:"Tudo", ov_close:"Fechar", ov_follow:"Seguir", ov_following:"A seguir", ov_empty:"Ainda nada por aqui.",
+    ty_musica:"Música", ty_audiolibro:"Audiolivros", ty_podcast:"Podcasts", ty_radio:"Rádio",
+    t_now:"agora mesmo", t_min:"há # min", t_hour:"há # h"
+  },
+  fr: {
+    _title:"Cadence — Communauté", back:"← Accueil",
+    sub:"Une communauté d'auditeurs", prompt:"Connectez-vous pour voir la communauté.",
+    login_btn:"Se connecter avec Google",
+    bio_label:"À propos de vous", bio_ph:"Parlez de vos goûts musicaux...",
+    save_bio:"Enregistrer la bio", logout_btn:"Se déconnecter",
+    wall_title:"Mur", wall_sub:"Ce que la communauté écoute.",
+    wall_loading:"Chargement...", wall_empty:"Pas encore d'activité.",
+    m_opening:"Ouverture de Google...", m_login_fail:"Connexion impossible : ",
+    m_saving:"Enregistrement...", m_saved:"Bio enregistrée ✓", m_save_fail:"Enregistrement impossible : ",
+    listener:"Auditeur", wall_all:"Tout", ov_close:"Fermer", ov_follow:"Suivre", ov_following:"Suivi", ov_empty:"Rien pour l'instant.",
+    ty_musica:"Musique", ty_audiolibro:"Livres audio", ty_podcast:"Podcasts", ty_radio:"Radio",
+    t_now:"à l'instant", t_min:"il y a # min", t_hour:"il y a # h"
+  },
+  it: {
+    _title:"Cadence — Comunità", back:"← Home",
+    sub:"Una comunità di ascoltatori", prompt:"Accedi per vedere la comunità.",
+    login_btn:"Accedi con Google",
+    bio_label:"Su di te", bio_ph:"Racconta qualcosa sui tuoi gusti musicali...",
+    save_bio:"Salva biografia", logout_btn:"Esci",
+    wall_title:"Bacheca", wall_sub:"Cosa ascolta la comunità.",
+    wall_loading:"Caricamento...", wall_empty:"Ancora nessuna attività.",
+    m_opening:"Apertura di Google...", m_login_fail:"Accesso non riuscito: ",
+    m_saving:"Salvataggio...", m_saved:"Biografia salvata ✓", m_save_fail:"Salvataggio non riuscito: ",
+    listener:"Ascoltatore", wall_all:"Tutto", ov_close:"Chiudi", ov_follow:"Segui", ov_following:"Segui già", ov_empty:"Ancora niente qui.",
+    ty_musica:"Musica", ty_audiolibro:"Audiolibri", ty_podcast:"Podcast", ty_radio:"Radio",
+    t_now:"proprio ora", t_min:"# min fa", t_hour:"# h fa"
+  },
+  de: {
+    _title:"Cadence — Community", back:"← Start",
+    sub:"Eine Community von Hörern", prompt:"Melde dich an, um die Community zu sehen.",
+    login_btn:"Mit Google anmelden",
+    bio_label:"Über dich", bio_ph:"Erzähl etwas über deinen Musikgeschmack...",
+    save_bio:"Bio speichern", logout_btn:"Abmelden",
+    wall_title:"Wand", wall_sub:"Was die Community gerade hört.",
+    wall_loading:"Lädt...", wall_empty:"Noch keine Aktivität.",
+    m_opening:"Google wird geöffnet...", m_login_fail:"Anmeldung fehlgeschlagen: ",
+    m_saving:"Speichern...", m_saved:"Bio gespeichert ✓", m_save_fail:"Speichern fehlgeschlagen: ",
+    listener:"Hörer", wall_all:"Alle", ov_close:"Schließen", ov_follow:"Folgen", ov_following:"Folge ich", ov_empty:"Hier ist noch nichts.",
+    ty_musica:"Musik", ty_audiolibro:"Hörbücher", ty_podcast:"Podcasts", ty_radio:"Radio",
+    t_now:"gerade eben", t_min:"vor # Min", t_hour:"vor # Std"
+  },
+  ru: {
+    _title:"Cadence — Сообщество", back:"← Главная",
+    sub:"Сообщество слушателей", prompt:"Войдите, чтобы увидеть сообщество.",
+    login_btn:"Войти через Google",
+    bio_label:"О себе", bio_ph:"Расскажите о своих музыкальных вкусах...",
+    save_bio:"Сохранить", logout_btn:"Выйти",
+    wall_title:"Стена", wall_sub:"Что сейчас слушает сообщество.",
+    wall_loading:"Загрузка...", wall_empty:"Пока нет активности.",
+    m_opening:"Открываем Google...", m_login_fail:"Не удалось войти: ",
+    m_saving:"Сохранение...", m_saved:"Сохранено ✓", m_save_fail:"Не удалось сохранить: ",
+    listener:"Слушатель", wall_all:"Все", ov_close:"Закрыть", ov_follow:"Подписаться", ov_following:"Вы подписаны", ov_empty:"Пока пусто.",
+    ty_musica:"Музыка", ty_audiolibro:"Аудиокниги", ty_podcast:"Подкасты", ty_radio:"Радио",
+    t_now:"только что", t_min:"# мин назад", t_hour:"# ч назад"
+  },
+  zh: {
+    _title:"Cadence — 社区", back:"← 首页",
+    sub:"听众社区", prompt:"登录以查看社区。",
+    login_btn:"使用 Google 登录",
+    bio_label:"关于你", bio_ph:"说说你的音乐口味...",
+    save_bio:"保存简介", logout_btn:"退出登录",
+    wall_title:"动态墙", wall_sub:"社区正在听什么。",
+    wall_loading:"加载中...", wall_empty:"还没有动态。",
+    m_opening:"正在打开 Google...", m_login_fail:"无法登录：",
+    m_saving:"保存中...", m_saved:"简介已保存 ✓", m_save_fail:"无法保存：",
+    listener:"听众", wall_all:"全部", ov_close:"关闭", ov_follow:"关注", ov_following:"已关注", ov_empty:"这里还什么都没有。",
+    ty_musica:"音乐", ty_audiolibro:"有声书", ty_podcast:"播客", ty_radio:"电台",
+    t_now:"刚刚", t_min:"# 分钟前", t_hour:"# 小时前"
+  },
+  ja: {
+    _title:"Cadence — コミュニティ", back:"← ホーム",
+    sub:"リスナーのコミュニティ", prompt:"ログインしてコミュニティを見る。",
+    login_btn:"Google でログイン",
+    bio_label:"あなたについて", bio_ph:"あなたの音楽の好みを教えてください...",
+    save_bio:"自己紹介を保存", logout_btn:"ログアウト",
+    wall_title:"ウォール", wall_sub:"コミュニティが今聴いているもの。",
+    wall_loading:"読み込み中...", wall_empty:"まだ活動がありません。",
+    m_opening:"Google を開いています...", m_login_fail:"ログインできませんでした: ",
+    m_saving:"保存中...", m_saved:"自己紹介を保存しました ✓", m_save_fail:"保存できませんでした: ",
+    listener:"リスナー", wall_all:"すべて", ov_close:"閉じる", ov_follow:"フォロー", ov_following:"フォロー中", ov_empty:"まだ何もありません。",
+    ty_musica:"音楽", ty_audiolibro:"オーディオブック", ty_podcast:"ポッドキャスト", ty_radio:"ラジオ",
+    t_now:"たった今", t_min:"# 分前", t_hour:"# 時間前"
+  },
+  ar: {
+    _title:"Cadence — المجتمع", back:"← الرئيسية",
+    sub:"مجتمع من المستمعين", prompt:"سجّل الدخول لرؤية المجتمع.",
+    login_btn:"تسجيل الدخول عبر Google",
+    bio_label:"نبذة عنك", bio_ph:"أخبرنا عن ذوقك الموسيقي...",
+    save_bio:"حفظ النبذة", logout_btn:"تسجيل الخروج",
+    wall_title:"الجدار", wall_sub:"ما يستمع إليه المجتمع.",
+    wall_loading:"جارٍ التحميل...", wall_empty:"لا يوجد نشاط بعد.",
+    m_opening:"جارٍ فتح Google...", m_login_fail:"تعذّر تسجيل الدخول: ",
+    m_saving:"جارٍ الحفظ...", m_saved:"تم حفظ النبذة ✓", m_save_fail:"تعذّر الحفظ: ",
+    listener:"مستمع", wall_all:"الكل", ov_close:"إغلاق", ov_follow:"متابعة", ov_following:"تتابعه", ov_empty:"لا شيء هنا بعد.",
+    ty_musica:"موسيقى", ty_audiolibro:"كتب صوتية", ty_podcast:"بودكاست", ty_radio:"راديو",
+    t_now:"الآن", t_min:"قبل # دقيقة", t_hour:"قبل # ساعة"
   }
 };
 let currentLang="es";
 function t(k){ return (I18N[currentLang]||I18N.es)[k] || k; }
+const RTL=["ar"];
 function setLang(lang){
   currentLang=lang;
   const d=I18N[lang]||I18N.es;
-  document.documentElement.lang=lang; document.title=d._title;
+  document.documentElement.lang=lang;
+  document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._title;
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.innerHTML=d[k];});
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  const sel=document.getElementById('langsel'); if(sel) sel.value=lang;
   try{ localStorage.setItem('cadence_lang',lang); }catch(e){}
   if (window._renderFeed) window._renderFeed();
 }
-document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+document.getElementById('langsel').addEventListener('change',e=>setLang(e.target.value));
 let _s=null; try{ _s=localStorage.getItem('cadence_lang'); }catch(e){}
-setLang(_s || ((navigator.language||'es').toLowerCase().startsWith('en')?'en':'es'));
+const _nav=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(_s || (I18N[_nav]?_nav:'es'));
 
 function timeAgo(date){
   if(!date) return t('t_now');

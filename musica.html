@@ -7,7 +7,7 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
@@ -20,6 +20,11 @@
   body::before{content:"";position:fixed;inset:0;z-index:-1;
     background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
   a{color:var(--accent);text-decoration:none}
+  .langsel{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 11px;font-family:var(--body);font-size:.82rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
   .topbar{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:space-between;
     align-items:center;padding:0 20px;z-index:20}
   .back{font-size:.9rem;color:var(--muted)}
@@ -65,7 +70,12 @@
 <body>
 
 <div class="topbar">
-  <a class="back" href="index.html">← Inicio</a>
+  <select class="langsel" id="langsel" aria-label="Idioma" style="margin-left:auto">
+    <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+    <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+    <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
+  <a class="back" href="index.html" data-i18n="back" style="margin-left:14px">← Inicio</a>
 </div>
 
 <div class="wrap">
@@ -73,13 +83,13 @@
     <img src="cadence-logo.png" alt="Cadence">
     <h1>Cadence</h1>
   </div>
-  <p class="sub">Tu música, desde tu propio Drive</p>
+  <p class="sub" data-i18n="sub">Tu música, desde tu propio Drive</p>
 
   <div class="card">
     <div id="connectBox">
       <p style="text-align:center;color:var(--muted);margin-bottom:20px">
-        Conecta con tu Google Drive para escuchar la música que subiste con Cadence.</p>
-      <button id="connectBtn" class="gbtn">Conectar con mi Drive</button>
+        <span data-i18n="prompt">Conecta con tu Google Drive para escuchar la música que subiste con Cadence.</span></p>
+      <button id="connectBtn" class="gbtn" data-i18n="connect">Conectar con mi Drive</button>
     </div>
     <div id="list"></div>
     <div id="status" class="status"></div>
@@ -102,6 +112,34 @@
 </div>
 <audio id="audio"></audio>
 
+<script>
+const I18N={
+ es:{_t:"Cadence — Mi música",back:"← Inicio",sub:"Tu música, desde tu propio Drive",prompt:"Conecta con tu Google Drive para escuchar la música que subiste con Cadence.",connect:"Conectar con mi Drive",noconn:"No se pudo conectar: ",gload:"Cargando Google...",searching:"Buscando tu música en Drive...",nofolder:"No encuentro la carpeta «Cadence».",nomusic:"No encuentro «Cadence/Música».",empty:"No hay música todavía.",count:" canciones. Pulsa una para escucharla.",err:"Error leyendo Drive: "},
+ en:{_t:"Cadence — My music",back:"← Home",sub:"Your music, from your own Drive",prompt:"Connect your Google Drive to play the music you uploaded with Cadence.",connect:"Connect my Drive",noconn:"Couldn't connect: ",gload:"Loading Google...",searching:"Searching your music in Drive...",nofolder:"Can't find the «Cadence» folder.",nomusic:"Can't find «Cadence/Música».",empty:"No music yet.",count:" songs. Tap one to play.",err:"Error reading Drive: "},
+ pt:{_t:"Cadence — A minha música",back:"← Início",sub:"A sua música, do seu próprio Drive",prompt:"Ligue o seu Google Drive para ouvir a música que carregou com o Cadence.",connect:"Ligar o meu Drive",noconn:"Não foi possível ligar: ",gload:"A carregar o Google...",searching:"A procurar a sua música no Drive...",nofolder:"Não encontro a pasta «Cadence».",nomusic:"Não encontro «Cadence/Música».",empty:"Ainda não há música.",count:" músicas. Toque numa para ouvir.",err:"Erro ao ler o Drive: "},
+ fr:{_t:"Cadence — Ma musique",back:"← Accueil",sub:"Votre musique, depuis votre propre Drive",prompt:"Connectez votre Google Drive pour écouter la musique importée avec Cadence.",connect:"Connecter mon Drive",noconn:"Connexion impossible : ",gload:"Chargement de Google...",searching:"Recherche de votre musique sur Drive...",nofolder:"Dossier « Cadence » introuvable.",nomusic:"« Cadence/Música » introuvable.",empty:"Pas encore de musique.",count:" titres. Touchez-en un pour l'écouter.",err:"Erreur de lecture du Drive : "},
+ it:{_t:"Cadence — La mia musica",back:"← Home",sub:"La tua musica, dal tuo Drive",prompt:"Collega il tuo Google Drive per ascoltare la musica caricata con Cadence.",connect:"Collega il mio Drive",noconn:"Connessione non riuscita: ",gload:"Caricamento di Google...",searching:"Ricerca della tua musica su Drive...",nofolder:"Cartella «Cadence» non trovata.",nomusic:"«Cadence/Música» non trovata.",empty:"Ancora nessuna musica.",count:" brani. Toccane uno per ascoltarlo.",err:"Errore lettura Drive: "},
+ de:{_t:"Cadence — Meine Musik",back:"← Start",sub:"Deine Musik, aus deinem eigenen Drive",prompt:"Verbinde dein Google Drive, um die mit Cadence hochgeladene Musik zu hören.",connect:"Mein Drive verbinden",noconn:"Verbindung fehlgeschlagen: ",gload:"Google wird geladen...",searching:"Suche deine Musik im Drive...",nofolder:"Ordner «Cadence» nicht gefunden.",nomusic:"«Cadence/Música» nicht gefunden.",empty:"Noch keine Musik.",count:" Titel. Tippe einen an zum Abspielen.",err:"Fehler beim Lesen des Drive: "},
+ ru:{_t:"Cadence — Моя музыка",back:"← Главная",sub:"Ваша музыка с вашего Google Диска",prompt:"Подключите Google Диск, чтобы слушать музыку, загруженную через Cadence.",connect:"Подключить Диск",noconn:"Не удалось подключиться: ",gload:"Загрузка Google...",searching:"Поиск вашей музыки на Диске...",nofolder:"Папка «Cadence» не найдена.",nomusic:"«Cadence/Música» не найдена.",empty:"Музыки пока нет.",count:" треков. Нажмите, чтобы слушать.",err:"Ошибка чтения Диска: "},
+ zh:{_t:"Cadence — 我的音乐",back:"← 首页",sub:"你的音乐，来自你自己的 Drive",prompt:"连接你的 Google Drive，收听你用 Cadence 上传的音乐。",connect:"连接我的 Drive",noconn:"无法连接：",gload:"正在加载 Google...",searching:"正在 Drive 中查找你的音乐...",nofolder:"找不到「Cadence」文件夹。",nomusic:"找不到「Cadence/Música」。",empty:"还没有音乐。",count:" 首歌曲。点按一首即可播放。",err:"读取 Drive 出错："},
+ ja:{_t:"Cadence — マイミュージック",back:"← ホーム",sub:"あなた自身の Drive の音楽",prompt:"Google ドライブを接続して、Cadence でアップロードした音楽を再生。",connect:"Drive を接続",noconn:"接続できませんでした: ",gload:"Google を読み込み中...",searching:"Drive であなたの音楽を検索中...",nofolder:"「Cadence」フォルダが見つかりません。",nomusic:"「Cadence/Música」が見つかりません。",empty:"まだ音楽がありません。",count:" 曲。タップで再生。",err:"Drive 読み込みエラー: "},
+ ar:{_t:"Cadence — موسيقاي",back:"← الرئيسية",sub:"موسيقاك من Google Drive الخاص بك",prompt:"اربط Google Drive للاستماع إلى الموسيقى التي رفعتها عبر Cadence.",connect:"اربط Drive الخاص بي",noconn:"تعذّر الاتصال: ",gload:"جارٍ تحميل Google...",searching:"جارٍ البحث عن موسيقاك في Drive...",nofolder:"تعذّر إيجاد مجلد «Cadence».",nomusic:"تعذّر إيجاد «Cadence/Música».",empty:"لا توجد موسيقى بعد.",count:" أغنية. اضغط واحدة للاستماع.",err:"خطأ في قراءة Drive: "}
+};
+const RTL=["ar"];
+function t(k){return (I18N[window._L]||I18N.es)[k]||k;}
+function setLang(lang){
+  window._L=lang; const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._t;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.textContent=d[k];});
+  document.getElementById('langsel').value=lang;
+  try{localStorage.setItem('cadence_lang',lang);}catch(e){}
+}
+document.getElementById('langsel').addEventListener('change',e=>setLang(e.target.value));
+let _s=null; try{_s=localStorage.getItem('cadence_lang');}catch(e){}
+const _n=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(_s||(I18N[_n]?_n:'es'));
+</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <!-- Firebase para registrar en el muro -->
 <script type="module">
@@ -160,7 +198,7 @@ window.onload = () => {
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID, scope: SCOPE,
         callback: (resp) => {
-          if (resp.error) { setStatus("No se pudo conectar: " + resp.error); return; }
+          if (resp.error) { setStatus(t("noconn") + resp.error); return; }
           accessToken = resp.access_token;
           document.getElementById("connectBox").style.display = "none";
           loadMusic();
@@ -171,7 +209,7 @@ window.onload = () => {
 };
 
 document.getElementById("connectBtn").addEventListener("click", () => {
-  if (!tokenClient) { setStatus("Cargando Google..."); return; }
+  if (!tokenClient) { setStatus(t("gload")); return; }
   setStatus(""); tokenClient.requestAccessToken();
 });
 
@@ -196,16 +234,16 @@ async function listChildren(parentId, foldersOnly){
 }
 
 async function loadMusic(){
-  setStatus("Buscando tu música en Drive...");
+  setStatus(t("searching"));
   listEl().innerHTML = ""; queue = [];
   try {
     const cadenceId = await findFolder("Cadence", null);
-    if (!cadenceId) return setStatus("No encuentro la carpeta «Cadence».");
+    if (!cadenceId) return setStatus(t("nofolder"));
     const musicId = await findFolder("Música", cadenceId);
-    if (!musicId) return setStatus("No encuentro «Cadence/Música».");
+    if (!musicId) return setStatus(t("nomusic"));
 
     const artists = await listChildren(musicId, true);
-    if (!artists.length) { listEl().innerHTML = '<p class="empty">No hay música todavía.</p>'; return setStatus(""); }
+    if (!artists.length) { listEl().innerHTML = '<p class="empty">'+t('empty')+'</p>'; return setStatus(""); }
 
     for (const artist of artists) {
       const aEl = document.createElement("div");
@@ -230,8 +268,8 @@ async function loadMusic(){
         });
       }
     }
-    setStatus(queue.length + " canciones. Pulsa una para escucharla.");
-  } catch (e) { setStatus("Error leyendo Drive: " + e.message); }
+    setStatus(queue.length + t("count"));
+  } catch (e) { setStatus(t("err") + e.message); }
 }
 
 async function playIndex(idx){
