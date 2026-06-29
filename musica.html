@@ -299,8 +299,8 @@ async function loadMusic(){
         const alEl = document.createElement("div");
         alEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
         listEl().appendChild(alEl);
-        const tracks = (await listChildren(album.id, false))
-          .filter(t => t.mimeType !== "application/vnd.google-apps.folder");
+        const tracks = dedupByFormat((await listChildren(album.id, false))
+          .filter(t => t.mimeType !== "application/vnd.google-apps.folder"));
         tracks.forEach(t => {
           const label = cleanName(t.name) + " — " + artist.name;
           const idx = queue.length;
@@ -453,6 +453,15 @@ audio.addEventListener("ended", () => {
 })();
 
 function cleanName(n){ return n.replace(/\.[a-z0-9]{2,4}$/i, ""); }
+// Si la misma canción está en varios formatos, deja solo una (prefiere m4a/AAC).
+function dedupByFormat(files){
+  const ext = n => (n.split('.').pop() || '').toLowerCase();
+  const rank = n => (["m4a","m4b","aac","mp4"].includes(ext(n)) ? 2 : 1);
+  const base = n => n.replace(/\.[^.]+$/, "").trim().toLowerCase();
+  const best = {};
+  files.forEach(f => { const b = base(f.name); if (!best[b] || rank(f.name) > rank(best[b].name)) best[b] = f; });
+  return Object.values(best);
+}
 function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 </script>
 </body>
