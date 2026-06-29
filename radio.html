@@ -14,7 +14,7 @@
 <style>
   :root{
     --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
-    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --accent:#7C9AFF; --gold:#FFC75A; --text:#E8EAF0; --muted:#9AA3B2;
     --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -25,7 +25,14 @@
     border-bottom:1px solid var(--line);flex-shrink:0}
   header img{width:30px;height:30px}
   header .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
-  header .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  header .right{margin-left:auto;display:flex;align-items:center;gap:14px}
+  header .back{color:var(--muted);font-size:.9rem}
+  .loginbtn{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:999px;padding:7px 14px;cursor:pointer;font-family:var(--body);font-size:.85rem}
+  .loginbtn:hover{border-color:var(--accent)}
+  .userchip{display:flex;align-items:center;gap:8px;font-size:.88rem}
+  .userav{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#0b0d12;
+    display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
   .controls{padding:10px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
     border-bottom:1px solid var(--line);flex-shrink:0}
   input{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
@@ -33,25 +40,34 @@
   input:focus{outline:none;border-color:var(--accent)}
   button.go{background:var(--accent);color:#0b0d12;border:0;border-radius:10px;
     padding:9px 16px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  button.favview{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:9px 14px;cursor:pointer;font-family:var(--body);font-size:.9rem}
+  button.favview.on{background:var(--gold);color:#231a00;border-color:var(--gold)}
   .main{flex:1;display:flex;min-height:0}
   #map{flex:1;background:#0a1a14}
-  /* panel lateral con la lista de la zona */
   .sidepanel{width:300px;flex-shrink:0;border-left:1px solid var(--line);
     background:var(--surface);display:flex;flex-direction:column;min-height:0}
-  .sidepanel h3{font-family:var(--display);font-weight:500;font-size:1rem;
-    padding:14px 16px 8px}
+  .sidepanel h3{font-family:var(--display);font-weight:500;font-size:1rem;padding:14px 16px 8px}
   .sidehint{padding:0 16px 10px;font-size:.82rem;color:var(--muted)}
   .sidelist{overflow-y:auto;flex:1}
-  .sideitem{padding:10px 16px;border-bottom:1px solid rgba(42,47,58,.5);cursor:pointer}
+  .sideitem{display:flex;align-items:center;gap:8px;padding:10px 16px;
+    border-bottom:1px solid rgba(42,47,58,.5)}
+  .sideitem .txt{flex:1;min-width:0;cursor:pointer}
   .sideitem:hover{background:var(--surface-2)}
-  .sideitem .sn{font-size:.92rem}
+  .sideitem .sn{font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sideitem .sc{font-size:.76rem;color:var(--muted)}
+  .star{cursor:pointer;font-size:1.1rem;color:var(--muted);flex-shrink:0;line-height:1}
+  .star.on{color:var(--gold)}
   @media (max-width:720px){ .sidepanel{display:none} }
   .leaflet-popup-content-wrapper{background:var(--surface);color:var(--text);border:1px solid var(--line)}
   .leaflet-popup-tip{background:var(--surface)}
   .popup-name{font-weight:600;margin-bottom:6px}
+  .popup-row{display:flex;gap:8px;align-items:center}
   .popup-btn{background:var(--accent);color:#0b0d12;border:0;border-radius:8px;
     padding:6px 12px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  .popup-star{background:transparent;border:1px solid var(--line);border-radius:8px;
+    padding:6px 9px;cursor:pointer;font-size:1rem;color:var(--muted)}
+  .popup-star.on{color:var(--gold);border-color:var(--gold)}
   .status{padding:6px 18px;font-size:.85rem;color:var(--muted);flex-shrink:0}
   .player{background:rgba(22,25,31,.97);border-top:1px solid var(--line);
     padding:12px 18px;display:none;align-items:center;gap:14px;flex-shrink:0}
@@ -59,8 +75,7 @@
   .player .pinfo{flex:1;min-width:0}
   .ptitle{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pstate{font-size:.78rem;color:var(--muted)}
-  .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;
-    background:var(--accent);color:#0b0d12;font-size:1.1rem}
+  .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;background:var(--accent);color:#0b0d12;font-size:1.1rem}
   .marker-cluster{background:rgba(124,154,255,.25)}
   .marker-cluster div{background:rgba(124,154,255,.85);color:#0b0d12;font-weight:600}
 </style>
@@ -70,12 +85,19 @@
 <header>
   <img src="cadence-logo.png" alt="Cadence">
   <span class="name">Cadence · Radio</span>
-  <a class="back" href="index.html">← Inicio</a>
+  <div class="right">
+    <button id="loginBtn" class="loginbtn">Entrar</button>
+    <span id="userChip" class="userchip" style="display:none">
+      <span id="userAv" class="userav"></span><span id="userName"></span>
+    </span>
+    <a class="back" href="index.html">← Inicio</a>
+  </div>
 </header>
 
 <div class="controls">
   <input id="search" type="text" placeholder="Filtrar por país o género (ej. usa, jazz, reggae)... o vacío = mundo entero">
   <button id="searchBtn" class="go">Buscar</button>
+  <button id="favViewBtn" class="favview">★ Mis favoritas</button>
 </div>
 
 <div class="main">
@@ -90,144 +112,190 @@
 <div id="status" class="status">Cargando mapa...</div>
 
 <div id="player" class="player">
-  <div class="pinfo">
-    <div id="pTitle" class="ptitle">—</div>
-    <div id="pState" class="pstate"></div>
-  </div>
+  <div class="pinfo"><div id="pTitle" class="ptitle">—</div><div id="pState" class="pstate"></div></div>
   <button id="playBtn" class="pbtn">⏸</button>
 </div>
 <audio id="audio"></audio>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<script>
-const API = "https://all.api.radio-browser.info/json";
-const map = L.map("map", { worldCopyJump:true, minZoom:2 }).setView([25, 5], 2.4);
-L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-  attribution:'&copy; OpenTopoMap &copy; OpenStreetMap', maxZoom:16
-}).addTo(map);
-const cluster = L.markerClusterGroup({ chunkedLoading:true, maxClusterRadius:45 });
-map.addLayer(cluster);
 
-const audio = document.getElementById("audio");
-const setStatus = m => document.getElementById("status").textContent = m;
-let allStations = [];  // {name, country, tag, url, lat, lon}
+<!-- Firebase: login + favoritas -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",authDomain:"cadence-500901.firebaseapp.com",
+  projectId:"cadence-500901",storageBucket:"cadence-500901.firebasestorage.app",
+  messagingSenderId:"995587221821",appId:"1:995587221821:web:3567f36d6ef84a61863d54"};
+const app=initializeApp(cfg), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
+let user=null, unsub=null;
+window.favorites=new Map();   // uuid -> station
 
-function radioIcon(){
-  return L.divIcon({ className:"",
-    html:'<div style="width:11px;height:11px;border-radius:50%;background:#7C9AFF;border:2px solid #0E1014;box-shadow:0 0 5px rgba(124,154,255,.9)"></div>',
-    iconSize:[11,11] });
-}
-const COUNTRY_CENTER = {
-  "US":[39,-98],"ES":[40,-3.7],"MX":[23,-102],"AR":[-34,-64],"GB":[54,-2],"FR":[46,2],
-  "DE":[51,10],"IT":[42,12],"BR":[-10,-55],"CO":[4,-72],"CL":[-30,-71],"PE":[-10,-76],
-  "CA":[56,-106],"AU":[-25,133],"JP":[36,138],"IN":[22,79],"RU":[61,105],"CN":[35,105],
-  "PT":[39,-8],"NL":[52,5],"BE":[50,4],"SE":[62,15],"PL":[52,19],"GR":[39,22],"TR":[39,35],
-  "EG":[26,30],"ZA":[-29,24],"NG":[9,8],"MA":[32,-6],"UA":[49,32],"IE":[53,-8]
+document.getElementById("loginBtn").addEventListener("click",()=>signInWithPopup(auth,provider).catch(e=>alert(e.message)));
+function logoutBind(){ document.getElementById("userChip").addEventListener("click",()=>signOut(auth)); }
+
+onAuthStateChanged(auth,u=>{
+  user=u;
+  const chip=document.getElementById("userChip"), btn=document.getElementById("loginBtn");
+  if(u){
+    btn.style.display="none"; chip.style.display="flex";
+    document.getElementById("userAv").textContent=(u.displayName||"O").trim().charAt(0).toUpperCase();
+    document.getElementById("userName").textContent=u.displayName||"Oyente";
+    if(unsub)unsub();
+    unsub=onSnapshot(collection(db,"users",u.uid,"radioFavorites"),snap=>{
+      window.favorites.clear();
+      snap.forEach(d=>window.favorites.set(d.id,d.data()));
+      if(window.refreshFavUI)window.refreshFavUI();
+    });
+  }else{
+    btn.style.display="inline-block"; chip.style.display="none";
+    window.favorites.clear(); if(unsub){unsub();unsub=null;} if(window.refreshFavUI)window.refreshFavUI();
+  }
+});
+logoutBind();
+
+// API global para el script del mapa.
+window.isLoggedIn=()=>!!user;
+window.toggleFavorite=async function(st){
+  if(!user){ alert("Entra con Google para guardar favoritas."); return; }
+  const id=st.uuid||((st.name||"")+"|"+(st.url||"")).slice(0,200);
+  if(window.favorites.has(id)){
+    await deleteDoc(doc(db,"users",user.uid,"radioFavorites",id));
+  }else{
+    await setDoc(doc(db,"users",user.uid,"radioFavorites",id),{
+      name:st.name||"Emisora", url:st.url||"", country:st.country||"", tag:st.tag||"",
+      lat:st.lat||null, lon:st.lon||null
+    });
+  }
 };
-function jitter(v){ return v + (Math.random()-0.5)*4; }
+</script>
+
+<script>
+const API="https://all.api.radio-browser.info/json";
+const map=L.map("map",{worldCopyJump:true,minZoom:2}).setView([25,5],2.4);
+L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{attribution:'&copy; OpenTopoMap',maxZoom:16}).addTo(map);
+const cluster=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:45}); map.addLayer(cluster);
+const audio=document.getElementById("audio");
+const setStatus=m=>document.getElementById("status").textContent=m;
+let allStations=[]; let favView=false;
+
+function radioIcon(){ return L.divIcon({className:"",
+  html:'<div style="width:11px;height:11px;border-radius:50%;background:#7C9AFF;border:2px solid #0E1014;box-shadow:0 0 5px rgba(124,154,255,.9)"></div>',iconSize:[11,11]});}
+const COUNTRY_CENTER={"US":[39,-98],"ES":[40,-3.7],"MX":[23,-102],"AR":[-34,-64],"GB":[54,-2],"FR":[46,2],
+  "DE":[51,10],"IT":[42,12],"BR":[-10,-55],"CO":[4,-72],"CL":[-30,-71],"PE":[-10,-76],"CA":[56,-106],
+  "AU":[-25,133],"JP":[36,138],"IN":[22,79],"RU":[61,105],"CN":[35,105],"PT":[39,-8],"NL":[52,5],
+  "BE":[50,4],"SE":[62,15],"PL":[52,19],"GR":[39,22],"TR":[39,35],"EG":[26,30],"ZA":[-29,24],
+  "NG":[9,8],"MA":[32,-6],"UA":[49,32],"IE":[53,-8]};
+function jitter(v){ return v+(Math.random()-0.5)*4; }
 
 async function loadStations(params){
-  setStatus("Cargando emisoras...");
-  cluster.clearLayers(); allStations = [];
-  try {
-    const url = API + "/stations/search?" + params + "&hidebroken=true&limit=5000&order=clickcount&reverse=true";
-    const res = await fetch(url, { headers:{ "User-Agent":"Cadence/1.0" } });
-    const data = await res.json();
-    const valid = data.filter(s => s.url_resolved);
-    const batch = [];
-    valid.forEach(s => {
-      let lat = parseFloat(s.geo_lat), lon = parseFloat(s.geo_long);
-      if (!lat || !lon) {
-        const c = COUNTRY_CENTER[s.countrycode];
-        if (!c) return;
-        lat = jitter(c[0]); lon = jitter(c[1]);
-      }
-      const st = { name:s.name||"Emisora", country:s.country||"", tag:(s.tags||"").split(",")[0],
-                   url:s.url_resolved, lat, lon };
+  setStatus("Cargando emisoras..."); cluster.clearLayers(); allStations=[]; favView=false;
+  document.getElementById("favViewBtn").classList.remove("on");
+  try{
+    const url=API+"/stations/search?"+params+"&hidebroken=true&limit=5000&order=clickcount&reverse=true";
+    const data=await (await fetch(url,{headers:{"User-Agent":"Cadence/1.0"}})).json();
+    const batch=[];
+    data.filter(s=>s.url_resolved).forEach(s=>{
+      let lat=parseFloat(s.geo_lat),lon=parseFloat(s.geo_long);
+      if(!lat||!lon){ const c=COUNTRY_CENTER[s.countrycode]; if(!c)return; lat=jitter(c[0]); lon=jitter(c[1]); }
+      const st={uuid:s.stationuuid,name:s.name||"Emisora",country:s.country||"",tag:(s.tags||"").split(",")[0],url:s.url_resolved,lat,lon};
       allStations.push(st);
-      const m = L.marker([lat, lon], { icon: radioIcon() });
-      m.bindPopup(
-        '<div class="popup-name">' + escapeHtml(st.name) + '</div>' +
-        '<div style="color:#9AA3B2;font-size:.8rem;margin-bottom:8px">' +
-          escapeHtml(st.country + (st.tag ? " · " + st.tag : "")) + '</div>' +
-        '<button class="popup-btn" onclick="playStation(\'' +
-          encodeURIComponent(st.url) + '\',\'' + encodeURIComponent(st.name) + '\')">▶ Escuchar</button>'
-      );
-      batch.push(m);
+      const m=L.marker([lat,lon],{icon:radioIcon()}); st._marker=m;
+      m.bindPopup(popupHtml(st)); m.on("popupopen",()=>bindPopup(st)); batch.push(m);
     });
     cluster.addLayers(batch);
-    setStatus(allStations.length + " emisoras. Acércate y mira la lista de la derecha.");
+    setStatus(allStations.length+" emisoras. Acércate y mira la lista de la derecha.");
     updateSideList();
-  } catch(e){ setStatus("Error cargando emisoras: " + e.message); }
+  }catch(e){ setStatus("Error cargando emisoras: "+e.message); }
 }
 
-// Lista lateral: emisoras dentro de lo que se ve ahora.
+function popupHtml(st){
+  const fav=window.favorites&&[...window.favorites.keys()].includes(st.uuid);
+  return '<div class="popup-name">'+esc(st.name)+'</div>'+
+    '<div style="color:#9AA3B2;font-size:.8rem;margin-bottom:8px">'+esc(st.country+(st.tag?" · "+st.tag:""))+'</div>'+
+    '<div class="popup-row"><button class="popup-btn" id="pp-play">▶ Escuchar</button>'+
+    '<button class="popup-star'+(fav?' on':'')+'" id="pp-star">★</button></div>';
+}
+function bindPopup(st){
+  const p=document.getElementById("pp-play"), s=document.getElementById("pp-star");
+  if(p)p.onclick=()=>playStation(st.url,st.name);
+  if(s)s.onclick=async()=>{ await window.toggleFavorite(st); };
+}
+
 function updateSideList(){
-  const list = document.getElementById("sideList");
-  const hint = document.getElementById("sideHint");
-  const title = document.getElementById("sideTitle");
-  const b = map.getBounds();
-  const visible = allStations.filter(s => b.contains([s.lat, s.lon]));
-  if (visible.length > 400){
-    list.innerHTML = "";
-    hint.textContent = "Acércate más para ver la lista (" + visible.length + " a la vista).";
-    title.textContent = "Emisoras a la vista";
-    return;
-  }
-  if (visible.length === 0){
-    list.innerHTML = ""; hint.textContent = "No hay emisoras en esta zona."; return;
-  }
-  hint.textContent = "";
-  // Quita duplicados (mismo nombre + url) que a veces trae la base de datos.
-  const seen = new Set();
-  const uniq = visible.filter(s => {
-    const k = (s.name + "|" + s.url).toLowerCase();
-    if (seen.has(k)) return false;
-    seen.add(k); return true;
-  });
-  title.textContent = uniq.length + " emisoras aquí";
-  list.innerHTML = "";
-  uniq.slice(0, 400).forEach(s => {
-    const div = document.createElement("div");
-    div.className = "sideitem";
-    div.innerHTML = '<div class="sn">' + escapeHtml(s.name) + '</div>' +
-      '<div class="sc">' + escapeHtml(s.country + (s.tag ? " · " + s.tag : "")) + '</div>';
-    // Clic limpio: sin comillas en HTML, guardamos los datos en el closure.
-    div.addEventListener("click", () => playStation(encodeURIComponent(s.url), encodeURIComponent(s.name)));
-    list.appendChild(div);
-  });
+  const list=document.getElementById("sideList"),hint=document.getElementById("sideHint"),title=document.getElementById("sideTitle");
+  const b=map.getBounds();
+  let visible=allStations.filter(s=>b.contains([s.lat,s.lon]));
+  if(visible.length>400){ list.innerHTML=""; title.textContent="Emisoras a la vista";
+    hint.textContent="Acércate más para ver la lista ("+visible.length+" a la vista)."; return; }
+  if(visible.length===0){ list.innerHTML=""; hint.textContent="No hay emisoras en esta zona."; return; }
+  hint.textContent="";
+  const seen=new Set();
+  const uniq=visible.filter(s=>{const k=(s.name+"|"+s.url).toLowerCase(); if(seen.has(k))return false; seen.add(k);return true;});
+  title.textContent=uniq.length+" emisoras aquí";
+  list.innerHTML="";
+  uniq.slice(0,400).forEach(s=>renderSideItem(list,s));
 }
-map.on("moveend zoomend", updateSideList);
+function renderSideItem(list,s){
+  const fav=window.favorites&&[...window.favorites.keys()].includes(s.uuid);
+  const div=document.createElement("div"); div.className="sideitem";
+  div.innerHTML='<div class="txt"><div class="sn">'+esc(s.name)+'</div>'+
+    '<div class="sc">'+esc(s.country+(s.tag?" · "+s.tag:""))+'</div></div>'+
+    '<span class="star'+(fav?' on':'')+'">★</span>';
+  div.querySelector(".txt").addEventListener("click",()=>playStation(s.url,s.name));
+  div.querySelector(".star").addEventListener("click",async()=>{ await window.toggleFavorite(s); });
+  list.appendChild(div);
+}
+map.on("moveend zoomend",()=>{ if(!favView)updateSideList(); });
 
-window.playStation = function(urlEnc, nameEnc){
-  const url = decodeURIComponent(urlEnc), name = decodeURIComponent(nameEnc);
-  document.getElementById("player").classList.add("show");
-  document.getElementById("pTitle").textContent = name;
-  document.getElementById("pState").textContent = "Conectando...";
-  audio.src = url;
-  audio.play()
-    .then(()=>{ document.getElementById("pState").textContent="En directo"; document.getElementById("playBtn").textContent="⏸"; })
-    .catch(()=>{ document.getElementById("pState").textContent="No se pudo reproducir"; });
-};
-document.getElementById("playBtn").addEventListener("click", ()=>{
-  if(audio.paused){ audio.play(); document.getElementById("playBtn").textContent="⏸"; document.getElementById("pState").textContent="En directo"; }
-  else { audio.pause(); document.getElementById("playBtn").textContent="▶"; document.getElementById("pState").textContent="En pausa"; }
+// Ver solo favoritas: las pinta en el mapa desde Firebase.
+document.getElementById("favViewBtn").addEventListener("click",()=>{
+  if(!window.isLoggedIn()){ alert("Entra con Google para ver tus favoritas."); return; }
+  favView=!favView;
+  document.getElementById("favViewBtn").classList.toggle("on",favView);
+  if(favView){
+    cluster.clearLayers(); allStations=[];
+    window.favorites.forEach((st,uuid)=>{
+      if(st.lat==null||st.lon==null)return;
+      const s={uuid,name:st.name,country:st.country,tag:st.tag,url:st.url,lat:st.lat,lon:st.lon};
+      allStations.push(s);
+      const m=L.marker([s.lat,s.lon],{icon:radioIcon()}); m.bindPopup(popupHtml(s)); m.on("popupopen",()=>bindPopup(s)); cluster.addLayer(m);
+    });
+    setStatus(allStations.length+" favoritas en el mapa.");
+    document.getElementById("sideTitle").textContent="Mis favoritas";
+    const list=document.getElementById("sideList"); list.innerHTML=""; document.getElementById("sideHint").textContent="";
+    allStations.forEach(s=>renderSideItem(list,s));
+  }else{ loadStations("order=clickcount&reverse=true"); }
 });
 
-document.getElementById("searchBtn").addEventListener("click", doSearch);
-document.getElementById("search").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
-function doSearch(){
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  if(!q){ loadStations("order=clickcount&reverse=true"); return; }
-  const codes = {"usa":"US","eeuu":"US","estados unidos":"US","españa":"ES","espana":"ES",
-    "mexico":"MX","méxico":"MX","argentina":"AR","reino unido":"GB","uk":"GB","francia":"FR",
-    "alemania":"DE","italia":"IT","brasil":"BR","japon":"JP","japón":"JP"};
-  if (codes[q]) loadStations("countrycode=" + codes[q]);
-  else loadStations("tagList=" + encodeURIComponent(q));
-}
-function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+window.refreshFavUI=function(){
+  // refresca estrellas visibles
+  if(favView){ document.getElementById("favViewBtn").click(); document.getElementById("favViewBtn").click(); }
+  else updateSideList();
+};
 
+function playStation(url,name){
+  document.getElementById("player").classList.add("show");
+  document.getElementById("pTitle").textContent=name; document.getElementById("pState").textContent="Conectando...";
+  audio.src=url; audio.play().then(()=>{document.getElementById("pState").textContent="En directo";document.getElementById("playBtn").textContent="⏸";})
+    .catch(()=>document.getElementById("pState").textContent="No se pudo reproducir");
+}
+document.getElementById("playBtn").addEventListener("click",()=>{
+  if(audio.paused){audio.play();document.getElementById("playBtn").textContent="⏸";}else{audio.pause();document.getElementById("playBtn").textContent="▶";}});
+
+document.getElementById("searchBtn").addEventListener("click",doSearch);
+document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
+function doSearch(){
+  const q=document.getElementById("search").value.trim().toLowerCase();
+  if(!q){loadStations("order=clickcount&reverse=true");return;}
+  const codes={"usa":"US","eeuu":"US","estados unidos":"US","españa":"ES","espana":"ES","mexico":"MX","méxico":"MX",
+    "argentina":"AR","reino unido":"GB","uk":"GB","francia":"FR","alemania":"DE","italia":"IT","brasil":"BR","japon":"JP","japón":"JP"};
+  if(codes[q])loadStations("countrycode="+codes[q]); else loadStations("tagList="+encodeURIComponent(q));
+}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 loadStations("order=clickcount&reverse=true");
 </script>
 </body>
