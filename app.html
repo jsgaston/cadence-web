@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Comunidad</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
+    --accent:#7C9AFF; --accent-deep:#3A5BD0; --text:#E8EAF0; --muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);
+    line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
+  a{color:var(--accent)}
+  .wrap{max-width:560px;margin:0 auto;padding:40px 24px}
+
+  .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px}
+  .brand img{width:44px;height:44px;object-fit:contain}
+  .brand h1{font-family:var(--display);font-weight:500;font-size:1.8rem}
+  .sub{text-align:center;color:var(--muted);margin-bottom:36px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px}
+  .hidden{display:none}
+
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+    padding:13px 18px;border-radius:999px;border:0;cursor:pointer;
+    background:#fff;color:#1f2330;font-family:var(--body);font-weight:600;font-size:1rem}
+  .gbtn:hover{background:#eef1f7}
+  .gbtn img{width:20px;height:20px}
+
+  .profile{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .avatar{width:64px;height:64px;border-radius:50%;border:2px solid var(--line);object-fit:cover}
+  .pname{font-family:var(--display);font-weight:500;font-size:1.35rem;line-height:1.1}
+  .pmail{color:var(--muted);font-size:.9rem}
+
+  label{display:block;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:26px 0 10px}
+  .row{display:flex;gap:10px}
+  input[type=text]{flex:1;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:1rem}
+  input[type=text]:focus{outline:none;border-color:var(--accent)}
+  .btn{padding:12px 20px;border-radius:12px;border:0;cursor:pointer;
+    background:var(--accent);color:#0b0d12;font-family:var(--body);font-weight:600}
+  .btn:hover{background:#93acff}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);
+    border-radius:999px;padding:9px 16px;font-weight:500;cursor:pointer;font-family:var(--body)}
+  .btn-ghost:hover{border-color:var(--accent)}
+
+  .status{min-height:20px;margin-top:14px;font-size:.9rem;color:var(--muted)}
+  .soon{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:.9rem}
+  .soon b{color:var(--text);font-weight:600}
+  .foot{text-align:center;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <img src="cadence-logo.png" alt="Cadence">
+    <h1>Cadence</h1>
+  </div>
+  <p class="sub">Comunidad de oyentes — versión inicial</p>
+
+  <!-- VISTA: no conectado -->
+  <div id="loginView" class="card">
+    <p style="text-align:center;margin-bottom:22px;color:var(--muted)">
+      Inicia sesión para crear tu perfil y empezar.</p>
+    <button id="loginBtn" class="gbtn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
+      Iniciar sesión con Google
+    </button>
+    <div id="loginStatus" class="status"></div>
+  </div>
+
+  <!-- VISTA: conectado -->
+  <div id="profileView" class="card hidden">
+    <div class="profile">
+      <img id="avatar" class="avatar" src="" alt="">
+      <div>
+        <div id="pname" class="pname"></div>
+        <div id="pmail" class="pmail"></div>
+      </div>
+    </div>
+
+    <label for="np">¿Qué estás escuchando?</label>
+    <div class="row">
+      <input id="np" type="text" placeholder="Artista, canción, podcast...">
+      <button id="saveBtn" class="btn">Guardar</button>
+    </div>
+    <div id="status" class="status"></div>
+
+    <div class="soon">
+      <b>Próximamente:</b> seguir a otros oyentes, ver qué escuchan,
+      chat y descubrir música libre. Esto es solo el comienzo.
+    </div>
+
+    <div class="foot">
+      <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Firebase ===== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+// --- Tus claves de Firebase (públicas, pueden ir aquí) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",
+  authDomain: "cadence-500901.firebaseapp.com",
+  projectId: "cadence-500901",
+  storageBucket: "cadence-500901.firebasestorage.app",
+  messagingSenderId: "995587221821",
+  appId: "1:995587221821:web:3567f36d6ef84a61863d54"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+const loginView = document.getElementById("loginView");
+const profileView = document.getElementById("profileView");
+const loginStatus = document.getElementById("loginStatus");
+const status = document.getElementById("status");
+const npInput = document.getElementById("np");
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  loginStatus.textContent = "Abriendo Google...";
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    loginStatus.textContent = "No se pudo iniciar sesión: " + e.message;
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  status.textContent = "Guardando...";
+  try {
+    await setDoc(doc(db, "users", user.uid),
+      { nowPlaying: npInput.value.trim(), updatedAt: serverTimestamp() },
+      { merge: true });
+    status.textContent = "Guardado ✓";
+  } catch (e) {
+    status.textContent = "No se pudo guardar: " + e.message;
+  }
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Crear o actualizar el perfil
+    const ref = doc(db, "users", user.uid);
+    try {
+      await setDoc(ref, {
+        displayName: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      const snap = await getDoc(ref);
+      const data = snap.exists() ? snap.data() : {};
+      npInput.value = data.nowPlaying || "";
+    } catch (e) {
+      status.textContent = "Aviso: " + e.message;
+    }
+    document.getElementById("avatar").src = user.photoURL || "cadence-logo.png";
+    document.getElementById("pname").textContent = user.displayName || "Oyente";
+    document.getElementById("pmail").textContent = user.email || "";
+    loginView.classList.add("hidden");
+    profileView.classList.remove("hidden");
+  } else {
+    profileView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+    loginStatus.textContent = "";
+  }
+});
+</script>
+</body>
+</html>
