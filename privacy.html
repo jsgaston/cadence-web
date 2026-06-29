@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de privacidad — Cadence</title>
+<meta name="description" content="Política de privacidad de la aplicación Cadence: qué datos trata, cómo usa Google Drive y por qué no recoge información personal.">
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1014; --surface:#16191F; --line:#2A2F3A;
+    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
+  header{padding:56px 24px 24px;border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;align-items:center;gap:14px}
+  header img{width:40px;height:40px;object-fit:contain}
+  header .name{font-family:var(--display);font-weight:500;font-size:1.5rem}
+  header a.back{margin-left:auto;font-size:.92rem}
+  main{padding:48px 0 80px}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(1.9rem,5vw,2.6rem);
+    letter-spacing:-.01em;margin-bottom:6px}
+  .updated{color:var(--muted);font-size:.92rem;margin-bottom:36px}
+  h2{font-family:var(--display);font-weight:500;font-size:1.35rem;
+    margin:34px 0 12px;color:var(--text)}
+  p,li{color:#cfd4de;margin-bottom:12px}
+  ul{padding-left:22px}
+  strong{color:var(--text)}
+  .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin:18px 0}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);
+    font-size:.9rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <img src="cadence-logo.png" alt="Cadence">
+    <span class="name">Cadence</span>
+    <a class="back" href="index.html">← Inicio</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <h1>Política de privacidad</h1>
+  <p class="updated">Última actualización: junio de 2026</p>
+
+  <p>Cadence es una aplicación de Android para reproducir música, audiolibros,
+  podcasts y radio. Esta política explica qué información trata la app y cómo. La
+  idea de fondo es sencilla: <strong>Cadence no recoge tus datos personales ni los
+  envía a ningún servidor nuestro</strong>, porque no tenemos servidores propios.</p>
+
+  <div class="box">
+    <p style="margin-bottom:0"><strong>En resumen:</strong> sin cuentas, sin
+    anuncios, sin analíticas, sin rastreo. La música la reproduce desde tu propio
+    dispositivo. Si activas la copia de seguridad, esta se guarda en <strong>tu
+    propio Google Drive</strong>, bajo tu control.</p>
+  </div>
+
+  <h2>Tu música y tus archivos</h2>
+  <p>Para reproducir tu música, Cadence necesita leer los archivos de audio de tu
+  dispositivo. Esa lectura ocurre <strong>solo en tu teléfono</strong>: la app no
+  sube tu música a ningún sitio salvo que tú actives la copia de seguridad en tu
+  Drive (más abajo). No compartimos ni transmitimos tus archivos.</p>
+
+  <h2>Copia de seguridad en Google Drive</h2>
+  <p>Si decides usar la copia de seguridad, Cadence se conecta a <strong>tu</strong>
+  cuenta de Google Drive con el permiso <code>drive.file</code>. Esto es importante:</p>
+  <ul>
+    <li>Cadence <strong>solo puede ver y tocar los archivos que la propia app crea</strong>
+      (la carpeta «Cadence» y su contenido). No accede al resto de tu Drive.</li>
+    <li>La copia se guarda en <strong>tu</strong> Drive, no en un servidor de Cadence.
+      Tú eres el dueño de esos archivos y puedes borrarlos cuando quieras.</li>
+    <li>Esa información <strong>no se comparte</strong> con nosotros ni con terceros,
+      ni se usa para ningún otro fin.</li>
+  </ul>
+  <p>El uso que Cadence hace de la información recibida de las APIs de Google se ajusta
+  a la <a href="https://developers.google.com/terms/api-services-user-data-policy">
+  Política de Datos de Usuario de los Servicios de la API de Google</a>, incluidos los
+  requisitos de <strong>Uso Limitado</strong>.</p>
+
+  <h2>Radio</h2>
+  <p>La sección de radio reproduce emisoras públicas de internet. Para encontrarlas,
+  la app consulta el directorio comunitario y abierto Radio Browser. No se envía
+  información personal tuya en esas consultas.</p>
+
+  <h2>Podcasts</h2>
+  <p>Los podcasts se obtienen de fuentes públicas (los feeds RSS de cada programa).
+  Si descargas un episodio, el archivo se guarda <strong>localmente en tu
+  dispositivo</strong>, dentro del almacenamiento privado de la app.</p>
+
+  <h2>Permisos que pide la app</h2>
+  <ul>
+    <li><strong>Acceso a audio/almacenamiento:</strong> para encontrar y reproducir
+      tu música.</li>
+    <li><strong>Internet:</strong> para la radio, los podcasts y la copia en Drive.</li>
+    <li><strong>Reproducción en segundo plano:</strong> para que la música siga
+      sonando con la pantalla apagada.</li>
+  </ul>
+
+  <h2>Anuncios, analíticas y cuentas</h2>
+  <p>Cadence <strong>no</strong> muestra anuncios, <strong>no</strong> incluye
+  analíticas ni rastreadores, y <strong>no</strong> te crea ninguna cuenta. No
+  vendemos ni compartimos datos, porque no los recogemos.</p>
+
+  <h2>Donaciones</h2>
+  <p>Cadence es gratuita y se mantiene con donaciones voluntarias a través de
+  servicios externos (Buy Me a Coffee y PayPal). Si donas, esos pagos los gestionan
+  esas plataformas según <em>sus</em> propias políticas de privacidad; Cadence no
+  recibe los datos de tu pago.</p>
+
+  <h2>Menores</h2>
+  <p>Cadence no está dirigida a menores de edad y no recoge datos de forma consciente
+  de ellos.</p>
+
+  <h2>Cambios en esta política</h2>
+  <p>Si en el futuro la app cambia y trata datos de forma distinta, actualizaremos
+  esta página y su fecha.</p>
+
+  <h2>Contacto</h2>
+  <p>Para cualquier duda sobre privacidad, escribe a
+  <a href="mailto:jsgastoniriartecabrera@gmail.com">jsgastoniriartecabrera@gmail.com</a>.</p>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">© <span id="y"></span> Cadence · <a href="index.html">cadence-project.org</a></div>
+</footer>
+
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>
