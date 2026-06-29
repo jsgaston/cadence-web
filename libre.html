@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Música libre</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0E1014;--surface:#16191F;--surface-2:#1E222B;--line:#2A2F3A;
+    --accent:#7C9AFF;--text:#E8EAF0;--muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif;--body:"Inter",system-ui,sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding-bottom:90px}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1000px 500px at 50% -10%,rgba(124,154,255,.14),transparent 60%);}
+  a{color:var(--accent);text-decoration:none}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+  .topbar img{width:28px;height:28px}.topbar .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
+  .topbar .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 20px}
+  .sub{text-align:center;color:var(--muted);margin-bottom:20px}
+  .searchrow{display:flex;gap:10px;margin-bottom:8px}
+  input{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 14px;color:var(--text);font-family:var(--body);font-size:.95rem}
+  input:focus{outline:none;border-color:var(--accent)}
+  button.go{background:var(--accent);color:#0b0d12;border:0;border-radius:10px;padding:11px 18px;
+    font-weight:600;cursor:pointer;font-family:var(--body)}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .tag{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:999px;
+    padding:6px 13px;cursor:pointer;font-size:.85rem}
+  .tag:hover{border-color:var(--accent)}
+  .status{min-height:20px;margin:8px 0 16px;font-size:.9rem;color:var(--muted);text-align:center}
+  .track{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--line);
+    border-radius:12px;margin-bottom:10px;background:var(--surface)}
+  .track img{width:54px;height:54px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--surface-2)}
+  .track .info{flex:1;min-width:0}
+  .track .t{font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .track .a{font-size:.83rem;color:var(--muted)}
+  .track .acts{display:flex;gap:8px;flex-shrink:0}
+  .iconbtn{width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;font-size:1rem}
+  .iconbtn.play{background:var(--accent);color:#0b0d12}
+  .iconbtn.dl{background:var(--surface-2);border:1px solid var(--line);color:var(--text);text-decoration:none;
+    display:flex;align-items:center;justify-content:center}
+  .note{font-size:.8rem;color:var(--muted);text-align:center;margin-top:20px;line-height:1.5}
+  .player{position:fixed;left:0;right:0;bottom:0;background:rgba(22,25,31,.97);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:12px 20px;display:none;z-index:30}
+  .player.show{display:block}
+  .player-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .pinfo{flex:1;min-width:0}.ptitle{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pstate{font-size:.78rem;color:var(--muted)}
+  .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;background:var(--accent);color:#0b0d12;font-size:1.1rem}
+  .pbtn.s{width:36px;height:36px;background:transparent;color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="cadence-logo.png" alt=""><span class="name">Cadence · Música libre</span>
+  <a class="back" href="index.html">← Inicio</a>
+</div>
+
+<div class="wrap">
+  <p class="sub">Música con licencia libre (Creative Commons) de Jamendo. Escúchala y descárgala, legal y gratis.</p>
+  <div class="searchrow">
+    <input id="q" type="text" placeholder="Buscar canción, artista o estilo...">
+    <button id="searchBtn" class="go">Buscar</button>
+  </div>
+  <div class="tags" id="tags"></div>
+  <div id="status" class="status"></div>
+  <div id="list"></div>
+  <p class="note" id="note"></p>
+</div>
+
+<div id="player" class="player">
+  <div class="player-inner">
+    <div class="pinfo"><div id="pTitle" class="ptitle">—</div><div id="pState" class="pstate"></div></div>
+    <button id="prevBtn" class="pbtn s">⏮</button><button id="playBtn" class="pbtn">⏸</button><button id="nextBtn" class="pbtn s">⏭</button>
+  </div>
+</div>
+<audio id="audio"></audio>
+
+<script>
+// Jamendo API pública (client_id de demostración de Jamendo).
+const CLIENT_ID="2cf112e0";
+const BASE="https://api.jamendo.com/v3.0";
+const $=id=>document.getElementById(id);
+const audio=$("audio");
+let tracks=[], current=-1;
+
+const GENRES=["pop","rock","electronic","jazz","classical","hiphop","ambient","folk","metal","reggae"];
+GENRES.forEach(g=>{ const b=document.createElement("button"); b.className="tag"; b.textContent=g;
+  b.onclick=()=>{ $("q").value=g; search(); }; $("tags").appendChild(b); });
+
+async function search(){
+  const q=$("q").value.trim();
+  $("status").textContent="Buscando música libre...";
+  $("list").innerHTML="";
+  try{
+    const url=BASE+"/tracks/?client_id="+CLIENT_ID+"&format=json&limit=40&audioformat=mp32"+
+      "&include=musicinfo&order=popularity_total"+(q?"&search="+encodeURIComponent(q):"");
+    const data=await (await fetch(url)).json();
+    tracks=(data.results||[]).filter(t=>t.audio);
+    if(!tracks.length){ $("status").textContent="No se encontró nada. Prueba otra búsqueda."; return; }
+    $("status").textContent=tracks.length+" canciones libres.";
+    render();
+  }catch(e){ $("status").textContent="Error: "+e.message; }
+}
+function render(){
+  const list=$("list"); list.innerHTML="";
+  tracks.forEach((t,i)=>{
+    const div=document.createElement("div"); div.className="track";
+    div.innerHTML=
+      '<img src="'+(t.album_image||t.image||"")+'" alt="" onerror="this.style.visibility=\'hidden\'">'+
+      '<div class="info"><div class="t">'+esc(t.name)+'</div><div class="a">'+esc(t.artist_name)+'</div></div>'+
+      '<div class="acts">'+
+        '<button class="iconbtn play" title="Escuchar">▶</button>'+
+        '<a class="iconbtn dl" href="'+t.audiodownload+'" title="Descargar" target="_blank" rel="noopener">⬇</a>'+
+      '</div>';
+    div.querySelector(".play").onclick=()=>playAt(i);
+    list.appendChild(div);
+  });
+}
+function playAt(i){
+  if(i<0||i>=tracks.length)return; current=i; const t=tracks[i];
+  $("player").classList.add("show"); $("pTitle").textContent=t.name+" — "+t.artist_name; $("pState").textContent="Reproduciendo";
+  audio.src=t.audio; audio.play().then(()=>$("playBtn").textContent="⏸").catch(()=>$("pState").textContent="No se pudo reproducir");
+}
+$("playBtn").onclick=()=>{ if(audio.paused){audio.play();$("playBtn").textContent="⏸";}else{audio.pause();$("playBtn").textContent="▶";} };
+$("nextBtn").onclick=()=>playAt(current+1); $("prevBtn").onclick=()=>playAt(current-1);
+audio.addEventListener("ended",()=>playAt(current+1));
+$("searchBtn").onclick=search; $("q").addEventListener("keydown",e=>{if(e.key==="Enter")search();});
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+$("note").textContent="Toda la música proviene de Jamendo bajo licencias Creative Commons. Respeta la licencia de cada obra al usarla.";
+search(); // arranca con lo más popular
+</script>
+</body>
+</html>

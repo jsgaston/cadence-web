@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Descargar</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0E1014;--surface:#16191F;--surface-2:#1E222B;--line:#2A2F3A;
+    --accent:#7C9AFF;--text:#E8EAF0;--muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif;--body:"Inter",system-ui,sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1000px 520px at 50% -8%,rgba(124,154,255,.14),transparent 60%);}
+  a{color:var(--accent);text-decoration:none}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+  .topbar img{width:28px;height:28px}.topbar .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
+  .topbar .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .wrap{max-width:680px;margin:0 auto;padding:50px 22px;text-align:center}
+  .logo{width:88px;height:88px;margin-bottom:18px}
+  h1{font-family:var(--display);font-weight:500;font-size:2.6rem;margin-bottom:8px}
+  .lead{color:var(--muted);font-size:1.1rem;max-width:520px;margin:0 auto 30px}
+  .btn{display:inline-block;background:var(--accent);color:#0b0d12;font-weight:600;
+    padding:14px 28px;border-radius:999px;font-size:1.05rem}
+  .btn:hover{background:#93acff}
+  .soon{display:inline-block;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
+    padding:14px 28px;border-radius:999px;font-size:1.05rem;cursor:default}
+  .steps{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    padding:28px;margin:34px 0}
+  .steps h2{font-family:var(--display);font-weight:500;font-size:1.3rem;margin-bottom:16px}
+  .step{display:flex;gap:14px;margin-bottom:16px}
+  .num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#0b0d12;font-weight:600;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step p{color:var(--muted);font-size:.95rem}
+  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:30px}
+  .fcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:left}
+  .fcard .ic{font-size:1.5rem;margin-bottom:6px}
+  .fcard h3{font-family:var(--display);font-weight:500;font-size:1rem;margin-bottom:4px}
+  .fcard p{color:var(--muted);font-size:.85rem}
+  .note{color:var(--muted);font-size:.85rem;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <img src="cadence-logo.png" alt=""><span class="name">Cadence</span>
+  <a class="back" href="index.html">← Inicio</a>
+</div>
+
+<div class="wrap">
+  <img class="logo" src="cadence-logo.png" alt="Cadence">
+  <h1>Descarga Cadence</h1>
+  <p class="lead">Tu música, audiolibros, podcasts y radio en un solo sitio. Gratis, sin anuncios, para Android.</p>
+
+  <!-- Cuando publiques en Play, sustituye este botón por el enlace real -->
+  <span class="soon">Próximamente en Google Play</span>
+
+  <div class="steps">
+    <h2>Cómo empezar</h2>
+    <div class="step"><div class="num">1</div><p>Instala Cadence en tu teléfono Android.</p></div>
+    <div class="step"><div class="num">2</div><p>Da permiso para acceder a tu música y empieza a escuchar al instante.</p></div>
+    <div class="step"><div class="num">3</div><p>Entra con Google para tener tu perfil, respaldar tu biblioteca en tu Drive y unirte a la comunidad.</p></div>
+    <div class="step"><div class="num">4</div><p>Desde el navegador, en <a href="index.html">cadence-project.org</a>, escucha tu música, explora la radio del mundo y crea listas a medida.</p></div>
+  </div>
+
+  <div class="feat">
+    <div class="fcard"><div class="ic">🎵</div><h3>Tu música</h3><p>Listas, ecualizador y mezcla inteligente.</p></div>
+    <div class="fcard"><div class="ic">📚</div><h3>Audiolibros</h3><p>Retoma, ajusta velocidad, temporizador.</p></div>
+    <div class="fcard"><div class="ic">🎙️</div><h3>Podcasts</h3><p>Busca, suscríbete y descarga.</p></div>
+    <div class="fcard"><div class="ic">🌍</div><h3>Radio</h3><p>Miles de emisoras del mundo.</p></div>
+  </div>
+
+  <p class="note">Cadence es gratis y sin anuncios, sostenido por donaciones. 
+    ¿Quieres ayudar? <a href="https://buymeacoffee.com/jsgaston">Invita a un café</a>.</p>
+</div>
+</body>
+</html>

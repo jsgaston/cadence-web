@@ -135,6 +135,23 @@
   </div>
 </div>
 
+<!-- Overlay de perfil de otro oyente -->
+<div id="profileOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(8,9,12,.86);
+  backdrop-filter:blur(6px);z-index:50;display:flex;align-items:flex-start;justify-content:center;
+  padding:40px 16px;overflow-y:auto">
+  <div class="card" style="max-width:520px;width:100%;margin:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div id="ovAvatar" class="avatar"></div>
+      <div><div id="ovName" class="pname"></div></div>
+      <button id="ovFollow" class="btn-ghost" style="margin-left:auto" data-i18n="ov_follow"></button>
+      <button id="ovClose" class="btn-ghost" data-i18n="ov_close"></button>
+    </div>
+    <p id="ovBio" style="color:var(--muted);margin-top:14px"></p>
+    <div id="ovTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 12px"></div>
+    <div id="ovHistory"></div>
+  </div>
+</div>
+
 <!-- ========= TEXTOS / TEXTS ========= -->
 <script>
 const I18N = {
@@ -148,7 +165,8 @@ const I18N = {
     wall_loading:"Cargando...", wall_empty:"Aún no hay actividad.",
     m_opening:"Abriendo Google...", m_login_fail:"No se pudo iniciar sesión: ",
     m_saving:"Guardando...", m_saved:"Biografía guardada ✓", m_save_fail:"No se pudo guardar: ",
-    listener:"Oyente",
+    listener:"Oyente", ov_close:"Cerrar", ov_follow:"Seguir", ov_following:"Siguiendo", ov_empty:"Nada por aquí todavía.",
+    ty_musica:"Música", ty_audiolibro:"Audiolibros", ty_podcast:"Podcasts", ty_radio:"Radio",
     t_now:"hace un momento", t_min:"hace # min", t_hour:"hace # h"
   },
   en: {
@@ -161,7 +179,8 @@ const I18N = {
     wall_loading:"Loading...", wall_empty:"No activity yet.",
     m_opening:"Opening Google...", m_login_fail:"Could not sign in: ",
     m_saving:"Saving...", m_saved:"Bio saved ✓", m_save_fail:"Could not save: ",
-    listener:"Listener",
+    listener:"Listener", ov_close:"Close", ov_follow:"Follow", ov_following:"Following", ov_empty:"Nothing here yet.",
+    ty_musica:"Music", ty_audiolibro:"Audiobooks", ty_podcast:"Podcasts", ty_radio:"Radio",
     t_now:"just now", t_min:"# min ago", t_hour:"# h ago"
   }
 };
@@ -196,8 +215,8 @@ function timeAgo(date){
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp,
-         collection, query, orderBy, limit, onSnapshot }
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, serverTimestamp,
+         collection, query, orderBy, limit, onSnapshot, getDocs }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -228,6 +247,7 @@ window._renderFeed=function(){
   cont.innerHTML="";
   feedData.forEach(it=>{
     const row=document.createElement("div"); row.className="feed-item";
+    row.style.cursor="pointer";
     const initial=(it.name||t('listener')).trim().charAt(0).toUpperCase();
     row.innerHTML =
       '<div class="fav">'+initial+'</div>'+
@@ -236,10 +256,84 @@ window._renderFeed=function(){
         '<div class="flabel">'+escapeHtml(it.label||'—')+'</div>'+
         '<div class="ftime">'+timeAgo(it.playedAt)+'</div>'+
       '</div>';
+    if(it.uid) row.addEventListener("click",()=>openProfile(it.uid));
     cont.appendChild(row);
   });
 };
 function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// --- Perfil de otro oyente (sin email) ---
+let ovHistory=[], ovTab="musica";
+window.openProfile=async function(uid){
+  const ov=document.getElementById("profileOverlay");
+  ov.classList.remove("hidden");
+  document.getElementById("ovBio").textContent="";
+  document.getElementById("ovHistory").innerHTML="";
+  try{
+    const ps=await getDoc(doc(db,"users",uid));
+    const name=(ps.exists()&&ps.data().displayName)||t('listener');
+    document.getElementById("ovName").textContent=name;
+    document.getElementById("ovAvatar").textContent=name.trim().charAt(0).toUpperCase();
+    document.getElementById("ovBio").textContent=(ps.exists()&&ps.data().bio)||"";
+    const hq=query(collection(db,"users",uid,"history"), orderBy("playedAt","desc"), limit(100));
+    const hs=await getDocs(hq);
+    ovHistory=hs.docs.map(d=>{const x=d.data();
+      return {label:x.label||x.title||"—", type:x.type||"musica",
+              playedAt:x.playedAt&&x.playedAt.toDate?x.playedAt.toDate():null};});
+    ovTab="musica"; renderOvTabs(); renderOvHistory();
+    setupFollow(uid);
+  }catch(e){ document.getElementById("ovHistory").innerHTML='<p class="empty">'+escapeHtml(e.message)+'</p>'; }
+};
+async function setupFollow(uid){
+  const btn=document.getElementById("ovFollow");
+  const me=fbAuth.currentUser;
+  if(!me || me.uid===uid){ btn.style.display="none"; return; }
+  btn.style.display="inline-block";
+  const ref=doc(db,"users",me.uid,"following",uid);
+  let following=false;
+  try{ following=(await getDoc(ref)).exists(); }catch(e){}
+  paintFollow(btn,following);
+  btn.onclick=async()=>{
+    try{
+      if(following){ await deleteDoc(ref); following=false; }
+      else{ await setDoc(ref,{ since: serverTimestamp() }); following=true; }
+      paintFollow(btn,following);
+    }catch(e){ alert(e.message); }
+  };
+}
+function paintFollow(btn,following){
+  btn.textContent = following ? ("✓ "+t('ov_following')) : ("★ "+t('ov_follow'));
+  btn.style.background = following ? "var(--accent)" : "transparent";
+  btn.style.color = following ? "#0b0d12" : "var(--text)";
+  btn.style.borderColor = following ? "var(--accent)" : "var(--line)";
+}
+function renderOvTabs(){
+  const types=["musica","audiolibro","podcast","radio"];
+  const box=document.getElementById("ovTabs"); box.innerHTML="";
+  types.forEach(ty=>{
+    const b=document.createElement("button");
+    b.className="btn-ghost"; b.style.padding="7px 13px";
+    if(ty===ovTab){ b.style.background="var(--accent)"; b.style.color="#0b0d12"; b.style.borderColor="var(--accent)"; }
+    b.textContent=t('ty_'+ty);
+    b.onclick=()=>{ ovTab=ty; renderOvTabs(); renderOvHistory(); };
+    box.appendChild(b);
+  });
+}
+function renderOvHistory(){
+  const cont=document.getElementById("ovHistory");
+  const items=ovHistory.filter(h=>h.type===ovTab);
+  if(!items.length){ cont.innerHTML='<p class="empty">'+t('ov_empty')+'</p>'; return; }
+  cont.innerHTML="";
+  items.forEach(h=>{
+    const d=document.createElement("div"); d.style.padding="9px 0";
+    d.style.borderBottom="1px solid rgba(42,47,58,.5)";
+    d.innerHTML='<div style="font-size:.93rem">'+escapeHtml(h.label)+'</div>'+
+      '<div style="font-size:.78rem;color:var(--muted)">'+(h.playedAt?timeAgo(h.playedAt):'')+'</div>';
+    cont.appendChild(d);
+  });
+}
+document.getElementById("ovClose").addEventListener("click",()=>document.getElementById("profileOverlay").classList.add("hidden"));
+document.getElementById("profileOverlay").addEventListener("click",e=>{ if(e.target.id==="profileOverlay") e.currentTarget.classList.add("hidden"); });
 
 document.getElementById("loginBtn").addEventListener("click", async ()=>{
   loginStatus.textContent=t('m_opening');
