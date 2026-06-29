@@ -67,6 +67,7 @@
     <h1 data-i18n="title"></h1>
     <p data-i18n="subtitle"></p>
   </div>
+  <div id="diag" style="margin:0 18px 8px;padding:8px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:.8rem;color:var(--muted)">…</div>
   <div class="rules" data-i18n="rules"></div>
   <div class="messages" id="messages"></div>
 
@@ -161,11 +162,21 @@ function render(){
 }
 window._rerender=render;
 
+function setDiag(txt, ok){
+  const d=$("diag"); if(!d) return;
+  d.textContent=txt;
+  d.style.color = ok===true ? "#7CFFA0" : (ok===false ? "#FF8A8A" : "var(--muted)");
+}
+
 // Carga en tiempo real (últimos 100)
 const qy=query(collection(db,"room"), orderBy("createdAt","asc"), limit(100));
 onSnapshot(qy, snap=>{
   msgs=[]; snap.forEach(d=>msgs.push({id:d.id, ...d.data()})); render();
-}, err=>{ const box=$("messages"); box.innerHTML=""; const e=document.createElement("div"); e.style.color="var(--muted)"; e.textContent=t("loaderr"); box.appendChild(e); });
+  setDiag("Lectura OK · "+msgs.length+" mensajes · "+(me?("sesión: "+(me.displayName||me.email||me.uid)):"sin sesión"), true);
+}, err=>{
+  const box=$("messages"); box.innerHTML=""; const e=document.createElement("div"); e.style.color="var(--muted)"; e.textContent=t("loaderr"); box.appendChild(e);
+  setDiag("Error de LECTURA: "+(err.code||err.message)+" → revisa las reglas de «room» (allow read) y Publica.", false);
+});
 
 // Clicks: borrar, reportar, abrir perfil
 $("messages").addEventListener("click", async (e)=>{
@@ -178,11 +189,12 @@ $("messages").addEventListener("click", async (e)=>{
 });
 
 // Login
-$("loginBtn").addEventListener("click", async ()=>{ try{ await signInWithPopup(auth, provider); }catch(_){} });
+$("loginBtn").addEventListener("click", async ()=>{ try{ await signInWithPopup(auth, provider); }catch(e){ setDiag("Error de LOGIN: "+(e.code||e.message), false); } });
 onAuthStateChanged(auth, user=>{
   me=user;
   $("loginbar").style.display = user ? "none" : "block";
   $("composer").style.display = user ? "flex" : "none";
+  setDiag(user ? ("Sesión iniciada: "+(user.displayName||user.email)) : "Sin sesión — pulsa «Iniciar sesión».", user?true:null);
   render();
 });
 
