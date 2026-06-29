@@ -70,6 +70,12 @@
   .pstate{font-size:.78rem;color:var(--muted)}
   .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;background:var(--accent);color:#0b0d12;font-size:1.1rem}
   .pbtn.s{width:36px;height:36px;background:transparent;color:var(--text)}
+  .pbtn.repeaton{color:var(--accent)!important}
+  .seekrow{max-width:680px;margin:8px auto 0;display:flex;align-items:center;gap:10px}
+  .seekrow span{font-size:.72rem;color:var(--muted);min-width:36px;text-align:center}
+  .seekrow input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--surface-2);cursor:pointer}
+  .seekrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer}
+  .seekrow input[type=range]::-moz-range-thumb{width:13px;height:13px;border:0;border-radius:50%;background:var(--accent);cursor:pointer}
 </style>
 </head>
 <body>
@@ -166,9 +172,15 @@
 <div id="player" class="player">
   <div class="player-inner">
     <div class="pinfo"><div id="pTitle" class="ptitle">—</div><div id="pState" class="pstate"></div></div>
+    <button id="repeatBtn" class="pbtn s" title="Repetir">🔁</button>
     <button id="prevBtn" class="pbtn s">⏮</button>
     <button id="playBtn" class="pbtn">⏸</button>
     <button id="nextBtn" class="pbtn s">⏭</button>
+  </div>
+  <div class="seekrow">
+    <span id="curTime">0:00</span>
+    <input id="seek" type="range" min="0" max="1000" value="0" title="Progreso">
+    <span id="durTime">0:00</span>
   </div>
 </div>
 <audio id="audio"></audio>
@@ -409,7 +421,16 @@ async function playAt(i){
 $("playBtn").addEventListener("click",()=>{ if(audio.paused){audio.play();$("playBtn").textContent="⏸";}else{audio.pause();$("playBtn").textContent="▶";}});
 $("nextBtn").addEventListener("click",()=>playAt(current+1));
 $("prevBtn").addEventListener("click",()=>playAt(current-1));
-audio.addEventListener("ended",()=>playAt(current+1));
+audio.addEventListener("ended",()=>{ if(!audio.loop) playAt(current+1); });
+(function(){
+  const seek=$("seek"), curT=$("curTime"), durT=$("durTime"), rb=$("repeatBtn"); let seeking=false;
+  function fmtT(s){ s=Math.floor(s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+  audio.addEventListener("loadedmetadata",()=>{ durT.textContent=fmtT(audio.duration); });
+  audio.addEventListener("timeupdate",()=>{ if(seeking)return; const d=audio.duration||0; seek.value=d?(audio.currentTime/d*1000):0; curT.textContent=fmtT(audio.currentTime); });
+  seek.addEventListener("input",()=>{ seeking=true; const d=audio.duration||0; curT.textContent=fmtT(d*seek.value/1000); });
+  seek.addEventListener("change",()=>{ const d=audio.duration||0; audio.currentTime=d*seek.value/1000; seeking=false; });
+  rb.addEventListener("click",()=>{ audio.loop=!audio.loop; rb.classList.toggle("repeaton",audio.loop); });
+})();
 
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 </script>
