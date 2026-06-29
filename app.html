@@ -19,9 +19,20 @@
     line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
   body::before{content:"";position:fixed;inset:0;z-index:-1;
     background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
-  a{color:var(--accent)}
-  .wrap{max-width:560px;margin:0 auto;padding:40px 24px}
+  a{color:var(--accent);text-decoration:none}
 
+  .topbar{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:space-between;
+    align-items:center;padding:0 20px;z-index:20}
+  .back{font-size:.9rem;color:var(--muted)}
+  .back:hover{color:var(--text)}
+  .lang{display:flex;gap:4px;background:rgba(22,25,31,.8);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:999px;padding:4px}
+  .lang-btn{border:0;background:transparent;color:var(--muted);cursor:pointer;
+    font-family:var(--body);font-size:.82rem;font-weight:600;letter-spacing:.04em;
+    padding:5px 11px;border-radius:999px}
+  .lang-btn.active{background:var(--accent);color:#0b0d12}
+
+  .wrap{max-width:560px;margin:0 auto;padding:72px 24px 40px}
   .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px}
   .brand img{width:44px;height:44px;object-fit:contain}
   .brand h1{font-family:var(--display);font-weight:500;font-size:1.8rem}
@@ -30,6 +41,7 @@
   .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px}
   .hidden{display:none}
 
+  .prompt{text-align:center;margin-bottom:22px;color:var(--muted)}
   .gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
     padding:13px 18px;border-radius:999px;border:0;cursor:pointer;
     background:#fff;color:#1f2330;font-family:var(--body);font-weight:600;font-size:1rem}
@@ -62,21 +74,28 @@
 </style>
 </head>
 <body>
-<div class="wrap">
 
+<div class="topbar">
+  <a class="back" href="index.html" data-i18n="back"></a>
+  <nav class="lang" aria-label="Idioma / Language">
+    <button class="lang-btn" data-lang="es">ES</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </nav>
+</div>
+
+<div class="wrap">
   <div class="brand">
     <img src="cadence-logo.png" alt="Cadence">
     <h1>Cadence</h1>
   </div>
-  <p class="sub">Comunidad de oyentes — versión inicial</p>
+  <p class="sub" data-i18n="sub"></p>
 
   <!-- VISTA: no conectado -->
   <div id="loginView" class="card">
-    <p style="text-align:center;margin-bottom:22px;color:var(--muted)">
-      Inicia sesión para crear tu perfil y empezar.</p>
+    <p class="prompt" data-i18n="prompt"></p>
     <button id="loginBtn" class="gbtn">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
-      Iniciar sesión con Google
+      <span data-i18n="login_btn"></span>
     </button>
     <div id="loginStatus" class="status"></div>
   </div>
@@ -91,26 +110,85 @@
       </div>
     </div>
 
-    <label for="np">¿Qué estás escuchando?</label>
+    <label for="np" data-i18n="np_label"></label>
     <div class="row">
-      <input id="np" type="text" placeholder="Artista, canción, podcast...">
-      <button id="saveBtn" class="btn">Guardar</button>
+      <input id="np" type="text" data-i18n-ph="np_ph">
+      <button id="saveBtn" class="btn" data-i18n="save_btn"></button>
     </div>
     <div id="status" class="status"></div>
 
-    <div class="soon">
-      <b>Próximamente:</b> seguir a otros oyentes, ver qué escuchan,
-      chat y descubrir música libre. Esto es solo el comienzo.
-    </div>
-
+    <div class="soon" data-i18n="soon"></div>
     <div class="foot">
-      <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
+      <button id="logoutBtn" class="btn-ghost" data-i18n="logout_btn"></button>
     </div>
   </div>
-
 </div>
 
-<!-- ===== Firebase ===== -->
+<!-- ============ TEXTOS / TEXTS ============ -->
+<script>
+const I18N = {
+  es: {
+    _title: "Cadence — Comunidad",
+    back: "← Inicio",
+    sub: "Comunidad de oyentes — versión inicial",
+    prompt: "Inicia sesión para crear tu perfil y empezar.",
+    login_btn: "Iniciar sesión con Google",
+    np_label: "¿Qué estás escuchando?",
+    np_ph: "Artista, canción, podcast...",
+    save_btn: "Guardar",
+    soon: "<b>Próximamente:</b> seguir a otros oyentes, ver qué escuchan, chat y descubrir música libre. Esto es solo el comienzo.",
+    logout_btn: "Cerrar sesión",
+    m_opening: "Abriendo Google...",
+    m_login_fail: "No se pudo iniciar sesión: ",
+    m_saving: "Guardando...",
+    m_saved: "Guardado ✓",
+    m_save_fail: "No se pudo guardar: ",
+    m_notice: "Aviso: ",
+    listener: "Oyente"
+  },
+  en: {
+    _title: "Cadence — Community",
+    back: "← Home",
+    sub: "A community of listeners — early version",
+    prompt: "Sign in to create your profile and get started.",
+    login_btn: "Sign in with Google",
+    np_label: "What are you listening to?",
+    np_ph: "Artist, song, podcast...",
+    save_btn: "Save",
+    soon: "<b>Coming soon:</b> follow other listeners, see what they play, chat, and discover free music. This is just the beginning.",
+    logout_btn: "Sign out",
+    m_opening: "Opening Google...",
+    m_login_fail: "Could not sign in: ",
+    m_saving: "Saving...",
+    m_saved: "Saved ✓",
+    m_save_fail: "Could not save: ",
+    m_notice: "Notice: ",
+    listener: "Listener"
+  }
+};
+let currentLang = "es";
+function t(k){ return (I18N[currentLang] || I18N.es)[k] || k; }
+function setLang(lang){
+  currentLang = lang;
+  const d = I18N[lang] || I18N.es;
+  document.documentElement.lang = lang;
+  document.title = d._title;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.innerHTML=d[k];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
+  document.querySelectorAll('.lang-btn').forEach(b=>
+    b.classList.toggle('active', b.dataset.lang===lang));
+  try{ localStorage.setItem('cadence_lang', lang); }catch(e){}
+}
+document.querySelectorAll('.lang-btn').forEach(b=>
+  b.addEventListener('click', ()=>setLang(b.dataset.lang)));
+let _saved=null; try{ _saved=localStorage.getItem('cadence_lang'); }catch(e){}
+const _auto=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es';
+setLang(_saved || _auto);
+</script>
+
+<!-- ============ Firebase ============ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -118,7 +196,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChang
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// --- Tus claves de Firebase (públicas, pueden ir aquí) ---
 const firebaseConfig = {
   apiKey: "AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",
   authDomain: "cadence-500901.firebaseapp.com",
@@ -140,33 +217,26 @@ const status = document.getElementById("status");
 const npInput = document.getElementById("np");
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
-  loginStatus.textContent = "Abriendo Google...";
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (e) {
-    loginStatus.textContent = "No se pudo iniciar sesión: " + e.message;
-  }
+  loginStatus.textContent = t("m_opening");
+  try { await signInWithPopup(auth, provider); }
+  catch (e) { loginStatus.textContent = t("m_login_fail") + e.message; }
 });
 
 document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-  status.textContent = "Guardando...";
+  const user = auth.currentUser; if (!user) return;
+  status.textContent = t("m_saving");
   try {
     await setDoc(doc(db, "users", user.uid),
       { nowPlaying: npInput.value.trim(), updatedAt: serverTimestamp() },
       { merge: true });
-    status.textContent = "Guardado ✓";
-  } catch (e) {
-    status.textContent = "No se pudo guardar: " + e.message;
-  }
+    status.textContent = t("m_saved");
+  } catch (e) { status.textContent = t("m_save_fail") + e.message; }
 });
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // Crear o actualizar el perfil
     const ref = doc(db, "users", user.uid);
     try {
       await setDoc(ref, {
@@ -178,11 +248,9 @@ onAuthStateChanged(auth, async (user) => {
       const snap = await getDoc(ref);
       const data = snap.exists() ? snap.data() : {};
       npInput.value = data.nowPlaying || "";
-    } catch (e) {
-      status.textContent = "Aviso: " + e.message;
-    }
+    } catch (e) { status.textContent = t("m_notice") + e.message; }
     document.getElementById("avatar").src = user.photoURL || "cadence-logo.png";
-    document.getElementById("pname").textContent = user.displayName || "Oyente";
+    document.getElementById("pname").textContent = user.displayName || t("listener");
     document.getElementById("pmail").textContent = user.email || "";
     loginView.classList.add("hidden");
     profileView.classList.remove("hidden");
