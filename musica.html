@@ -11,7 +11,7 @@
 <style>
   :root{
     --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
-    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --accent:#7C9AFF; --accent-deep:#3A5BD0; --text:#E8EAF0; --muted:#9AA3B2;
     --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -23,7 +23,7 @@
   .topbar{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:space-between;
     align-items:center;padding:0 20px;z-index:20}
   .back{font-size:.9rem;color:var(--muted)}
-  .wrap{max-width:640px;margin:0 auto;padding:72px 24px 60px}
+  .wrap{max-width:640px;margin:0 auto;padding:72px 24px 130px}
   .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
   .brand img{width:44px;height:44px;object-fit:contain}
   .brand h1{font-family:var(--display);font-weight:500;font-size:1.8rem}
@@ -35,12 +35,31 @@
   .gbtn:hover{background:#93acff}
   .status{min-height:20px;margin-top:14px;font-size:.9rem;color:var(--muted);text-align:center}
   .artist{font-family:var(--display);font-size:1.2rem;font-weight:500;margin:22px 0 4px}
-  .album{color:var(--accent);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;
-    margin:14px 0 6px}
-  .track{display:flex;align-items:center;gap:10px;padding:9px 0;
-    border-bottom:1px solid rgba(42,47,58,.5);font-size:.95rem}
+  .album{color:var(--accent);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:14px 0 6px}
+  .track{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:8px;
+    border-bottom:1px solid rgba(42,47,58,.5);font-size:.95rem;cursor:pointer}
+  .track:hover{background:var(--surface-2)}
+  .track.playing{color:var(--accent)}
   .track .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+  .track.playing .dot{background:var(--accent)}
   .empty{color:var(--muted);text-align:center;padding:20px 0}
+
+  /* Barra de reproducción */
+  .player{position:fixed;left:0;right:0;bottom:0;background:rgba(22,25,31,.96);
+    backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 20px;
+    display:none;z-index:30}
+  .player.show{display:block}
+  .player-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:16px}
+  .pinfo{flex:1;min-width:0}
+  .ptitle{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pstate{font-size:.78rem;color:var(--muted)}
+  .pcontrols{display:flex;align-items:center;gap:6px}
+  .pbtn{width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
+    background:transparent;color:var(--text);font-size:1.1rem;display:flex;
+    align-items:center;justify-content:center}
+  .pbtn:hover{background:var(--surface-2)}
+  .pbtn.main{background:var(--accent);color:#0b0d12;width:46px;height:46px}
+  .pbtn.main:hover{background:#93acff}
 </style>
 </head>
 <body>
@@ -59,7 +78,7 @@
   <div class="card">
     <div id="connectBox">
       <p style="text-align:center;color:var(--muted);margin-bottom:20px">
-        Conecta con tu Google Drive para ver la música que subiste con Cadence.</p>
+        Conecta con tu Google Drive para escuchar la música que subiste con Cadence.</p>
       <button id="connectBtn" class="gbtn">Conectar con mi Drive</button>
     </div>
     <div id="list"></div>
@@ -67,28 +86,71 @@
   </div>
 </div>
 
+<!-- Barra de reproducción -->
+<div id="player" class="player">
+  <div class="player-inner">
+    <div class="pinfo">
+      <div id="pTitle" class="ptitle">—</div>
+      <div id="pState" class="pstate"></div>
+    </div>
+    <div class="pcontrols">
+      <button id="prevBtn" class="pbtn" title="Anterior">⏮</button>
+      <button id="playBtn" class="pbtn main" title="Play/Pausa">▶</button>
+      <button id="nextBtn" class="pbtn" title="Siguiente">⏭</button>
+    </div>
+  </div>
+</div>
+<audio id="audio"></audio>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Firebase para registrar en el muro -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey:"AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",
+  authDomain:"cadence-500901.firebaseapp.com",
+  projectId:"cadence-500901",
+  storageBucket:"cadence-500901.firebasestorage.app",
+  messagingSenderId:"995587221821",
+  appId:"1:995587221821:web:3567f36d6ef84a61863d54"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbAuth = getAuth(fbApp);
+const fbDb = getFirestore(fbApp);
+let fbUser = null;
+onAuthStateChanged(fbAuth, u => { fbUser = u; });
+// Expuesto para el script principal.
+window.reportToWall = function(label){
+  if(!fbUser) return;  // solo si está logueado en la comunidad
+  addDoc(collection(fbDb,"feed"), {
+    uid: fbUser.uid, name: fbUser.displayName || "Oyente",
+    label: label, type: "musica", playedAt: serverTimestamp()
+  }).catch(()=>{});
+};
+</script>
+
 <script>
 const CLIENT_ID = "995587221821-8cbi515dqobdcsktbodk864q7obl255r.apps.googleusercontent.com";
 const SCOPE = "https://www.googleapis.com/auth/drive.file";
 
-let tokenClient = null;
-let accessToken = null;
+let tokenClient = null, accessToken = null;
+let queue = [];      // {id, name, label}
+let current = -1;
 
 const statusEl = () => document.getElementById("status");
 const listEl = () => document.getElementById("list");
+const audio = document.getElementById("audio");
+function setStatus(m){ statusEl().textContent = m; }
 
-function setStatus(msg){ statusEl().textContent = msg; }
-
-// Inicializa el cliente de token de Google Identity Services.
 window.onload = () => {
-  // Espera a que cargue la librería de Google.
   const wait = setInterval(() => {
     if (window.google && google.accounts && google.accounts.oauth2) {
       clearInterval(wait);
       tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPE,
+        client_id: CLIENT_ID, scope: SCOPE,
         callback: (resp) => {
           if (resp.error) { setStatus("No se pudo conectar: " + resp.error); return; }
           accessToken = resp.access_token;
@@ -102,72 +164,104 @@ window.onload = () => {
 
 document.getElementById("connectBtn").addEventListener("click", () => {
   if (!tokenClient) { setStatus("Cargando Google..."); return; }
-  setStatus("");
-  tokenClient.requestAccessToken();
+  setStatus(""); tokenClient.requestAccessToken();
 });
 
-// --- Llamadas a la API de Drive ---
-async function drive(path) {
+async function drive(path){
   const res = await fetch("https://www.googleapis.com/drive/v3/" + path, {
     headers: { Authorization: "Bearer " + accessToken }
   });
   if (!res.ok) throw new Error("Drive " + res.status);
   return res.json();
 }
-
-async function findFolder(name, parentId) {
+async function findFolder(name, parentId){
   let q = "mimeType='application/vnd.google-apps.folder' and name='" + name.replace(/'/g,"\\'") + "' and trashed=false";
   if (parentId) q += " and '" + parentId + "' in parents";
-  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id,name)");
+  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id)");
   return (r.files && r.files[0]) ? r.files[0].id : null;
 }
-
-async function listChildren(parentId, foldersOnly) {
+async function listChildren(parentId, foldersOnly){
   let q = "'" + parentId + "' in parents and trashed=false";
   if (foldersOnly) q += " and mimeType='application/vnd.google-apps.folder'";
   const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id,name,mimeType)&orderBy=name&pageSize=200");
   return r.files || [];
 }
 
-async function loadMusic() {
+async function loadMusic(){
   setStatus("Buscando tu música en Drive...");
-  listEl().innerHTML = "";
+  listEl().innerHTML = ""; queue = [];
   try {
     const cadenceId = await findFolder("Cadence", null);
-    if (!cadenceId) { setStatus("No encuentro la carpeta «Cadence» en tu Drive."); return; }
+    if (!cadenceId) return setStatus("No encuentro la carpeta «Cadence».");
     const musicId = await findFolder("Música", cadenceId);
-    if (!musicId) { setStatus("No encuentro la carpeta «Cadence/Música». ¿Has subido música desde la app?"); return; }
+    if (!musicId) return setStatus("No encuentro «Cadence/Música».");
 
     const artists = await listChildren(musicId, true);
-    if (artists.length === 0) { listEl().innerHTML = '<p class="empty">No hay música todavía.</p>'; setStatus(""); return; }
+    if (!artists.length) { listEl().innerHTML = '<p class="empty">No hay música todavía.</p>'; return setStatus(""); }
 
-    let total = 0;
     for (const artist of artists) {
-      const artistEl = document.createElement("div");
-      artistEl.innerHTML = '<div class="artist">' + esc(artist.name) + '</div>';
-      listEl().appendChild(artistEl);
-
+      const aEl = document.createElement("div");
+      aEl.innerHTML = '<div class="artist">' + esc(artist.name) + '</div>';
+      listEl().appendChild(aEl);
       const albums = await listChildren(artist.id, true);
       for (const album of albums) {
-        const albumEl = document.createElement("div");
-        albumEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
-        listEl().appendChild(albumEl);
-
-        const tracks = await listChildren(album.id, false);
-        tracks.filter(t => t.mimeType !== "application/vnd.google-apps.folder").forEach(t => {
-          total++;
+        const alEl = document.createElement("div");
+        alEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
+        listEl().appendChild(alEl);
+        const tracks = (await listChildren(album.id, false))
+          .filter(t => t.mimeType !== "application/vnd.google-apps.folder");
+        tracks.forEach(t => {
+          const label = cleanName(t.name) + " — " + artist.name;
+          const idx = queue.length;
+          queue.push({ id: t.id, name: cleanName(t.name), label });
           const row = document.createElement("div");
-          row.className = "track";
+          row.className = "track"; row.dataset.idx = idx;
           row.innerHTML = '<span class="dot"></span>' + esc(cleanName(t.name));
+          row.addEventListener("click", () => playIndex(idx));
           listEl().appendChild(row);
         });
       }
     }
-    setStatus(total + " canciones en tu Drive.");
+    setStatus(queue.length + " canciones. Pulsa una para escucharla.");
+  } catch (e) { setStatus("Error leyendo Drive: " + e.message); }
+}
+
+async function playIndex(idx){
+  if (idx < 0 || idx >= queue.length) return;
+  current = idx;
+  const track = queue[idx];
+  highlight();
+  document.getElementById("player").classList.add("show");
+  document.getElementById("pTitle").textContent = track.name;
+  document.getElementById("pState").textContent = "Cargando...";
+  try {
+    // Descarga el audio de Drive con el token y lo reproduce.
+    const res = await fetch("https://www.googleapis.com/drive/v3/files/" + track.id + "?alt=media", {
+      headers: { Authorization: "Bearer " + accessToken }
+    });
+    if (!res.ok) throw new Error("Drive " + res.status);
+    const blob = await res.blob();
+    audio.src = URL.createObjectURL(blob);
+    await audio.play();
+    document.getElementById("pState").textContent = "Reproduciendo";
+    document.getElementById("playBtn").textContent = "⏸";
+    if (window.reportToWall) window.reportToWall(track.label);
   } catch (e) {
-    setStatus("Error leyendo Drive: " + e.message);
+    document.getElementById("pState").textContent = "Error: " + e.message;
   }
 }
+function highlight(){
+  document.querySelectorAll(".track").forEach(r =>
+    r.classList.toggle("playing", Number(r.dataset.idx) === current));
+}
+
+document.getElementById("playBtn").addEventListener("click", () => {
+  if (audio.paused) { audio.play(); document.getElementById("playBtn").textContent = "⏸"; document.getElementById("pState").textContent="Reproduciendo"; }
+  else { audio.pause(); document.getElementById("playBtn").textContent = "▶"; document.getElementById("pState").textContent="En pausa"; }
+});
+document.getElementById("nextBtn").addEventListener("click", () => playIndex(current + 1));
+document.getElementById("prevBtn").addEventListener("click", () => playIndex(current - 1));
+audio.addEventListener("ended", () => playIndex(current + 1));
 
 function cleanName(n){ return n.replace(/\.[a-z0-9]{2,4}$/i, ""); }
 function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
