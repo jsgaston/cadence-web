@@ -159,9 +159,10 @@ logoutBind();
 
 // API global para el script del mapa.
 window.isLoggedIn=()=>!!user;
+window.favId=(url)=>(url||"").replace(/[^A-Za-z0-9]/g,"-").slice(0,180)||"radio";
 window.toggleFavorite=async function(st){
   if(!user){ alert("Entra con Google para guardar favoritas."); return; }
-  const id=st.uuid||((st.name||"")+"|"+(st.url||"")).slice(0,200);
+  const id=window.favId(st.url);
   if(window.favorites.has(id)){
     await deleteDoc(doc(db,"users",user.uid,"radioFavorites",id));
   }else{
@@ -213,7 +214,7 @@ async function loadStations(params){
 }
 
 function popupHtml(st){
-  const fav=window.favorites&&[...window.favorites.keys()].includes(st.uuid);
+  const fav=window.favorites&&window.favorites.has(window.favId(st.url));
   return '<div class="popup-name">'+esc(st.name)+'</div>'+
     '<div style="color:#9AA3B2;font-size:.8rem;margin-bottom:8px">'+esc(st.country+(st.tag?" · "+st.tag:""))+'</div>'+
     '<div class="popup-row"><button class="popup-btn" id="pp-play">▶ Escuchar</button>'+
@@ -240,7 +241,7 @@ function updateSideList(){
   uniq.slice(0,400).forEach(s=>renderSideItem(list,s));
 }
 function renderSideItem(list,s){
-  const fav=window.favorites&&[...window.favorites.keys()].includes(s.uuid);
+  const fav=window.favorites&&window.favorites.has(window.favId(s.url));
   const div=document.createElement("div"); div.className="sideitem";
   div.innerHTML='<div class="txt"><div class="sn">'+esc(s.name)+'</div>'+
     '<div class="sc">'+esc(s.country+(s.tag?" · "+s.tag:""))+'</div></div>'+
