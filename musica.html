@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Mi música</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
+    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);
+    line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
+  a{color:var(--accent);text-decoration:none}
+  .topbar{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:space-between;
+    align-items:center;padding:0 20px;z-index:20}
+  .back{font-size:.9rem;color:var(--muted)}
+  .wrap{max-width:640px;margin:0 auto;padding:72px 24px 60px}
+  .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
+  .brand img{width:44px;height:44px;object-fit:contain}
+  .brand h1{font-family:var(--display);font-weight:500;font-size:1.8rem}
+  .sub{text-align:center;color:var(--muted);margin-bottom:32px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px}
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+    padding:13px 18px;border-radius:999px;border:0;cursor:pointer;
+    background:var(--accent);color:#0b0d12;font-family:var(--body);font-weight:600;font-size:1rem}
+  .gbtn:hover{background:#93acff}
+  .status{min-height:20px;margin-top:14px;font-size:.9rem;color:var(--muted);text-align:center}
+  .artist{font-family:var(--display);font-size:1.2rem;font-weight:500;margin:22px 0 4px}
+  .album{color:var(--accent);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;
+    margin:14px 0 6px}
+  .track{display:flex;align-items:center;gap:10px;padding:9px 0;
+    border-bottom:1px solid rgba(42,47,58,.5);font-size:.95rem}
+  .track .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+  .empty{color:var(--muted);text-align:center;padding:20px 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← Inicio</a>
+</div>
+
+<div class="wrap">
+  <div class="brand">
+    <img src="cadence-logo.png" alt="Cadence">
+    <h1>Cadence</h1>
+  </div>
+  <p class="sub">Tu música, desde tu propio Drive</p>
+
+  <div class="card">
+    <div id="connectBox">
+      <p style="text-align:center;color:var(--muted);margin-bottom:20px">
+        Conecta con tu Google Drive para ver la música que subiste con Cadence.</p>
+      <button id="connectBtn" class="gbtn">Conectar con mi Drive</button>
+    </div>
+    <div id="list"></div>
+    <div id="status" class="status"></div>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const CLIENT_ID = "995587221821-8cbi515dqobdcsktbodk864q7obl255r.apps.googleusercontent.com";
+const SCOPE = "https://www.googleapis.com/auth/drive.file";
+
+let tokenClient = null;
+let accessToken = null;
+
+const statusEl = () => document.getElementById("status");
+const listEl = () => document.getElementById("list");
+
+function setStatus(msg){ statusEl().textContent = msg; }
+
+// Inicializa el cliente de token de Google Identity Services.
+window.onload = () => {
+  // Espera a que cargue la librería de Google.
+  const wait = setInterval(() => {
+    if (window.google && google.accounts && google.accounts.oauth2) {
+      clearInterval(wait);
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPE,
+        callback: (resp) => {
+          if (resp.error) { setStatus("No se pudo conectar: " + resp.error); return; }
+          accessToken = resp.access_token;
+          document.getElementById("connectBox").style.display = "none";
+          loadMusic();
+        }
+      });
+    }
+  }, 200);
+};
+
+document.getElementById("connectBtn").addEventListener("click", () => {
+  if (!tokenClient) { setStatus("Cargando Google..."); return; }
+  setStatus("");
+  tokenClient.requestAccessToken();
+});
+
+// --- Llamadas a la API de Drive ---
+async function drive(path) {
+  const res = await fetch("https://www.googleapis.com/drive/v3/" + path, {
+    headers: { Authorization: "Bearer " + accessToken }
+  });
+  if (!res.ok) throw new Error("Drive " + res.status);
+  return res.json();
+}
+
+async function findFolder(name, parentId) {
+  let q = "mimeType='application/vnd.google-apps.folder' and name='" + name.replace(/'/g,"\\'") + "' and trashed=false";
+  if (parentId) q += " and '" + parentId + "' in parents";
+  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id,name)");
+  return (r.files && r.files[0]) ? r.files[0].id : null;
+}
+
+async function listChildren(parentId, foldersOnly) {
+  let q = "'" + parentId + "' in parents and trashed=false";
+  if (foldersOnly) q += " and mimeType='application/vnd.google-apps.folder'";
+  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id,name,mimeType)&orderBy=name&pageSize=200");
+  return r.files || [];
+}
+
+async function loadMusic() {
+  setStatus("Buscando tu música en Drive...");
+  listEl().innerHTML = "";
+  try {
+    const cadenceId = await findFolder("Cadence", null);
+    if (!cadenceId) { setStatus("No encuentro la carpeta «Cadence» en tu Drive."); return; }
+    const musicId = await findFolder("Música", cadenceId);
+    if (!musicId) { setStatus("No encuentro la carpeta «Cadence/Música». ¿Has subido música desde la app?"); return; }
+
+    const artists = await listChildren(musicId, true);
+    if (artists.length === 0) { listEl().innerHTML = '<p class="empty">No hay música todavía.</p>'; setStatus(""); return; }
+
+    let total = 0;
+    for (const artist of artists) {
+      const artistEl = document.createElement("div");
+      artistEl.innerHTML = '<div class="artist">' + esc(artist.name) + '</div>';
+      listEl().appendChild(artistEl);
+
+      const albums = await listChildren(artist.id, true);
+      for (const album of albums) {
+        const albumEl = document.createElement("div");
+        albumEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
+        listEl().appendChild(albumEl);
+
+        const tracks = await listChildren(album.id, false);
+        tracks.filter(t => t.mimeType !== "application/vnd.google-apps.folder").forEach(t => {
+          total++;
+          const row = document.createElement("div");
+          row.className = "track";
+          row.innerHTML = '<span class="dot"></span>' + esc(cleanName(t.name));
+          listEl().appendChild(row);
+        });
+      }
+    }
+    setStatus(total + " canciones en tu Drive.");
+  } catch (e) {
+    setStatus("Error leyendo Drive: " + e.message);
+  }
+}
+
+function cleanName(n){ return n.replace(/\.[a-z0-9]{2,4}$/i, ""); }
+function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+</script>
+</body>
+</html>
