@@ -7,34 +7,33 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{--ink:#0E1014;--surface:#16191F;--surface-2:#1E222B;--line:#2A2F3A;
     --accent:#7C9AFF;--text:#E8EAF0;--muted:#9AA3B2;
     --display:"Fraunces",Georgia,serif;--body:"Inter",system-ui,sans-serif;}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
-  body::before{content:"";position:fixed;inset:0;z-index:-1;
-    background:radial-gradient(1000px 520px at 50% -8%,rgba(124,154,255,.14),transparent 60%);}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(1000px 520px at 50% -8%,rgba(124,154,255,.14),transparent 60%);}
   a{color:var(--accent);text-decoration:none}
   .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
   .topbar img{width:28px;height:28px}.topbar .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
-  .topbar .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .langsel{margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 11px;font-family:var(--body);font-size:.82rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  .back{color:var(--muted);font-size:.9rem;margin-left:14px}
   .wrap{max-width:680px;margin:0 auto;padding:50px 22px;text-align:center}
   .logo{width:88px;height:88px;margin-bottom:18px}
   h1{font-family:var(--display);font-weight:500;font-size:2.6rem;margin-bottom:8px}
   .lead{color:var(--muted);font-size:1.1rem;max-width:520px;margin:0 auto 30px}
-  .btn{display:inline-block;background:var(--accent);color:#0b0d12;font-weight:600;
-    padding:14px 28px;border-radius:999px;font-size:1.05rem}
-  .btn:hover{background:#93acff}
-  .soon{display:inline-block;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
-    padding:14px 28px;border-radius:999px;font-size:1.05rem;cursor:default}
-  .steps{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;
-    padding:28px;margin:34px 0}
+  .soon{display:inline-block;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);padding:14px 28px;border-radius:999px;font-size:1.05rem;cursor:default}
+  .qrbox{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;margin:30px auto 0;max-width:320px}
+  .qrbox #qr{display:flex;justify-content:center}
+  .qrbox #qr img,.qrbox #qr canvas{border-radius:10px;background:#fff;padding:10px}
+  .qrcap{color:var(--muted);font-size:.88rem;margin-top:14px}
+  .steps{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;margin:34px 0}
   .steps h2{font-family:var(--display);font-weight:500;font-size:1.3rem;margin-bottom:16px}
   .step{display:flex;gap:14px;margin-bottom:16px}
-  .num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#0b0d12;font-weight:600;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#0b0d12;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .step p{color:var(--muted);font-size:.95rem}
   .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:30px}
   .fcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:left}
@@ -42,39 +41,92 @@
   .fcard h3{font-family:var(--display);font-weight:500;font-size:1rem;margin-bottom:4px}
   .fcard p{color:var(--muted);font-size:.85rem}
   .note{color:var(--muted);font-size:.85rem;margin-top:30px}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
+  html[dir="rtl"] .step{flex-direction:row-reverse;text-align:right}
+  html[dir="rtl"] .steps,html[dir="rtl"] .fcard{text-align:right}
+  html[dir="rtl"] .langsel{margin-left:0;margin-right:auto}
 </style>
 </head>
 <body>
 <div class="topbar">
   <img src="cadence-logo.png" alt=""><span class="name">Cadence</span>
-  <a class="back" href="index.html">← Inicio</a>
+  <select class="langsel" id="langsel" aria-label="Idioma">
+    <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+    <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+    <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
+  <a class="back" href="index.html" data-i18n="back"></a>
 </div>
 
 <div class="wrap">
   <img class="logo" src="cadence-logo.png" alt="Cadence">
-  <h1>Descarga Cadence</h1>
-  <p class="lead">Tu música, audiolibros, podcasts y radio en un solo sitio. Gratis, sin anuncios, para Android.</p>
+  <h1 data-i18n="d_title"></h1>
+  <p class="lead" data-i18n="d_lead"></p>
+  <span class="soon" data-i18n="d_soon"></span>
 
-  <!-- Cuando publiques en Play, sustituye este botón por el enlace real -->
-  <span class="soon">Próximamente en Google Play</span>
+  <div class="qrbox">
+    <div id="qr"></div>
+    <p class="qrcap" data-i18n="qr_cap"></p>
+  </div>
 
   <div class="steps">
-    <h2>Cómo empezar</h2>
-    <div class="step"><div class="num">1</div><p>Instala Cadence en tu teléfono Android.</p></div>
-    <div class="step"><div class="num">2</div><p>Da permiso para acceder a tu música y empieza a escuchar al instante.</p></div>
-    <div class="step"><div class="num">3</div><p>Entra con Google para tener tu perfil, respaldar tu biblioteca en tu Drive y unirte a la comunidad.</p></div>
-    <div class="step"><div class="num">4</div><p>Desde el navegador, en <a href="index.html">cadence-project.org</a>, escucha tu música, explora la radio del mundo y crea listas a medida.</p></div>
+    <h2 data-i18n="steps_title"></h2>
+    <div class="step"><div class="num">1</div><p data-i18n="step1"></p></div>
+    <div class="step"><div class="num">2</div><p data-i18n="step2"></p></div>
+    <div class="step"><div class="num">3</div><p data-i18n="step3"></p></div>
+    <div class="step"><div class="num">4</div><p data-i18n="step4"></p></div>
   </div>
 
   <div class="feat">
-    <div class="fcard"><div class="ic">🎵</div><h3>Tu música</h3><p>Listas, ecualizador y mezcla inteligente.</p></div>
-    <div class="fcard"><div class="ic">📚</div><h3>Audiolibros</h3><p>Retoma, ajusta velocidad, temporizador.</p></div>
-    <div class="fcard"><div class="ic">🎙️</div><h3>Podcasts</h3><p>Busca, suscríbete y descarga.</p></div>
-    <div class="fcard"><div class="ic">🌍</div><h3>Radio</h3><p>Miles de emisoras del mundo.</p></div>
+    <div class="fcard"><div class="ic">🎵</div><h3 data-i18n="f1h"></h3><p data-i18n="f1p"></p></div>
+    <div class="fcard"><div class="ic">📚</div><h3 data-i18n="f2h"></h3><p data-i18n="f2p"></p></div>
+    <div class="fcard"><div class="ic">🎙️</div><h3 data-i18n="f3h"></h3><p data-i18n="f3p"></p></div>
+    <div class="fcard"><div class="ic">🌍</div><h3 data-i18n="f4h"></h3><p data-i18n="f4p"></p></div>
   </div>
 
-  <p class="note">Cadence es gratis y sin anuncios, sostenido por donaciones. 
-    ¿Quieres ayudar? <a href="https://buymeacoffee.com/jsgaston">Invita a un café</a>.</p>
+  <p class="note" data-i18n="note"></p>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// 👉 Cuando publiques en Google Play, cambia esta URL por el enlace de tu app en Play.
+const APP_URL = "https://cadence-project.org";
+
+const I18N={
+ es:{_t:"Cadence — Descargar",back:"← Inicio",d_title:"Descarga Cadence",d_lead:"Tu música, audiolibros, podcasts y radio en un solo sitio. Gratis, sin anuncios, para Android.",d_soon:"Próximamente en Google Play",qr_cap:"Escanea con tu móvil para visitar Cadence.",steps_title:"Cómo empezar",step1:"Instala Cadence en tu teléfono Android.",step2:"Da permiso para acceder a tu música y empieza a escuchar al instante.",step3:"Entra con Google para tener tu perfil, respaldar tu biblioteca en tu Drive y unirte a la comunidad.",step4:"Desde el navegador, en cadence-project.org, escucha tu música, explora la radio del mundo y crea listas a medida.",f1h:"Tu música",f1p:"Listas, ecualizador y mezcla inteligente.",f2h:"Audiolibros",f2p:"Retoma, velocidad, temporizador.",f3h:"Podcasts",f3p:"Busca, suscríbete y descarga.",f4h:"Radio",f4p:"Miles de emisoras del mundo.",note:"Cadence es gratis y sin anuncios, sostenido por donaciones."},
+ en:{_t:"Cadence — Download",back:"← Home",d_title:"Download Cadence",d_lead:"Your music, audiobooks, podcasts and radio in one place. Free, ad-free, for Android.",d_soon:"Coming soon to Google Play",qr_cap:"Scan with your phone to visit Cadence.",steps_title:"How to start",step1:"Install Cadence on your Android phone.",step2:"Grant access to your music and start listening instantly.",step3:"Sign in with Google for your profile, back up your library to your Drive and join the community.",step4:"From your browser, at cadence-project.org, play your music, explore world radio and build playlists by time.",f1h:"Your music",f1p:"Playlists, equalizer and smart shuffle.",f2h:"Audiobooks",f2p:"Resume, speed, sleep timer.",f3h:"Podcasts",f3p:"Search, subscribe and download.",f4h:"Radio",f4p:"Thousands of stations worldwide.",note:"Cadence is free and ad-free, supported by donations."},
+ pt:{_t:"Cadence — Transferir",back:"← Início",d_title:"Transfira o Cadence",d_lead:"A sua música, audiolivros, podcasts e rádio num só lugar. Grátis, sem anúncios, para Android.",d_soon:"Brevemente no Google Play",qr_cap:"Leia com o telemóvel para visitar o Cadence.",steps_title:"Como começar",step1:"Instale o Cadence no seu telemóvel Android.",step2:"Conceda acesso à sua música e comece a ouvir de imediato.",step3:"Inicie sessão com a Google para ter o seu perfil, guardar a biblioteca no seu Drive e juntar-se à comunidade.",step4:"No navegador, em cadence-project.org, ouça a sua música, explore a rádio do mundo e crie listas à medida.",f1h:"A sua música",f1p:"Listas, equalizador e mistura inteligente.",f2h:"Audiolivros",f2p:"Retomar, velocidade, temporizador.",f3h:"Podcasts",f3p:"Pesquise, subscreva e descarregue.",f4h:"Rádio",f4p:"Milhares de estações do mundo.",note:"O Cadence é grátis e sem anúncios, mantido por doações."},
+ fr:{_t:"Cadence — Télécharger",back:"← Accueil",d_title:"Télécharger Cadence",d_lead:"Votre musique, livres audio, podcasts et radio en un seul endroit. Gratuit, sans publicité, pour Android.",d_soon:"Bientôt sur Google Play",qr_cap:"Scannez avec votre téléphone pour visiter Cadence.",steps_title:"Pour commencer",step1:"Installez Cadence sur votre téléphone Android.",step2:"Autorisez l'accès à votre musique et écoutez aussitôt.",step3:"Connectez-vous avec Google pour votre profil, sauvegarder votre bibliothèque sur votre Drive et rejoindre la communauté.",step4:"Depuis le navigateur, sur cadence-project.org, écoutez votre musique, explorez la radio du monde et créez des listes sur mesure.",f1h:"Votre musique",f1p:"Listes, égaliseur et lecture intelligente.",f2h:"Livres audio",f2p:"Reprise, vitesse, minuterie.",f3h:"Podcasts",f3p:"Recherchez, abonnez-vous, téléchargez.",f4h:"Radio",f4p:"Des milliers de stations du monde.",note:"Cadence est gratuit et sans publicité, soutenu par les dons."},
+ it:{_t:"Cadence — Scarica",back:"← Home",d_title:"Scarica Cadence",d_lead:"La tua musica, audiolibri, podcast e radio in un unico posto. Gratis, senza pubblicità, per Android.",d_soon:"Presto su Google Play",qr_cap:"Inquadra col telefono per visitare Cadence.",steps_title:"Come iniziare",step1:"Installa Cadence sul tuo telefono Android.",step2:"Concedi l'accesso alla tua musica e ascolta subito.",step3:"Accedi con Google per avere il profilo, salvare la libreria sul tuo Drive e unirti alla comunità.",step4:"Dal browser, su cadence-project.org, ascolta la tua musica, esplora la radio del mondo e crea playlist su misura.",f1h:"La tua musica",f1p:"Playlist, equalizzatore e shuffle intelligente.",f2h:"Audiolibri",f2p:"Riprendi, velocità, timer.",f3h:"Podcast",f3p:"Cerca, iscriviti e scarica.",f4h:"Radio",f4p:"Migliaia di stazioni dal mondo.",note:"Cadence è gratis e senza pubblicità, sostenuto dalle donazioni."},
+ de:{_t:"Cadence — Herunterladen",back:"← Start",d_title:"Cadence herunterladen",d_lead:"Deine Musik, Hörbücher, Podcasts und Radio an einem Ort. Kostenlos, werbefrei, für Android.",d_soon:"Bald bei Google Play",qr_cap:"Mit dem Handy scannen, um Cadence zu besuchen.",steps_title:"So geht's los",step1:"Installiere Cadence auf deinem Android-Handy.",step2:"Erlaube den Zugriff auf deine Musik und höre sofort.",step3:"Melde dich mit Google an für dein Profil, sichere deine Bibliothek in deinem Drive und tritt der Community bei.",step4:"Im Browser, auf cadence-project.org, höre deine Musik, entdecke Weltradio und erstelle Playlists nach Zeit.",f1h:"Deine Musik",f1p:"Playlists, Equalizer und smarter Mix.",f2h:"Hörbücher",f2p:"Fortsetzen, Tempo, Sleep-Timer.",f3h:"Podcasts",f3p:"Suchen, abonnieren, herunterladen.",f4h:"Radio",f4p:"Tausende Sender weltweit.",note:"Cadence ist kostenlos und werbefrei, getragen durch Spenden."},
+ ru:{_t:"Cadence — Скачать",back:"← Главная",d_title:"Скачать Cadence",d_lead:"Ваша музыка, аудиокниги, подкасты и радио в одном месте. Бесплатно, без рекламы, для Android.",d_soon:"Скоро в Google Play",qr_cap:"Отсканируйте телефоном, чтобы открыть Cadence.",steps_title:"С чего начать",step1:"Установите Cadence на телефон с Android.",step2:"Дайте доступ к музыке и слушайте сразу.",step3:"Войдите через Google: профиль, резервная копия библиотеки на вашем Диске и участие в сообществе.",step4:"В браузере на cadence-project.org слушайте музыку, исследуйте мировое радио и собирайте плейлисты по времени.",f1h:"Ваша музыка",f1p:"Плейлисты, эквалайзер и умный микс.",f2h:"Аудиокниги",f2p:"Продолжение, скорость, таймер.",f3h:"Подкасты",f3p:"Поиск, подписка и загрузка.",f4h:"Радио",f4p:"Тысячи станций мира.",note:"Cadence бесплатен и без рекламы, живёт на пожертвования."},
+ zh:{_t:"Cadence — 下载",back:"← 首页",d_title:"下载 Cadence",d_lead:"你的音乐、有声书、播客和电台，集于一处。免费、无广告，适用于 Android。",d_soon:"即将上线 Google Play",qr_cap:"用手机扫码访问 Cadence。",steps_title:"如何开始",step1:"在你的 Android 手机上安装 Cadence。",step2:"授予音乐访问权限，立即开始收听。",step3:"使用 Google 登录，拥有个人资料、把音乐库备份到你的 Drive，并加入社区。",step4:"在浏览器中访问 cadence-project.org，播放音乐、探索世界电台并按时长创建歌单。",f1h:"你的音乐",f1p:"歌单、均衡器和智能随机。",f2h:"有声书",f2p:"续播、变速、睡眠定时。",f3h:"播客",f3p:"搜索、订阅与下载。",f4h:"电台",f4p:"来自全球的数千个电台。",note:"Cadence 免费且无广告，靠捐赠维持。"},
+ ja:{_t:"Cadence — ダウンロード",back:"← ホーム",d_title:"Cadence をダウンロード",d_lead:"音楽・オーディオブック・ポッドキャスト・ラジオをひとつに。無料・広告なし、Android 向け。",d_soon:"Google Play に近日登場",qr_cap:"スマホでスキャンして Cadence にアクセス。",steps_title:"はじめ方",step1:"Android スマホに Cadence をインストール。",step2:"音楽へのアクセスを許可して、すぐに再生。",step3:"Google でログインして、プロフィール作成・ライブラリを Drive にバックアップ・コミュニティに参加。",step4:"ブラウザで cadence-project.org にアクセスし、音楽を再生、世界のラジオを探し、時間に合わせたプレイリストを作成。",f1h:"あなたの音楽",f1p:"プレイリスト、イコライザー、スマートシャッフル。",f2h:"オーディオブック",f2p:"続きから・速度・スリープ。",f3h:"ポッドキャスト",f3p:"検索・登録・ダウンロード。",f4h:"ラジオ",f4p:"世界中の数千局。",note:"Cadence は無料・広告なし、寄付で運営しています。"},
+ ar:{_t:"Cadence — تنزيل",back:"← الرئيسية",d_title:"نزّل Cadence",d_lead:"موسيقاك وكتبك الصوتية وبودكاستك والراديو في مكان واحد. مجاني، بلا إعلانات، لأندرويد.",d_soon:"قريباً على Google Play",qr_cap:"امسح بهاتفك لزيارة Cadence.",steps_title:"كيف تبدأ",step1:"ثبّت Cadence على هاتف أندرويد.",step2:"امنح الإذن للوصول إلى موسيقاك وابدأ الاستماع فوراً.",step3:"سجّل الدخول عبر Google للحصول على ملفك، ونسخ مكتبتك إلى Drive، والانضمام إلى المجتمع.",step4:"من المتصفح، على cadence-project.org، شغّل موسيقاك واستكشف راديو العالم وأنشئ قوائم حسب الوقت.",f1h:"موسيقاك",f1p:"قوائم ومعادل وخلط ذكي.",f2h:"الكتب الصوتية",f2p:"متابعة وسرعة ومؤقّت.",f3h:"البودكاست",f3p:"ابحث واشترك ونزّل.",f4h:"الراديو",f4p:"آلاف المحطات حول العالم.",note:"Cadence مجاني وبلا إعلانات، مدعوم بالتبرعات."}
+};
+const RTL=["ar"];
+let qrDrawn=false;
+function drawQR(){
+  const box=document.getElementById("qr"); box.innerHTML="";
+  new QRCode(box,{text:APP_URL,width:180,height:180,colorDark:"#0E1014",colorLight:"#ffffff"});
+  qrDrawn=true;
+}
+function setLang(lang){
+  const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang;
+  document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._t;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.textContent=d[k];});
+  document.getElementById('langsel').value=lang;
+  try{localStorage.setItem('cadence_lang',lang);}catch(e){}
+}
+document.getElementById('langsel').addEventListener('change',e=>setLang(e.target.value));
+let saved=null; try{saved=localStorage.getItem('cadence_lang');}catch(e){}
+const nav=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(saved||(I18N[nav]?nav:'es'));
+if(window.QRCode) drawQR(); else window.addEventListener('load',()=>{ if(window.QRCode&&!qrDrawn) drawQR(); });
+</script>
 </body>
 </html>
