@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cadence — tu música, sin anuncios</title>
-<meta name="description" content="Cadence es un reproductor de música, audiolibros, podcasts y radio para Android. Gratis, sin anuncios y sin cuotas. Tu biblioteca es tuya; el respaldo va a tu propio Google Drive.">
+<meta name="description" content="Cadence: reproductor de música, audiolibros, podcasts y radio para Android. Gratis, sin anuncios. El respaldo va a tu propio Google Drive.">
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,22 +22,27 @@
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
   .wrap{max-width:960px;margin:0 auto;padding:0 24px}
-
-  /* glow de fondo */
   body::before{content:"";position:fixed;inset:0;z-index:-1;
     background:radial-gradient(1200px 600px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
 
-  /* HERO */
+  /* selector de idioma */
+  .lang{position:fixed;top:16px;right:16px;z-index:20;display:flex;gap:4px;
+    background:rgba(22,25,31,.8);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:999px;padding:4px}
+  .lang-btn{border:0;background:transparent;color:var(--muted);cursor:pointer;
+    font-family:var(--body);font-size:.82rem;font-weight:600;letter-spacing:.04em;
+    padding:5px 11px;border-radius:999px}
+  .lang-btn.active{background:var(--accent);color:#0b0d12}
+
   header.hero{text-align:center;padding:96px 24px 64px}
   .logo{width:76px;height:76px;object-fit:contain;
     filter:drop-shadow(0 6px 24px rgba(124,154,255,.35))}
   .wordmark{font-family:var(--display);font-weight:500;font-size:clamp(3rem,9vw,5.5rem);
     letter-spacing:-.02em;line-height:1;margin:18px 0 0}
   .thesis{font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--muted);
-    max-width:30ch;margin:18px auto 0}
+    max-width:34ch;margin:18px auto 0}
   .accent-word{color:var(--accent)}
 
-  /* SIGNATURE: barras de sonido */
   .wave{display:flex;align-items:flex-end;justify-content:center;gap:5px;
     height:54px;margin:34px auto 8px}
   .wave span{width:5px;height:100%;border-radius:3px;transform-origin:bottom;
@@ -63,7 +68,6 @@
   .btn-ghost{border:1px solid var(--line);color:var(--text)}
   .btn-ghost:hover{border-color:var(--accent);text-decoration:none}
 
-  /* SECCIONES */
   section{padding:56px 0}
   .eyebrow{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
     color:var(--accent);font-weight:600;margin-bottom:14px}
@@ -73,8 +77,7 @@
 
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:16px;margin-top:32px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-    padding:24px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
   .card h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
   .card p{color:var(--muted);font-size:.96rem}
   .card .dot{display:inline-block;width:9px;height:9px;border-radius:50%;
@@ -87,8 +90,7 @@
 
   footer{border-top:1px solid var(--line);padding:40px 0 64px;margin-top:40px;
     color:var(--muted);font-size:.92rem}
-  .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
-    align-items:center}
+  .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
   .foot-links{display:flex;gap:20px;flex-wrap:wrap}
 
   @media (prefers-reduced-motion: reduce){
@@ -99,67 +101,46 @@
 </head>
 <body>
 
+<nav class="lang" aria-label="Idioma / Language">
+  <button class="lang-btn" data-lang="es">ES</button>
+  <button class="lang-btn" data-lang="en">EN</button>
+</nav>
+
 <header class="hero">
   <div class="wrap">
-    <img class="logo" src="cadence-logo.png" alt="Logo de Cadence">
+    <img class="logo" src="cadence-logo.png" alt="Cadence">
     <h1 class="wordmark">Cadence</h1>
     <div class="wave" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span><span></span>
     </div>
-    <p class="thesis">Tu música, tus audiolibros, tus podcasts y la radio.
-      <span class="accent-word">Sin anuncios. Sin cuotas.</span></p>
+    <p class="thesis" data-i18n="thesis"></p>
     <div class="cta">
-      <a class="btn btn-primary" href="#que-es">Descubre Cadence</a>
-      <a class="btn btn-ghost" href="privacy.html">Política de privacidad</a>
+      <a class="btn btn-primary" href="#que-es" data-i18n="cta_discover"></a>
+      <a class="btn btn-ghost" href="privacy.html" data-i18n="cta_privacy"></a>
     </div>
   </div>
 </header>
 
 <section id="que-es">
   <div class="wrap">
-    <p class="eyebrow">Qué es</p>
-    <h2>Un reproductor que respeta lo que es tuyo</h2>
-    <p class="lead">Cadence es una app de Android para escuchar la música que ya tienes
-      en el móvil, junto con audiolibros, podcasts y radio por internet. No lleva
-      anuncios, no pide suscripción y no te crea ninguna cuenta. Tu biblioteca vive
-      en tu teléfono; si quieres una copia de seguridad, va a <strong>tu propio
-      Google Drive</strong>, no a un servidor nuestro.</p>
+    <p class="eyebrow" data-i18n="s1_eyebrow"></p>
+    <h2 data-i18n="s1_title"></h2>
+    <p class="lead" data-i18n="s1_lead"></p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <p class="eyebrow">Qué hace</p>
-    <h2>Todo lo que escuchas, en un sitio</h2>
+    <p class="eyebrow" data-i18n="s2_eyebrow"></p>
+    <h2 data-i18n="s2_title"></h2>
     <div class="grid">
-      <div class="card">
-        <h3><span class="dot"></span>Tu música</h3>
-        <p>Reproduce los archivos de tu dispositivo. Listas, etiquetas, ecualizador,
-          fundido entre canciones y un modo aleatorio inteligente.</p>
-      </div>
-      <div class="card">
-        <h3><span class="dot"></span>Audiolibros y podcasts</h3>
-        <p>Retoma justo donde lo dejaste, ajusta la velocidad y descarga episodios
-          para escucharlos sin conexión.</p>
-      </div>
-      <div class="card">
-        <h3><span class="dot"></span>Radio</h3>
-        <p>Miles de emisoras por internet, con tus favoritas siempre a mano.</p>
-      </div>
-      <div class="card">
-        <h3><span class="dot"></span>Respaldo en tu Drive</h3>
-        <p>Guarda tu biblioteca y tu música en la carpeta Cadence de tu propio
-          Google Drive. Tú eres el dueño del archivo.</p>
-      </div>
-      <div class="card">
-        <h3><span class="dot"></span>Sin anuncios ni rastreo</h3>
-        <p>Nada de publicidad, analíticas ni perfiles. Lo que escuchas es asunto tuyo.</p>
-      </div>
-      <div class="card">
-        <h3><span class="dot"></span>Gratis, sostenido por donaciones</h3>
-        <p>Cadence es gratis. Si te gusta y quieres apoyarlo, puedes invitar a un café.</p>
-      </div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c1_h"></span></h3><p data-i18n="c1_p"></p></div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c2_h"></span></h3><p data-i18n="c2_p"></p></div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c3_h"></span></h3><p data-i18n="c3_p"></p></div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c4_h"></span></h3><p data-i18n="c4_p"></p></div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c5_h"></span></h3><p data-i18n="c5_p"></p></div>
+      <div class="card"><h3><span class="dot"></span><span data-i18n="c6_h"></span></h3><p data-i18n="c6_p"></p></div>
     </div>
   </div>
 </section>
@@ -167,14 +148,12 @@
 <section>
   <div class="wrap">
     <div class="ethos">
-      <p class="eyebrow">La idea</p>
-      <h2>Hecho para escuchar, no para vender tus datos</h2>
-      <p>Cadence nace de una idea sencilla: poder escuchar lo tuyo con calma, sin que
-        una app te interrumpa con anuncios o te empuje a pagar cada mes. Es libre y
-        se mantiene con la ayuda de quien quiera echar una mano.</p>
+      <p class="eyebrow" data-i18n="s3_eyebrow"></p>
+      <h2 data-i18n="s3_title"></h2>
+      <p data-i18n="s3_p"></p>
       <div class="cta">
-        <a class="btn btn-primary" href="https://buymeacoffee.com/jsgaston">Invítame a un café</a>
-        <a class="btn btn-ghost" href="https://paypal.me/javigastoniriarte">Apoyar por PayPal</a>
+        <a class="btn btn-primary" href="https://buymeacoffee.com/jsgaston" data-i18n="cta_coffee"></a>
+        <a class="btn btn-ghost" href="https://paypal.me/javigastoniriarte" data-i18n="cta_paypal"></a>
       </div>
     </div>
   </div>
@@ -184,13 +163,102 @@
   <div class="wrap foot-row">
     <div>© <span id="y"></span> Cadence · Javier Gastón Cabrera</div>
     <div class="foot-links">
-      <a href="privacy.html">Privacidad</a>
-      <a href="mailto:jsgastoniriartecabrera@gmail.com">Contacto</a>
-      <a href="https://buymeacoffee.com/jsgaston">Apoyar</a>
+      <a href="privacy.html" data-i18n="f_privacy"></a>
+      <a href="mailto:jsgastoniriartecabrera@gmail.com" data-i18n="f_contact"></a>
+      <a href="https://buymeacoffee.com/jsgaston" data-i18n="f_support"></a>
     </div>
   </div>
 </footer>
 
-<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+<!-- ============================================================= -->
+<!--  TEXTOS / TEXTS  ·  edita aquí para cambiar el contenido       -->
+<!-- ============================================================= -->
+<script>
+const I18N = {
+  es: {
+    _title: "Cadence — tu música, sin anuncios",
+    thesis: 'Tu música, tus audiolibros, tus podcasts y la radio. <span class="accent-word">Sin anuncios. Sin cuotas.</span>',
+    cta_discover: "Descubre Cadence",
+    cta_privacy: "Política de privacidad",
+    s1_eyebrow: "Qué es",
+    s1_title: "Un reproductor que respeta lo que es tuyo",
+    s1_lead: "Cadence es una app de Android para escuchar la música que ya tienes en el móvil, junto con audiolibros, podcasts y radio por internet. No lleva anuncios, no pide suscripción y no te crea ninguna cuenta. Tu biblioteca vive en tu teléfono; si quieres una copia de seguridad, va a <strong>tu propio Google Drive</strong>, no a un servidor nuestro.",
+    s2_eyebrow: "Qué hace",
+    s2_title: "Todo lo que escuchas, en un sitio",
+    c1_h: "Tu música",
+    c1_p: "Reproduce los archivos de tu dispositivo. Listas, etiquetas, ecualizador, fundido entre canciones y un modo aleatorio inteligente.",
+    c2_h: "Audiolibros y podcasts",
+    c2_p: "Retoma justo donde lo dejaste, ajusta la velocidad y descarga episodios para escucharlos sin conexión.",
+    c3_h: "Radio",
+    c3_p: "Miles de emisoras por internet, con tus favoritas siempre a mano.",
+    c4_h: "Respaldo en tu Drive",
+    c4_p: "Guarda tu biblioteca y tu música en la carpeta Cadence de tu propio Google Drive. Tú eres el dueño del archivo.",
+    c5_h: "Sin anuncios ni rastreo",
+    c5_p: "Nada de publicidad, analíticas ni perfiles. Lo que escuchas es asunto tuyo.",
+    c6_h: "Gratis, con donaciones",
+    c6_p: "Cadence es gratis. Si te gusta y quieres apoyarlo, puedes invitar a un café.",
+    s3_eyebrow: "La idea",
+    s3_title: "Hecho para escuchar, no para vender tus datos",
+    s3_p: "Cadence nace de una idea sencilla: poder escuchar lo tuyo con calma, sin que una app te interrumpa con anuncios o te empuje a pagar cada mes. Es libre y se mantiene con la ayuda de quien quiera echar una mano.",
+    cta_coffee: "Invítame a un café",
+    cta_paypal: "Apoyar por PayPal",
+    f_privacy: "Privacidad",
+    f_contact: "Contacto",
+    f_support: "Apoyar"
+  },
+  en: {
+    _title: "Cadence — your music, ad-free",
+    thesis: 'Your music, your audiobooks, your podcasts, and the radio. <span class="accent-word">No ads. No subscriptions.</span>',
+    cta_discover: "Discover Cadence",
+    cta_privacy: "Privacy policy",
+    s1_eyebrow: "What it is",
+    s1_title: "A player that respects what's yours",
+    s1_lead: "Cadence is an Android app for listening to the music you already have on your phone, along with audiobooks, podcasts, and internet radio. No ads, no subscription, and no account required. Your library lives on your phone; if you want a backup, it goes to <strong>your own Google Drive</strong>, not to a server of ours.",
+    s2_eyebrow: "What it does",
+    s2_title: "Everything you listen to, in one place",
+    c1_h: "Your music",
+    c1_p: "Plays the files on your device. Playlists, tags, equalizer, crossfade between tracks, and a smart shuffle mode.",
+    c2_h: "Audiobooks & podcasts",
+    c2_p: "Pick up right where you left off, adjust the speed, and download episodes to listen offline.",
+    c3_h: "Radio",
+    c3_p: "Thousands of internet stations, with your favorites always within reach.",
+    c4_h: "Backup to your Drive",
+    c4_p: "Save your library and music to the Cadence folder in your own Google Drive. You own the files.",
+    c5_h: "No ads, no tracking",
+    c5_p: "No advertising, analytics, or profiling. What you listen to is your business.",
+    c6_h: "Free, donation-supported",
+    c6_p: "Cadence is free. If you like it and want to support it, you can buy a coffee.",
+    s3_eyebrow: "The idea",
+    s3_title: "Built for listening, not for selling your data",
+    s3_p: "Cadence comes from a simple idea: being able to listen to what's yours in peace, without an app interrupting you with ads or pushing you to pay every month. It's free and kept alive by anyone who wants to lend a hand.",
+    cta_coffee: "Buy me a coffee",
+    cta_paypal: "Support via PayPal",
+    f_privacy: "Privacy",
+    f_contact: "Contact",
+    f_support: "Support"
+  }
+};
+
+function setLang(lang){
+  const dict = I18N[lang] || I18N.es;
+  document.documentElement.lang = lang;
+  document.title = dict._title;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(dict[k] !== undefined) el.innerHTML = dict[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>
+    b.classList.toggle('active', b.dataset.lang === lang));
+  try{ localStorage.setItem('cadence_lang', lang); }catch(e){}
+}
+
+document.querySelectorAll('.lang-btn').forEach(b=>
+  b.addEventListener('click', ()=>setLang(b.dataset.lang)));
+
+let saved=null; try{ saved=localStorage.getItem('cadence_lang'); }catch(e){}
+const auto=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es';
+setLang(saved || auto);
+document.getElementById('y').textContent=new Date().getFullYear();
+</script>
 </body>
 </html>
