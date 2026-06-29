@@ -131,7 +131,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 // 👉 Tu UID de dueño: te permite borrar cualquier mensaje (moderar). Ponlo cuando lo sepas.
-const OWNER_UID = "Javi Notsagin";
+const OWNER_UID = "";
 
 const $=id=>document.getElementById(id);
 let me=null, msgs=[], lastText="", lastTime=0;
@@ -205,11 +205,36 @@ async function send(){
       text: text.slice(0,500), createdAt: serverTimestamp(), reports: 0
     });
     lastText=text; lastTime=now; input.value=""; counter.textContent="0/500"; input.style.height="auto";
-  }catch(_){}
+  }catch(err){
+    console.error("Cadence chat send error:", err);
+    let msg = err && err.code ? err.code : (err && err.message ? err.message : String(err));
+    if(msg.indexOf("permission")>=0 || msg.indexOf("insufficient")>=0)
+      msg = t("noperm");
+    alert(t("senderr") + msg);
+  }
   sendBtn.disabled=false;
 }
 sendBtn.addEventListener("click", send);
 input.addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); send(); } });
+</script>
+
+<script>
+// Claves de error añadidas a los 10 idiomas
+(function(){
+  const E={
+    es:{senderr:"No se pudo enviar: ",noperm:"falta permiso en Firestore (revisa las reglas de «room» y Publica)."},
+    en:{senderr:"Couldn't send: ",noperm:"missing Firestore permission (check the «room» rules and Publish)."},
+    pt:{senderr:"Não foi possível enviar: ",noperm:"falta permissão no Firestore (verifique as regras de «room» e Publique)."},
+    fr:{senderr:"Échec de l'envoi : ",noperm:"permission Firestore manquante (vérifiez les règles « room » et publiez)."},
+    it:{senderr:"Invio non riuscito: ",noperm:"permesso Firestore mancante (controlla le regole «room» e Pubblica)."},
+    de:{senderr:"Senden fehlgeschlagen: ",noperm:"Firestore-Berechtigung fehlt (prüfe die «room»-Regeln und veröffentliche)."},
+    ru:{senderr:"Не удалось отправить: ",noperm:"нет прав в Firestore (проверьте правила «room» и опубликуйте)."},
+    zh:{senderr:"发送失败：",noperm:"缺少 Firestore 权限（请检查「room」规则并发布）。"},
+    ja:{senderr:"送信できませんでした: ",noperm:"Firestore の権限がありません（「room」のルールを確認して公開してください）。"},
+    ar:{senderr:"تعذّر الإرسال: ",noperm:"إذن Firestore مفقود (راجع قواعد «room» وانشرها)."}
+  };
+  for(const k in E){ if(I18N[k]){ Object.assign(I18N[k], E[k]); } }
+})();
 </script>
 
 <script>
