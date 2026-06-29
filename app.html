@@ -131,6 +131,7 @@
   <div id="wallView" class="card hidden">
     <h2 data-i18n="wall_title"></h2>
     <p class="wall-sub" data-i18n="wall_sub"></p>
+    <div id="feedFilters" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
     <div id="feed"><p class="empty" data-i18n="wall_loading"></p></div>
   </div>
 </div>
@@ -165,7 +166,7 @@ const I18N = {
     wall_loading:"Cargando...", wall_empty:"Aún no hay actividad.",
     m_opening:"Abriendo Google...", m_login_fail:"No se pudo iniciar sesión: ",
     m_saving:"Guardando...", m_saved:"Biografía guardada ✓", m_save_fail:"No se pudo guardar: ",
-    listener:"Oyente", ov_close:"Cerrar", ov_follow:"Seguir", ov_following:"Siguiendo", ov_empty:"Nada por aquí todavía.",
+    listener:"Oyente", wall_all:"Todo", ov_close:"Cerrar", ov_follow:"Seguir", ov_following:"Siguiendo", ov_empty:"Nada por aquí todavía.",
     ty_musica:"Música", ty_audiolibro:"Audiolibros", ty_podcast:"Podcasts", ty_radio:"Radio",
     t_now:"hace un momento", t_min:"hace # min", t_hour:"hace # h"
   },
@@ -179,7 +180,7 @@ const I18N = {
     wall_loading:"Loading...", wall_empty:"No activity yet.",
     m_opening:"Opening Google...", m_login_fail:"Could not sign in: ",
     m_saving:"Saving...", m_saved:"Bio saved ✓", m_save_fail:"Could not save: ",
-    listener:"Listener", ov_close:"Close", ov_follow:"Follow", ov_following:"Following", ov_empty:"Nothing here yet.",
+    listener:"Listener", wall_all:"All", ov_close:"Close", ov_follow:"Follow", ov_following:"Following", ov_empty:"Nothing here yet.",
     ty_musica:"Music", ty_audiolibro:"Audiobooks", ty_podcast:"Podcasts", ty_radio:"Radio",
     t_now:"just now", t_min:"# min ago", t_hour:"# h ago"
   }
@@ -240,19 +241,38 @@ const bioStatus=document.getElementById("bioStatus");
 const bioBox=document.getElementById("bio");
 
 let feedData=[];
+let feedFilter="all";
+function renderFeedFilters(){
+  const box=document.getElementById("feedFilters"); if(!box) return;
+  const opts=[["all",t('wall_all')],["musica",t('ty_musica')],["audiolibro",t('ty_audiolibro')],
+              ["podcast",t('ty_podcast')],["radio",t('ty_radio')]];
+  box.innerHTML="";
+  opts.forEach(([key,lbl])=>{
+    const b=document.createElement("button");
+    b.className="btn-ghost"; b.style.padding="6px 12px"; b.style.fontSize=".82rem";
+    if(key===feedFilter){ b.style.background="var(--accent)"; b.style.color="#0b0d12"; b.style.borderColor="var(--accent)"; }
+    b.textContent=lbl;
+    b.onclick=()=>{ feedFilter=key; renderFeedFilters(); window._renderFeed(); };
+    box.appendChild(b);
+  });
+}
 window._renderFeed=function(){
   const cont=document.getElementById("feed");
   if(!cont) return;
-  if(feedData.length===0){ cont.innerHTML='<p class="empty">'+t('wall_empty')+'</p>'; return; }
+  renderFeedFilters();
+  const data = feedFilter==="all" ? feedData : feedData.filter(it=>(it.type||"musica")===feedFilter);
+  if(data.length===0){ cont.innerHTML='<p class="empty">'+t('wall_empty')+'</p>'; return; }
   cont.innerHTML="";
-  feedData.forEach(it=>{
+  data.forEach(it=>{
     const row=document.createElement("div"); row.className="feed-item";
     row.style.cursor="pointer";
     const initial=(it.name||t('listener')).trim().charAt(0).toUpperCase();
+    const ty=t('ty_'+(it.type||'musica'));
     row.innerHTML =
       '<div class="fav">'+initial+'</div>'+
       '<div style="flex:1;min-width:0">'+
-        '<div class="fname">'+escapeHtml(it.name||t('listener'))+'</div>'+
+        '<div class="fname">'+escapeHtml(it.name||t('listener'))+
+          ' <span style="color:var(--muted);font-weight:400;font-size:.78rem">· '+escapeHtml(ty)+'</span></div>'+
         '<div class="flabel">'+escapeHtml(it.label||'—')+'</div>'+
         '<div class="ftime">'+timeAgo(it.playedAt)+'</div>'+
       '</div>';
