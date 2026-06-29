@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadence — tu música, sin anuncios</title>
-<meta name="description" content="Cadence: reproductor de música, audiolibros, podcasts y radio para Android. Gratis, sin anuncios. El respaldo va a tu propio Google Drive.">
+<title>Cadence — Tu música, libre</title>
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,123 +15,149 @@
     --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
   body{background:var(--ink);color:var(--text);font-family:var(--body);
-    line-height:1.6;-webkit-font-smoothing:antialiased}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+    line-height:1.65;-webkit-font-smoothing:antialiased}
   body::before{content:"";position:fixed;inset:0;z-index:-1;
-    background:radial-gradient(1200px 600px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
+    background:radial-gradient(1100px 560px at 50% -8%, rgba(124,154,255,.14), transparent 60%);}
+  a{color:var(--accent);text-decoration:none}
+  .container{max-width:1000px;margin:0 auto;padding:0 24px}
 
-  /* selector de idioma */
-  .lang{position:fixed;top:16px;right:16px;z-index:20;display:flex;gap:4px;
-    background:rgba(22,25,31,.8);backdrop-filter:blur(8px);
-    border:1px solid var(--line);border-radius:999px;padding:4px}
+  /* Navegación */
+  nav.top{position:sticky;top:0;z-index:30;background:rgba(14,16,20,.82);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1000px;margin:0 auto;padding:12px 24px;display:flex;
+    align-items:center;gap:18px}
+  .nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--display);
+    font-size:1.2rem;font-weight:500}
+  .nav-brand img{width:28px;height:28px}
+  .nav-links{display:flex;gap:18px;margin-left:8px;flex-wrap:wrap}
+  .nav-links a{color:var(--muted);font-size:.92rem;font-weight:500}
+  .nav-links a:hover{color:var(--text)}
+  .lang{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);
+    border-radius:999px;padding:4px;margin-left:auto}
   .lang-btn{border:0;background:transparent;color:var(--muted);cursor:pointer;
-    font-family:var(--body);font-size:.82rem;font-weight:600;letter-spacing:.04em;
+    font-family:var(--body);font-size:.8rem;font-weight:600;letter-spacing:.04em;
     padding:5px 11px;border-radius:999px}
   .lang-btn.active{background:var(--accent);color:#0b0d12}
 
-  header.hero{text-align:center;padding:96px 24px 64px}
-  .logo{width:76px;height:76px;object-fit:contain;
-    filter:drop-shadow(0 6px 24px rgba(124,154,255,.35))}
-  .wordmark{font-family:var(--display);font-weight:500;font-size:clamp(3rem,9vw,5.5rem);
-    letter-spacing:-.02em;line-height:1;margin:18px 0 0}
-  .thesis{font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--muted);
-    max-width:34ch;margin:18px auto 0}
-  .accent-word{color:var(--accent)}
-
-  .wave{display:flex;align-items:flex-end;justify-content:center;gap:5px;
-    height:54px;margin:34px auto 8px}
-  .wave span{width:5px;height:100%;border-radius:3px;transform-origin:bottom;
-    background:linear-gradient(var(--accent),var(--accent-deep));
-    transform:scaleY(.25);animation:beat 1.4s ease-in-out infinite}
-  .wave span:nth-child(1){animation-delay:-1.0s}
-  .wave span:nth-child(2){animation-delay:-.2s}
-  .wave span:nth-child(3){animation-delay:-.7s}
-  .wave span:nth-child(4){animation-delay:-.4s}
-  .wave span:nth-child(5){animation-delay:-1.2s}
-  .wave span:nth-child(6){animation-delay:-.1s}
-  .wave span:nth-child(7){animation-delay:-.9s}
-  .wave span:nth-child(8){animation-delay:-.5s}
-  .wave span:nth-child(9){animation-delay:-1.1s}
-  .wave span:nth-child(10){animation-delay:-.3s}
-  .wave span:nth-child(11){animation-delay:-.8s}
-  @keyframes beat{0%,100%{transform:scaleY(.22)}50%{transform:scaleY(1)}}
-
-  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-  .btn{display:inline-block;padding:12px 22px;border-radius:999px;font-weight:500}
+  /* Hero */
+  .hero{text-align:center;padding:72px 0 56px}
+  .hero img.logo{width:84px;height:84px;margin-bottom:18px}
+  .wordmark{font-family:var(--display);font-weight:500;font-size:3.4rem;line-height:1}
+  .tagline{color:var(--muted);font-size:1.05rem;margin-top:6px;letter-spacing:.02em}
+  .thesis{max-width:620px;margin:24px auto 0;font-size:1.18rem;color:#cfd5e2}
+  .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .btn{display:inline-block;padding:12px 22px;border-radius:999px;font-weight:600;
+    font-size:.98rem;cursor:pointer;border:1px solid transparent}
   .btn-primary{background:var(--accent);color:#0b0d12}
-  .btn-primary:hover{background:#93acff;text-decoration:none}
-  .btn-ghost{border:1px solid var(--line);color:var(--text)}
-  .btn-ghost:hover{border-color:var(--accent);text-decoration:none}
+  .btn-primary:hover{background:#93acff}
+  .btn-ghost{border-color:var(--line);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--accent)}
 
-  section{padding:56px 0}
-  .eyebrow{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--accent);font-weight:600;margin-bottom:14px}
-  h2{font-family:var(--display);font-weight:500;font-size:clamp(1.7rem,4vw,2.4rem);
-    letter-spacing:-.01em;margin-bottom:16px}
-  p.lead{color:var(--muted);max-width:62ch;font-size:1.08rem}
+  section{padding:46px 0}
+  .eyebrow{color:var(--accent);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:600;margin-bottom:10px}
+  h2{font-family:var(--display);font-weight:500;font-size:2rem;margin-bottom:14px}
+  .lead{font-size:1.1rem;color:#cfd5e2;max-width:680px}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:16px;margin-top:32px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
-  .card h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
-  .card p{color:var(--muted);font-size:.96rem}
-  .card .dot{display:inline-block;width:9px;height:9px;border-radius:50%;
-    background:var(--accent);margin-right:8px;vertical-align:middle}
+  /* Explora: tarjetas grandes que enlazan */
+  .explore{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:8px}
+  .xcard{display:block;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    padding:26px;transition:border-color .15s,transform .15s}
+  .xcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .xcard .ic{font-size:1.8rem;margin-bottom:10px}
+  .xcard h3{font-family:var(--display);font-weight:500;font-size:1.3rem;color:var(--text);margin-bottom:6px}
+  .xcard p{color:var(--muted);font-size:.95rem}
+  .xcard .go{color:var(--accent);font-size:.9rem;font-weight:600;margin-top:12px;display:inline-block}
 
-  .ethos{background:var(--surface);border:1px solid var(--line);border-radius:20px;
-    padding:40px;text-align:center;margin-top:8px}
-  .ethos h2{margin-bottom:12px}
-  .ethos p{color:var(--muted);max-width:56ch;margin:0 auto}
+  /* Features */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card h3{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:500;
+    font-size:1.12rem;margin-bottom:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+  .card p{color:var(--muted);font-size:.93rem}
 
-  footer{border-top:1px solid var(--line);padding:40px 0 64px;margin-top:40px;
-    color:var(--muted);font-size:.92rem}
-  .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
-  .foot-links{display:flex;gap:20px;flex-wrap:wrap}
+  /* Apoyo */
+  .support{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:36px}
 
-  @media (prefers-reduced-motion: reduce){
-    .wave span{animation:none;transform:scaleY(.6)}
-    html{scroll-behavior:auto}
-  }
+  footer{border-top:1px solid var(--line);padding:30px 0;margin-top:30px}
+  .foot-inner{display:flex;gap:20px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:.9rem}
+  .foot-inner a{color:var(--muted)} .foot-inner a:hover{color:var(--text)}
+  .foot-inner .sp{margin-left:auto}
 </style>
 </head>
 <body>
 
-<nav class="lang" aria-label="Idioma / Language">
-  <button class="lang-btn" data-lang="es">ES</button>
-  <button class="lang-btn" data-lang="en">EN</button>
+<nav class="top">
+  <div class="nav-inner">
+    <span class="nav-brand"><img src="cadence-logo.png" alt="">Cadence</span>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home"></a>
+      <a href="app.html" data-i18n="nav_community"></a>
+      <a href="musica.html" data-i18n="nav_music"></a>
+      <a href="radio.html" data-i18n="nav_radio"></a>
+      <a href="privacy.html" data-i18n="nav_privacy"></a>
+    </div>
+    <div class="lang">
+      <button class="lang-btn" data-lang="es">ES</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
 </nav>
 
 <header class="hero">
-  <div class="wrap">
+  <div class="container">
     <img class="logo" src="cadence-logo.png" alt="Cadence">
     <h1 class="wordmark">Cadence</h1>
-    <div class="wave" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
+    <p class="tagline" data-i18n="tagline"></p>
     <p class="thesis" data-i18n="thesis"></p>
-    <div class="cta">
-      <a class="btn btn-primary" href="app.html" data-i18n="cta_community"></a>
-      <a class="btn btn-ghost" href="#que-es" data-i18n="cta_discover"></a>
-      <a class="btn btn-ghost" href="privacy.html" data-i18n="cta_privacy"></a>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#explora" data-i18n="cta_explore"></a>
+      <a class="btn btn-ghost" href="app.html" data-i18n="cta_community"></a>
     </div>
   </div>
 </header>
 
 <section id="que-es">
-  <div class="wrap">
+  <div class="container">
     <p class="eyebrow" data-i18n="s1_eyebrow"></p>
     <h2 data-i18n="s1_title"></h2>
     <p class="lead" data-i18n="s1_lead"></p>
   </div>
 </section>
 
+<!-- Explora: las partes de Cadence en la web -->
+<section id="explora">
+  <div class="container">
+    <p class="eyebrow" data-i18n="x_eyebrow"></p>
+    <h2 data-i18n="x_title"></h2>
+    <div class="explore">
+      <a class="xcard" href="musica.html">
+        <div class="ic">🎵</div>
+        <h3 data-i18n="x1_h"></h3>
+        <p data-i18n="x1_p"></p>
+        <span class="go" data-i18n="x_go"></span>
+      </a>
+      <a class="xcard" href="radio.html">
+        <div class="ic">🌍</div>
+        <h3 data-i18n="x2_h"></h3>
+        <p data-i18n="x2_p"></p>
+        <span class="go" data-i18n="x_go"></span>
+      </a>
+      <a class="xcard" href="app.html">
+        <div class="ic">👥</div>
+        <h3 data-i18n="x3_h"></h3>
+        <p data-i18n="x3_p"></p>
+        <span class="go" data-i18n="x_go"></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Qué ofrece -->
 <section>
-  <div class="wrap">
+  <div class="container">
     <p class="eyebrow" data-i18n="s2_eyebrow"></p>
     <h2 data-i18n="s2_title"></h2>
     <div class="grid">
@@ -146,13 +171,14 @@
   </div>
 </section>
 
+<!-- Apoyo -->
 <section>
-  <div class="wrap">
-    <div class="ethos">
+  <div class="container">
+    <div class="support">
       <p class="eyebrow" data-i18n="s3_eyebrow"></p>
       <h2 data-i18n="s3_title"></h2>
-      <p data-i18n="s3_p"></p>
-      <div class="cta">
+      <p class="lead" data-i18n="s3_p"></p>
+      <div class="cta-row" style="justify-content:flex-start;margin-top:22px">
         <a class="btn btn-primary" href="https://buymeacoffee.com/jsgaston" data-i18n="cta_coffee"></a>
         <a class="btn btn-ghost" href="https://paypal.me/javigastoniriarte" data-i18n="cta_paypal"></a>
       </div>
@@ -161,107 +187,78 @@
 </section>
 
 <footer>
-  <div class="wrap foot-row">
-    <div>© <span id="y"></span> Cadence · Javier Gastón Cabrera</div>
-    <div class="foot-links">
-      <a href="privacy.html" data-i18n="f_privacy"></a>
-      <a href="mailto:jsgastoniriartecabrera@gmail.com" data-i18n="f_contact"></a>
-      <a href="https://buymeacoffee.com/jsgaston" data-i18n="f_support"></a>
-    </div>
+  <div class="container foot-inner">
+    <span>© 2026 Cadence · Javier Gastón Cabrera</span>
+    <a href="privacy.html" data-i18n="f_privacy"></a>
+    <a href="mailto:jsgastoniriartecabrera@gmail.com" data-i18n="f_contact"></a>
+    <a class="sp" href="https://buymeacoffee.com/jsgaston" data-i18n="f_support"></a>
   </div>
 </footer>
 
-<!-- ============================================================= -->
-<!--  TEXTOS / TEXTS  ·  edita aquí para cambiar el contenido       -->
-<!-- ============================================================= -->
 <script>
 const I18N = {
   es: {
-    _title: "Cadence — tu música, sin anuncios",
-    thesis: 'Tu música, tus audiolibros, tus podcasts y la radio. <span class="accent-word">Sin anuncios. Sin cuotas.</span>',
-    cta_community: "Entrar a la comunidad",
-    cta_discover: "Descubre Cadence",
-    cta_privacy: "Política de privacidad",
-    s1_eyebrow: "Qué es",
-    s1_title: "Un reproductor que respeta lo que es tuyo",
-    s1_lead: "Cadence es una app de Android para escuchar la música que ya tienes en el móvil, junto con audiolibros, podcasts y radio por internet. No lleva anuncios, no pide suscripción y no te crea ninguna cuenta. Tu biblioteca vive en tu teléfono; si quieres una copia de seguridad, va a <strong>tu propio Google Drive</strong>, no a un servidor nuestro.",
-    s2_eyebrow: "Qué hace",
-    s2_title: "Todo lo que escuchas, en un sitio",
-    c1_h: "Tu música",
-    c1_p: "Reproduce los archivos de tu dispositivo. Listas, etiquetas, ecualizador, fundido entre canciones y un modo aleatorio inteligente.",
-    c2_h: "Audiolibros y podcasts",
-    c2_p: "Retoma justo donde lo dejaste, ajusta la velocidad y descarga episodios para escucharlos sin conexión.",
-    c3_h: "Radio",
-    c3_p: "Miles de emisoras por internet, con tus favoritas siempre a mano.",
-    c4_h: "Respaldo en tu Drive",
-    c4_p: "Guarda tu biblioteca y tu música en la carpeta Cadence de tu propio Google Drive. Tú eres el dueño del archivo.",
-    c5_h: "Sin anuncios ni rastreo",
-    c5_p: "Nada de publicidad, analíticas ni perfiles. Lo que escuchas es asunto tuyo.",
-    c6_h: "Gratis, con donaciones",
-    c6_p: "Cadence es gratis. Si te gusta y quieres apoyarlo, puedes invitar a un café.",
-    s3_eyebrow: "La idea",
-    s3_title: "Hecho para escuchar, no para vender tus datos",
-    s3_p: "Cadence nace de una idea sencilla: poder escuchar lo tuyo con calma, sin que una app te interrumpa con anuncios o te empuje a pagar cada mes. Es libre y se mantiene con la ayuda de quien quiera echar una mano.",
-    cta_coffee: "Invítame a un café",
-    cta_paypal: "Apoyar por PayPal",
-    f_privacy: "Privacidad",
-    f_contact: "Contacto",
-    f_support: "Apoyar"
+    _title:"Cadence — Tu música, libre",
+    nav_home:"Inicio", nav_community:"Comunidad", nav_music:"Mi música", nav_radio:"Radio", nav_privacy:"Privacidad",
+    tagline:"Tu música, libre.",
+    thesis:"Un reproductor de música, audiolibros, podcasts y radio para Android — gratuito, sin anuncios y sostenido por donaciones. Y ahora también en tu navegador.",
+    cta_explore:"Explorar Cadence", cta_community:"Entrar a la comunidad",
+    s1_eyebrow:"Qué es", s1_title:"Música sin barreras",
+    s1_lead:"Cadence reproduce tu propia música, tus audiolibros, tus podcasts y miles de emisoras de radio. Sin anuncios, sin rastreo, sin cuotas. Tú eres el dueño de tu biblioteca: tu música vive en tu propio Google Drive, y Cadence solo la reproduce — en el móvil o en el navegador.",
+    x_eyebrow:"Explora", x_title:"Cadence en tu navegador",
+    x1_h:"Mi música", x1_p:"Escucha la música de tu propio Google Drive directamente en el navegador, estés donde estés.",
+    x2_h:"Radio en el mapa", x2_p:"Un mapamundi con miles de emisoras. Viaja por el mundo y escucha la radio de cualquier lugar.",
+    x3_h:"Comunidad", x3_p:"Crea tu perfil de oyente y descubre qué escucha la gente con tus mismos gustos, en tiempo real.",
+    x_go:"Abrir →",
+    s2_eyebrow:"Qué ofrece", s2_title:"Todo en uno",
+    c1_h:"Música", c1_p:"Tu biblioteca con listas, ecualizador, mezcla inteligente y crossfade.",
+    c2_h:"Audiolibros", c2_p:"Retoma donde lo dejaste, ajusta la velocidad y pon temporizador.",
+    c3_h:"Podcasts", c3_p:"Busca, suscríbete y descarga episodios para escuchar sin conexión.",
+    c4_h:"Radio", c4_p:"Miles de emisoras de todo el mundo, con tus favoritas a un toque.",
+    c5_h:"Respaldo en Drive", c5_p:"Tu música y tus listas, a salvo en tu propio Google Drive.",
+    c6_h:"Comunidad", c6_p:"Perfiles, biografías y un muro en vivo de lo que escucha la gente.",
+    s3_eyebrow:"Apoya el proyecto", s3_title:"Gratis para siempre",
+    s3_p:"Cadence no tiene anuncios ni cuotas, y nunca los tendrá. Se sostiene solo con la ayuda de quien quiere que siga existiendo. Si te gusta, puedes invitar a un café.",
+    cta_coffee:"Invitar a un café", cta_paypal:"Apoyar por PayPal",
+    f_privacy:"Privacidad", f_contact:"Contacto", f_support:"Apoyar"
   },
   en: {
-    _title: "Cadence — your music, ad-free",
-    thesis: 'Your music, your audiobooks, your podcasts, and the radio. <span class="accent-word">No ads. No subscriptions.</span>',
-    cta_community: "Enter the community",
-    cta_discover: "Discover Cadence",
-    cta_privacy: "Privacy policy",
-    s1_eyebrow: "What it is",
-    s1_title: "A player that respects what's yours",
-    s1_lead: "Cadence is an Android app for listening to the music you already have on your phone, along with audiobooks, podcasts, and internet radio. No ads, no subscription, and no account required. Your library lives on your phone; if you want a backup, it goes to <strong>your own Google Drive</strong>, not to a server of ours.",
-    s2_eyebrow: "What it does",
-    s2_title: "Everything you listen to, in one place",
-    c1_h: "Your music",
-    c1_p: "Plays the files on your device. Playlists, tags, equalizer, crossfade between tracks, and a smart shuffle mode.",
-    c2_h: "Audiobooks & podcasts",
-    c2_p: "Pick up right where you left off, adjust the speed, and download episodes to listen offline.",
-    c3_h: "Radio",
-    c3_p: "Thousands of internet stations, with your favorites always within reach.",
-    c4_h: "Backup to your Drive",
-    c4_p: "Save your library and music to the Cadence folder in your own Google Drive. You own the files.",
-    c5_h: "No ads, no tracking",
-    c5_p: "No advertising, analytics, or profiling. What you listen to is your business.",
-    c6_h: "Free, donation-supported",
-    c6_p: "Cadence is free. If you like it and want to support it, you can buy a coffee.",
-    s3_eyebrow: "The idea",
-    s3_title: "Built for listening, not for selling your data",
-    s3_p: "Cadence comes from a simple idea: being able to listen to what's yours in peace, without an app interrupting you with ads or pushing you to pay every month. It's free and kept alive by anyone who wants to lend a hand.",
-    cta_coffee: "Buy me a coffee",
-    cta_paypal: "Support via PayPal",
-    f_privacy: "Privacy",
-    f_contact: "Contact",
-    f_support: "Support"
+    _title:"Cadence — Your music, free",
+    nav_home:"Home", nav_community:"Community", nav_music:"My music", nav_radio:"Radio", nav_privacy:"Privacy",
+    tagline:"Your music, free.",
+    thesis:"A music, audiobook, podcast and radio player for Android — free, ad-free and donation-supported. And now in your browser too.",
+    cta_explore:"Explore Cadence", cta_community:"Enter the community",
+    s1_eyebrow:"What it is", s1_title:"Music without barriers",
+    s1_lead:"Cadence plays your own music, your audiobooks, your podcasts and thousands of radio stations. No ads, no tracking, no fees. You own your library: your music lives in your own Google Drive, and Cadence just plays it — on your phone or in your browser.",
+    x_eyebrow:"Explore", x_title:"Cadence in your browser",
+    x1_h:"My music", x1_p:"Play the music from your own Google Drive right in your browser, wherever you are.",
+    x2_h:"Radio on the map", x2_p:"A world map with thousands of stations. Travel the globe and tune into radio anywhere.",
+    x3_h:"Community", x3_p:"Create your listener profile and discover what people with your taste are playing, in real time.",
+    x_go:"Open →",
+    s2_eyebrow:"What it offers", s2_title:"All in one",
+    c1_h:"Music", c1_p:"Your library with playlists, equalizer, smart shuffle and crossfade.",
+    c2_h:"Audiobooks", c2_p:"Resume where you left off, adjust speed and set a sleep timer.",
+    c3_h:"Podcasts", c3_p:"Search, subscribe and download episodes for offline listening.",
+    c4_h:"Radio", c4_p:"Thousands of stations worldwide, with your favorites one tap away.",
+    c5_h:"Drive backup", c5_p:"Your music and playlists, safe in your own Google Drive.",
+    c6_h:"Community", c6_p:"Profiles, bios and a live wall of what people are listening to.",
+    s3_eyebrow:"Support the project", s3_title:"Free forever",
+    s3_p:"Cadence has no ads and no fees, and never will. It survives only through the help of those who want it to keep existing. If you like it, you can buy a coffee.",
+    cta_coffee:"Buy a coffee", cta_paypal:"Support via PayPal",
+    f_privacy:"Privacy", f_contact:"Contact", f_support:"Support"
   }
 };
-
 function setLang(lang){
-  const dict = I18N[lang] || I18N.es;
-  document.documentElement.lang = lang;
-  document.title = dict._title;
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k = el.getAttribute('data-i18n');
-    if(dict[k] !== undefined) el.innerHTML = dict[k];
-  });
-  document.querySelectorAll('.lang-btn').forEach(b=>
-    b.classList.toggle('active', b.dataset.lang === lang));
-  try{ localStorage.setItem('cadence_lang', lang); }catch(e){}
+  const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.title=d._title;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.innerHTML=d[k];});
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  try{ localStorage.setItem('cadence_lang',lang); }catch(e){}
 }
-
-document.querySelectorAll('.lang-btn').forEach(b=>
-  b.addEventListener('click', ()=>setLang(b.dataset.lang)));
-
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
 let saved=null; try{ saved=localStorage.getItem('cadence_lang'); }catch(e){}
 const auto=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es';
-setLang(saved || auto);
-document.getElementById('y').textContent=new Date().getFullYear();
+setLang(saved||auto);
 </script>
 </body>
 </html>
