@@ -179,13 +179,24 @@ function updateSideList(){
     list.innerHTML = ""; hint.textContent = "No hay emisoras en esta zona."; return;
   }
   hint.textContent = "";
-  title.textContent = visible.length + " emisoras aquí";
-  list.innerHTML = visible.slice(0, 400).map(s =>
-    '<div class="sideitem" onclick="playStation(\'' + encodeURIComponent(s.url) + '\',\'' +
-      encodeURIComponent(s.name) + '\')">' +
-      '<div class="sn">' + escapeHtml(s.name) + '</div>' +
-      '<div class="sc">' + escapeHtml(s.country + (s.tag ? " · " + s.tag : "")) + '</div></div>'
-  ).join("");
+  // Quita duplicados (mismo nombre + url) que a veces trae la base de datos.
+  const seen = new Set();
+  const uniq = visible.filter(s => {
+    const k = (s.name + "|" + s.url).toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  });
+  title.textContent = uniq.length + " emisoras aquí";
+  list.innerHTML = "";
+  uniq.slice(0, 400).forEach(s => {
+    const div = document.createElement("div");
+    div.className = "sideitem";
+    div.innerHTML = '<div class="sn">' + escapeHtml(s.name) + '</div>' +
+      '<div class="sc">' + escapeHtml(s.country + (s.tag ? " · " + s.tag : "")) + '</div>';
+    // Clic limpio: sin comillas en HTML, guardamos los datos en el closure.
+    div.addEventListener("click", () => playStation(encodeURIComponent(s.url), encodeURIComponent(s.name)));
+    list.appendChild(div);
+  });
 }
 map.on("moveend zoomend", updateSideList);
 
