@@ -257,11 +257,27 @@ async function drive(path){
   if (!res.ok) throw new Error("Drive " + res.status);
   return res.json();
 }
-async function findFolder(name, parentId){
-  let q = "mimeType='application/vnd.google-apps.folder' and name='" + name.replace(/'/g,"\\'") + "' and trashed=false";
+// Devuelve TODAS las carpetas que coincidan con el nombre (no solo la primera),
+// comparando sin acentos ni mayúsculas para tolerar "Musica"/"Música", etc.
+function norm(s){ return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase(); }
+async function findFolders(name, parentId){
+  let q = "mimeType='application/vnd.google-apps.folder' and trashed=false";
   if (parentId) q += " and '" + parentId + "' in parents";
-  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id)");
-  return (r.files && r.files[0]) ? r.files[0].id : null;
+  // Traemos todas las subcarpetas y filtramos por nombre normalizado.
+  let out = [], pageToken = null;
+  do {
+    let url = "files?q=" + encodeURIComponent(q) + "&fields=nextPageToken,files(id,name)&pageSize=1000";
+    if (pageToken) url += "&pageToken=" + pageToken;
+    const r = await drive(url);
+    if (r.files) out = out.concat(r.files);
+    pageToken = r.nextPageToken || null;
+  } while (pageToken);
+  const target = norm(name);
+  return out.filter(f => norm(f.name) === target).map(f => f.id);
+}
+async function findFolder(name, parentId){
+  const ids = await findFolders(name, parentId);
+  return ids.length ? ids[0] : null;
 }
 async function listChildren(parentId, foldersOnly){
   let q = "'" + parentId + "' in parents and trashed=false";
@@ -283,39 +299,73 @@ async function loadMusic(){
   listEl().innerHTML = ""; queue = [];
   window._extCount = {};
   try {
-    const cadenceId = await findFolder("Cadence", null);
-    if (!cadenceId) return setStatus(t("nofolder"));
-    const musicId = await findFolder("Música", cadenceId);
-    if (!musicId) return setStatus(t("nomusic"));
+    // 1) TODAS las carpetas "Cadence" (puede haber duplicadas).
+    const cadenceIds = await findFolders("Cadence", null);
+    if (!cadenceIds.length) return setStatus(t("nofolder"));
+    // 2) TODAS las "Música" dentro de cada "Cadence".
+    let musicIds = [];
+    for (const cid of cadenceIds) musicIds = musicIds.concat(await findFolders("Música", cid));
+    if (!musicIds.length) return setStatus(t("nomusic"));
 
-    const artists = await listChildren(musicId, true);
-    if (!artists.length) { listEl().innerHTML = '<p class="empty">'+t('empty')+'</p>'; return setStatus(""); }
+    // 3) Recorremos todas las "Música" y agrupamos artistas por nombre,
+    //    aunque estén en carpetas distintas/duplicadas.
+    const artistFolders = {}; // nombre normalizado -> {name, ids:[]}
+    for (const mid of musicIds) {
+      for (const a of await listChildren(mid, true)) {
+        const k = norm(a.name);
+        (artistFolders[k] = artistFolders[k] || { name: a.name, ids: [] }).ids.push(a.id);
+      }
+    }
+    const artistKeys = Object.keys(artistFolders).sort((x, y) => artistFolders[x].name.localeCompare(artistFolders[y].name));
+    if (!artistKeys.length) { listEl().innerHTML = '<p class="empty">'+t('empty')+'</p>'; return setStatus(""); }
 
-    for (const artist of artists) {
+    for (const ak of artistKeys) {
+      const artist = artistFolders[ak];
       const aEl = document.createElement("div");
       aEl.innerHTML = '<div class="artist">' + esc(artist.name) + '</div>';
       listEl().appendChild(aEl);
-      const albums = await listChildren(artist.id, true);
-      for (const album of albums) {
+
+      // Álbumes de ese artista, agrupados por nombre (de todas sus carpetas).
+      const albumFolders = {};
+      for (const aid of artist.ids) {
+        for (const al of await listChildren(aid, true)) {
+          const k = norm(al.name);
+          (albumFolders[k] = albumFolders[k] || { name: al.name, ids: [] }).ids.push(al.id);
+        }
+      }
+      for (const alk of Object.keys(albumFolders)) {
+        const album = albumFolders[alk];
         const alEl = document.createElement("div");
         alEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
         listEl().appendChild(alEl);
-        const rawFiles = (await listChildren(album.id, false))
-          .filter(t => t.mimeType !== "application/vnd.google-apps.folder");
+
+        // Todos los archivos del álbum (de todas sus carpetas), sin ocultar formatos.
+        let rawFiles = [];
+        for (const alid of album.ids) {
+          rawFiles = rawFiles.concat((await listChildren(alid, false))
+            .filter(f => f.mimeType !== "application/vnd.google-apps.folder"));
+        }
+        // Quitamos archivos repetidos exactos (mismo nombre) por si una carpeta sale dos veces.
+        const byName = {}; rawFiles.forEach(f => { byName[f.name] = f; });
+        rawFiles = Object.values(byName);
+
         rawFiles.forEach(f => { const e = (f.name.split('.').pop() || '?').toLowerCase(); window._extCount[e] = (window._extCount[e] || 0) + 1; });
-        const tracks = dedupByFormat(rawFiles);
-        tracks.forEach(t => {
+        // Ordenamos por nombre y MOSTRAMOS TODO (mp3 y m4a).
+        rawFiles.sort((x, y) => x.name.localeCompare(y.name));
+        rawFiles.forEach(t => {
+          const fmt = (t.name.split('.').pop() || '').toLowerCase();
           const label = cleanName(t.name) + " — " + artist.name;
           const idx = queue.length;
           queue.push({ id: t.id, name: cleanName(t.name), file: t.name, label });
           const row = document.createElement("div");
           row.className = "track"; row.dataset.idx = idx;
           row.innerHTML = '<span class="dot"></span><span>' + esc(cleanName(t.name)) +
-            '</span><button class="addbtn" title="Añadir a lista">＋</button>';
+            '</span><span style="font-size:.7rem;color:var(--muted);margin-left:6px">' + esc(fmt) + '</span>' +
+            '<button class="addbtn" title="Añadir a lista">＋</button>';
           row.addEventListener("click", () => playIndex(idx));
           row.querySelector(".addbtn").addEventListener("click", (e) => {
             e.stopPropagation();
-            addToPlaylist({ id: t.id, name: cleanName(t.name), file: t.name, label: cleanName(t.name) + " — " + artist.name });
+            addToPlaylist({ id: t.id, name: cleanName(t.name), file: t.name, label });
           });
           listEl().appendChild(row);
         });
