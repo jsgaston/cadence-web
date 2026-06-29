@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Música a medida</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root{
+    --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
+    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding-bottom:90px}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
+  a{color:var(--accent);text-decoration:none}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+  .topbar img{width:28px;height:28px}
+  .topbar .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
+  .topbar .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .wrap{max-width:680px;margin:0 auto;padding:24px 20px}
+  .sub{text-align:center;color:var(--muted);margin-bottom:22px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+    padding:13px;border-radius:999px;border:0;cursor:pointer;background:var(--accent);
+    color:#0b0d12;font-weight:600;font-size:1rem;font-family:var(--body)}
+  .gbtn:hover{background:#93acff}
+  h3{font-family:var(--display);font-weight:500;font-size:1.05rem;margin-bottom:12px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .seg button{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:999px;padding:8px 14px;cursor:pointer;font-family:var(--body);font-size:.88rem}
+  .seg button.on{background:var(--accent);color:#0b0d12;border-color:var(--accent)}
+  .modepane{display:none} .modepane.on{display:block}
+  #map{height:260px;border-radius:12px;border:1px solid var(--line);margin-bottom:10px}
+  label{display:block;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:14px 0 6px}
+  input,select{width:100%;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;color:var(--text);font-family:var(--body);font-size:.95rem}
+  input:focus,select:focus{outline:none;border-color:var(--accent)}
+  .row{display:flex;gap:12px} .row>div{flex:1}
+  .est{font-size:1.05rem;margin-top:8px}
+  .est b{color:var(--accent);font-family:var(--display);font-size:1.4rem}
+  .makebtn{margin-top:18px}
+  .status{min-height:20px;margin-top:10px;font-size:.9rem;color:var(--muted);text-align:center}
+  .result .track{display:flex;align-items:center;gap:10px;padding:9px 0;
+    border-bottom:1px solid rgba(42,47,58,.5);font-size:.93rem;cursor:pointer}
+  .result .track:hover{color:var(--accent)}
+  .result .track .meta{margin-left:auto;color:var(--muted);font-size:.8rem}
+  .summary{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.95rem}
+  .summary b{color:var(--accent)}
+  .player{position:fixed;left:0;right:0;bottom:0;background:rgba(22,25,31,.97);
+    backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 20px;display:none;z-index:30}
+  .player.show{display:block}
+  .player-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .pinfo{flex:1;min-width:0}.ptitle{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pstate{font-size:.78rem;color:var(--muted)}
+  .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;background:var(--accent);color:#0b0d12;font-size:1.1rem}
+  .pbtn.s{width:36px;height:36px;background:transparent;color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="cadence-logo.png" alt=""><span class="name">Cadence · Música a medida</span>
+  <a class="back" href="index.html">← Inicio</a>
+</div>
+
+<div class="wrap">
+  <p class="sub">Música que dura justo lo que tu trayecto o tu rato.</p>
+
+  <div class="card" id="connectCard">
+    <p style="text-align:center;color:var(--muted);margin-bottom:18px">
+      Conecta con tu Drive. Necesita el índice que creas desde la app
+      (Copia de seguridad → «Actualizar índice para la web»).</p>
+    <button id="connectBtn" class="gbtn">Conectar con mi Drive</button>
+    <div id="connectStatus" class="status"></div>
+  </div>
+
+  <div id="tool" style="display:none">
+    <!-- Tiempo -->
+    <div class="card">
+      <h3>¿Cuánto tiempo?</h3>
+      <div class="seg" id="modeSeg">
+        <button data-mode="map" class="on">En el mapa</button>
+        <button data-mode="manual">Minutos</button>
+        <button data-mode="clock">Hasta una hora</button>
+      </div>
+
+      <div class="modepane on" id="pane-map">
+        <div id="map"></div>
+        <div class="seg" id="vehSeg">
+          <button data-veh="walk" class="on">🚶 Andar</button>
+          <button data-veh="skate">🛼 Patín</button>
+          <button data-veh="bike">🚲 Bici</button>
+          <button data-veh="car">🚗 Coche</button>
+        </div>
+        <p style="color:var(--muted);font-size:.85rem">Pincha en el mapa el punto de salida y luego el destino.</p>
+        <div class="est" id="mapEst">—</div>
+      </div>
+
+      <div class="modepane" id="pane-manual">
+        <label>Minutos</label>
+        <input id="manualMin" type="number" min="1" max="600" value="25" placeholder="25">
+      </div>
+
+      <div class="modepane" id="pane-clock">
+        <label>Quiero que acabe a las…</label>
+        <input id="clockTime" type="time">
+        <div class="est" id="clockEst" style="margin-top:10px">—</div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card">
+      <h3>A tu gusto (opcional)</h3>
+      <div class="row">
+        <div>
+          <label>Ritmo (BPM)</label>
+          <select id="bpmSel">
+            <option value="any">Cualquiera</option>
+            <option value="calm">Tranquilo (&lt;90)</option>
+            <option value="mid">Medio (90–130)</option>
+            <option value="energy">Enérgico (&gt;130)</option>
+          </select>
+        </div>
+        <div>
+          <label>Estilo</label>
+          <select id="genreSel"><option value="any">Cualquiera</option></select>
+        </div>
+      </div>
+      <button id="makeBtn" class="gbtn makebtn">Crear mi lista</button>
+      <div id="makeStatus" class="status"></div>
+    </div>
+
+    <!-- Resultado -->
+    <div class="card result" id="resultCard" style="display:none">
+      <div class="summary">
+        <span>Tu lista: <b id="rCount">0</b> canciones</span>
+        <span>Duración: <b id="rDur">0:00</b> / objetivo <span id="rTarget">0:00</span></span>
+      </div>
+      <div id="resultList"></div>
+    </div>
+  </div>
+</div>
+
+<div id="player" class="player">
+  <div class="player-inner">
+    <div class="pinfo"><div id="pTitle" class="ptitle">—</div><div id="pState" class="pstate"></div></div>
+    <button id="prevBtn" class="pbtn s">⏮</button>
+    <button id="playBtn" class="pbtn">⏸</button>
+    <button id="nextBtn" class="pbtn s">⏭</button>
+  </div>
+</div>
+<audio id="audio"></audio>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const CLIENT_ID = "995587221821-8cbi515dqobdcsktbodk864q7obl255r.apps.googleusercontent.com";
+const SCOPE = "https://www.googleapis.com/auth/drive.file";
+const SPEEDS = { walk:5, skate:10, bike:15, car:32 }; // km/h
+const DETOUR = 1.3; // las calles no van en línea recta
+
+let tokenClient=null, accessToken=null;
+let index=[];        // del cadence-index.json
+let fileMap={};      // "artist|album|file" -> fileId
+let mode="map", veh="walk";
+let origin=null, dest=null, mapEstMin=0;
+let playlist=[], current=-1;
+
+const $ = id => document.getElementById(id);
+const audio = $("audio");
+
+window.onload = () => {
+  const wait=setInterval(()=>{
+    if(window.google&&google.accounts&&google.accounts.oauth2){
+      clearInterval(wait);
+      tokenClient=google.accounts.oauth2.initTokenClient({
+        client_id:CLIENT_ID, scope:SCOPE,
+        callback:(r)=>{ if(r.error){$("connectStatus").textContent="No se pudo conectar: "+r.error;return;}
+          accessToken=r.access_token; $("connectCard").style.display="none"; $("tool").style.display="block";
+          setTimeout(()=>map.invalidateSize(),200); loadIndex(); }
+      });
+    }
+  },200);
+};
+$("connectBtn").addEventListener("click",()=>{ if(tokenClient){ $("connectStatus").textContent=""; tokenClient.requestAccessToken(); }});
+
+async function drive(path){
+  const r=await fetch("https://www.googleapis.com/drive/v3/"+path,{headers:{Authorization:"Bearer "+accessToken}});
+  if(!r.ok) throw new Error("Drive "+r.status); return r.json();
+}
+async function findFolder(name,parent){
+  let q="mimeType='application/vnd.google-apps.folder' and name='"+name.replace(/'/g,"\\'")+"' and trashed=false";
+  if(parent) q+=" and '"+parent+"' in parents";
+  const r=await drive("files?q="+encodeURIComponent(q)+"&fields=files(id)"); return r.files&&r.files[0]?r.files[0].id:null;
+}
+async function listChildren(parent,foldersOnly){
+  let q="'"+parent+"' in parents and trashed=false";
+  if(foldersOnly) q+=" and mimeType='application/vnd.google-apps.folder'";
+  const r=await drive("files?q="+encodeURIComponent(q)+"&fields=files(id,name,mimeType)&pageSize=500"); return r.files||[];
+}
+
+async function loadIndex(){
+  $("makeStatus").textContent="Leyendo tu música...";
+  try{
+    const cadenceId=await findFolder("Cadence",null);
+    if(!cadenceId){ $("makeStatus").textContent="No encuentro la carpeta «Cadence»."; return; }
+    // 1) índice
+    const idxId=await findFolder0("cadence-index.json",cadenceId);
+    if(!idxId){ $("makeStatus").textContent="No encuentro «cadence-index.json». Créalo desde la app."; return; }
+    const res=await fetch("https://www.googleapis.com/drive/v3/files/"+idxId+"?alt=media",{headers:{Authorization:"Bearer "+accessToken}});
+    const data=await res.json();
+    index=data.tracks||[];
+    // 2) mapa de archivos reales para reproducir
+    const musicId=await findFolder("Música",cadenceId);
+    if(musicId) await buildFileMap(musicId);
+    // 3) géneros
+    const genres=[...new Set(index.map(t=>(t.genre||"").trim()).filter(Boolean))].sort();
+    genres.forEach(g=>{ const o=document.createElement("option"); o.value=g; o.textContent=g; $("genreSel").appendChild(o); });
+    $("makeStatus").textContent=index.length+" canciones en tu índice.";
+  }catch(e){ $("makeStatus").textContent="Error: "+e.message; }
+}
+// buscar un FICHERO (no carpeta) por nombre
+async function findFolder0(name,parent){
+  let q="name='"+name.replace(/'/g,"\\'")+"' and trashed=false";
+  if(parent) q+=" and '"+parent+"' in parents";
+  const r=await drive("files?q="+encodeURIComponent(q)+"&fields=files(id)"); return r.files&&r.files[0]?r.files[0].id:null;
+}
+async function buildFileMap(musicId){
+  fileMap={};
+  const artists=await listChildren(musicId,true);
+  for(const a of artists){
+    const albums=await listChildren(a.id,true);
+    for(const al of albums){
+      const files=await listChildren(al.id,false);
+      files.forEach(f=>{ if(f.mimeType!=="application/vnd.google-apps.folder")
+        fileMap[a.name+"|"+al.name+"|"+f.name]=f.id; });
+    }
+  }
+}
+
+// ---- Modos de tiempo ----
+$("modeSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+  mode=b.dataset.mode;
+  $("modeSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  ["map","manual","clock"].forEach(m=>$("pane-"+m).classList.toggle("on",m===mode));
+  if(mode==="map") setTimeout(()=>map.invalidateSize(),100);
+}));
+$("vehSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+  veh=b.dataset.veh; $("vehSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); updateMapEst();
+}));
+
+// ---- Mapa ----
+const map=L.map("map",{minZoom:2}).setView([40,-3.7],5);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{subdomains:'abcd',maxZoom:19}).addTo(map);
+let oMarker=null,dMarker=null,line=null;
+map.on("click",e=>{
+  if(!origin||dest){ origin=e.latlng; dest=null;
+    if(dMarker){map.removeLayer(dMarker);dMarker=null;} if(line){map.removeLayer(line);line=null;}
+    if(oMarker)map.removeLayer(oMarker); oMarker=L.marker(origin).addTo(map).bindPopup("Salida").openPopup();
+  } else { dest=e.latlng;
+    if(dMarker)map.removeLayer(dMarker); dMarker=L.marker(dest).addTo(map).bindPopup("Destino").openPopup();
+    line=L.polyline([origin,dest],{color:"#7C9AFF"}).addTo(map);
+  }
+  updateMapEst();
+});
+function haversine(a,b){
+  const R=6371,toR=x=>x*Math.PI/180;
+  const dLat=toR(b.lat-a.lat),dLon=toR(b.lng-a.lng);
+  const s=Math.sin(dLat/2)**2+Math.cos(toR(a.lat))*Math.cos(toR(b.lat))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
+}
+function updateMapEst(){
+  if(!origin||!dest){ $("mapEst").innerHTML="—"; mapEstMin=0; return; }
+  const km=haversine(origin,dest)*DETOUR;
+  mapEstMin=Math.max(1,Math.round(km/SPEEDS[veh]*60));
+  $("mapEst").innerHTML="Trayecto: <b>"+mapEstMin+" min</b> ("+km.toFixed(1)+" km)";
+}
+
+// ---- Hora ----
+$("clockTime").addEventListener("change",()=>{
+  const v=$("clockTime").value; if(!v){$("clockEst").innerHTML="—";return;}
+  const [h,m]=v.split(":").map(Number); const now=new Date();
+  const target=new Date(); target.setHours(h,m,0,0);
+  if(target<=now) target.setDate(target.getDate()+1);
+  const min=Math.round((target-now)/60000);
+  $("clockEst").innerHTML="Faltan <b>"+min+" min</b>";
+});
+function targetMinutes(){
+  if(mode==="map") return mapEstMin;
+  if(mode==="manual") return parseInt($("manualMin").value)||0;
+  if(mode==="clock"){ const v=$("clockTime").value; if(!v)return 0;
+    const [h,m]=v.split(":").map(Number); const now=new Date(); const t=new Date(); t.setHours(h,m,0,0);
+    if(t<=now)t.setDate(t.getDate()+1); return Math.round((t-now)/60000); }
+  return 0;
+}
+
+// ---- Crear lista ----
+$("makeBtn").addEventListener("click",()=>{
+  const tMin=targetMinutes();
+  if(tMin<=0){ $("makeStatus").textContent="Primero fija el tiempo (mapa, minutos u hora)."; return; }
+  const targetMs=tMin*60000;
+  const bpm=$("bpmSel").value, genre=$("genreSel").value;
+  let pool=index.filter(t=>t.durationMs>0);
+  if(genre!=="any") pool=pool.filter(t=>(t.genre||"")===genre);
+  if(bpm!=="any") pool=pool.filter(t=>{ const b=t.bpm; if(b==null)return false;
+    if(bpm==="calm")return b<90; if(bpm==="mid")return b>=90&&b<=130; return b>130; });
+  if(!pool.length){ $("makeStatus").textContent="No hay canciones con esos filtros. Prueba a aflojarlos."; return; }
+  // baraja y rellena hasta clavar el tiempo
+  pool=pool.sort(()=>Math.random()-0.5);
+  const chosen=[]; let total=0;
+  for(const t of pool){ if(total+t.durationMs<=targetMs+45000){ chosen.push(t); total+=t.durationMs; } }
+  // si quedó muy corta, mete la que más acerque
+  playlist=chosen; current=-1;
+  renderResult(total,targetMs);
+  $("makeStatus").textContent="";
+});
+function fmt(ms){ const s=Math.round(ms/1000); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function renderResult(total,targetMs){
+  $("resultCard").style.display="block";
+  $("rCount").textContent=playlist.length;
+  $("rDur").textContent=fmt(total); $("rTarget").textContent=fmt(targetMs);
+  const list=$("resultList"); list.innerHTML="";
+  playlist.forEach((t,i)=>{
+    const div=document.createElement("div"); div.className="track";
+    div.innerHTML='<span>'+esc(t.title)+' — '+esc(t.artist||"")+'</span><span class="meta">'+fmt(t.durationMs)+'</span>';
+    div.addEventListener("click",()=>playAt(i)); list.appendChild(div);
+  });
+  if(playlist.length) playAt(0);
+}
+
+// ---- Reproducción ----
+function fileIdFor(t){ return fileMap[(t.artistFolder||t.artist)+"|"+(t.albumFolder||t.album)+"|"+t.file]; }
+async function playAt(i){
+  if(i<0||i>=playlist.length)return; current=i; const t=playlist[i];
+  $("player").classList.add("show"); $("pTitle").textContent=t.title+" — "+(t.artist||"");
+  $("pState").textContent="Cargando...";
+  const id=fileIdFor(t);
+  if(!id){ $("pState").textContent="No encuentro el archivo en Drive (¿índice antiguo?)"; return; }
+  try{
+    const res=await fetch("https://www.googleapis.com/drive/v3/files/"+id+"?alt=media",{headers:{Authorization:"Bearer "+accessToken}});
+    const blob=await res.blob(); audio.src=URL.createObjectURL(blob); await audio.play();
+    $("pState").textContent="Reproduciendo"; $("playBtn").textContent="⏸";
+  }catch(e){ $("pState").textContent="Error: "+e.message; }
+}
+$("playBtn").addEventListener("click",()=>{ if(audio.paused){audio.play();$("playBtn").textContent="⏸";}else{audio.pause();$("playBtn").textContent="▶";}});
+$("nextBtn").addEventListener("click",()=>playAt(current+1));
+$("prevBtn").addEventListener("click",()=>playAt(current-1));
+audio.addEventListener("ended",()=>playAt(current+1));
+
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+</script>
+</body>
+</html>
