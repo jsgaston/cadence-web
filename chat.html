@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Sala</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0E1014;--surface:#16191F;--surface-2:#1E222B;--line:#2A2F3A;
+    --accent:#7C9AFF;--text:#E8EAF0;--muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif;--body:"Inter",system-ui,sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+  a{color:var(--accent);text-decoration:none}
+  .topbar{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .topbar img{width:26px;height:26px}.topbar .name{font-family:var(--display);font-size:1.1rem;font-weight:500}
+  .langsel{margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 10px;font-family:var(--body);font-size:.8rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  .back{color:var(--muted);font-size:.88rem;margin-left:12px}
+  .wrap{flex:1;display:flex;flex-direction:column;max-width:760px;width:100%;margin:0 auto;min-height:0}
+  .roomhead{padding:14px 18px 6px}
+  .roomhead h1{font-family:var(--display);font-weight:500;font-size:1.5rem}
+  .roomhead p{color:var(--muted);font-size:.85rem}
+  .messages{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+  .msg{display:flex;gap:10px;align-items:flex-start}
+  .av{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#0b0d12;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:.9rem;overflow:hidden}
+  .av img{width:100%;height:100%;object-fit:cover}
+  .bubble{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 13px;max-width:100%}
+  .bubble .who{font-size:.82rem;color:var(--accent);font-weight:600;cursor:pointer}
+  .bubble .txt{font-size:.95rem;white-space:pre-wrap;word-break:break-word}
+  .bubble .meta{font-size:.72rem;color:var(--muted);margin-top:3px;display:flex;gap:10px;align-items:center}
+  .meta button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:.72rem;padding:0}
+  .meta button:hover{color:var(--accent)}
+  .composer{flex-shrink:0;border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:10px;align-items:flex-end}
+  textarea{flex:1;resize:none;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;color:var(--text);font-family:var(--body);font-size:.95rem;max-height:120px}
+  textarea:focus{outline:none;border-color:var(--accent)}
+  .sendbtn{background:var(--accent);color:#0b0d12;border:0;border-radius:12px;padding:11px 18px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  .sendbtn:disabled{opacity:.5;cursor:default}
+  .loginbar{padding:14px 18px;text-align:center;color:var(--muted);font-size:.92rem;border-top:1px solid var(--line)}
+  .gbtn{background:#fff;color:#1f2330;border:0;border-radius:999px;padding:10px 20px;font-weight:600;cursor:pointer;margin-top:8px}
+  .counter{font-size:.72rem;color:var(--muted);align-self:center;min-width:42px;text-align:right}
+  .rules{font-size:.78rem;color:var(--muted);padding:0 18px 8px}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
+  html[dir="rtl"] .langsel{margin-left:0;margin-right:auto}
+  html[dir="rtl"] .msg{flex-direction:row-reverse}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <img src="cadence-logo.png" alt=""><span class="name">Cadence · <span data-i18n="room"></span></span>
+  <select class="langsel" id="langsel" aria-label="Idioma">
+    <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+    <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+    <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
+  <a class="back" href="app.html" data-i18n="back"></a>
+</div>
+
+<div class="wrap">
+  <div class="roomhead">
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="subtitle"></p>
+  </div>
+  <div class="rules" data-i18n="rules"></div>
+  <div class="messages" id="messages"></div>
+
+  <div id="loginbar" class="loginbar">
+    <span data-i18n="loginprompt"></span><br>
+    <button id="loginBtn" class="gbtn" data-i18n="login"></button>
+  </div>
+
+  <div id="composer" class="composer" style="display:none">
+    <textarea id="input" rows="1" maxlength="500" data-i18n-ph="ph"></textarea>
+    <span class="counter" id="counter">0/500</span>
+    <button id="sendBtn" class="sendbtn" data-i18n="send"></button>
+  </div>
+</div>
+
+<script>
+const I18N={
+ es:{_t:"Cadence — Sala",room:"Sala",back:"← Comunidad",title:"Sala pública",subtitle:"Comparte música, noticias o lo que sea con la comunidad.",rules:"Sé respetuoso. Mensajes públicos. Puedes reportar o borrar lo tuyo.",loginprompt:"Inicia sesión para escribir en la sala.",login:"Iniciar sesión con Google",ph:"Escribe un mensaje...",send:"Enviar",empty:"Aún no hay mensajes. ¡Rompe el hielo!",report:"Reportar",del:"Borrar",reported:"Reportado. Gracias.",confirmdel:"¿Borrar este mensaje?",tooFast:"Espera un momento antes de enviar otro.",dup:"Ese mensaje es idéntico al anterior.",sending:"Enviando...",loaderr:"No se pudieron cargar los mensajes."},
+ en:{_t:"Cadence — Room",room:"Room",back:"← Community",title:"Public room",subtitle:"Share music, news or anything with the community.",rules:"Be respectful. Messages are public. You can report or delete your own.",loginprompt:"Sign in to write in the room.",login:"Sign in with Google",ph:"Write a message...",send:"Send",empty:"No messages yet. Break the ice!",report:"Report",del:"Delete",reported:"Reported. Thanks.",confirmdel:"Delete this message?",tooFast:"Wait a moment before sending another.",dup:"That message is identical to the previous one.",sending:"Sending...",loaderr:"Couldn't load messages."},
+ pt:{_t:"Cadence — Sala",room:"Sala",back:"← Comunidade",title:"Sala pública",subtitle:"Partilhe música, notícias ou o que quiser com a comunidade.",rules:"Seja respeitoso. Mensagens públicas. Pode reportar ou apagar as suas.",loginprompt:"Inicie sessão para escrever na sala.",login:"Iniciar sessão com Google",ph:"Escreva uma mensagem...",send:"Enviar",empty:"Ainda não há mensagens. Quebre o gelo!",report:"Reportar",del:"Apagar",reported:"Reportado. Obrigado.",confirmdel:"Apagar esta mensagem?",tooFast:"Espere um momento antes de enviar outra.",dup:"Essa mensagem é idêntica à anterior.",sending:"A enviar...",loaderr:"Não foi possível carregar as mensagens."},
+ fr:{_t:"Cadence — Salon",room:"Salon",back:"← Communauté",title:"Salon public",subtitle:"Partagez musique, actus ou autre avec la communauté.",rules:"Restez respectueux. Messages publics. Vous pouvez signaler ou supprimer les vôtres.",loginprompt:"Connectez-vous pour écrire dans le salon.",login:"Se connecter avec Google",ph:"Écrire un message...",send:"Envoyer",empty:"Pas encore de messages. Lancez-vous !",report:"Signaler",del:"Supprimer",reported:"Signalé. Merci.",confirmdel:"Supprimer ce message ?",tooFast:"Attendez un instant avant d'en envoyer un autre.",dup:"Ce message est identique au précédent.",sending:"Envoi...",loaderr:"Impossible de charger les messages."},
+ it:{_t:"Cadence — Stanza",room:"Stanza",back:"← Comunità",title:"Stanza pubblica",subtitle:"Condividi musica, notizie o altro con la comunità.",rules:"Sii rispettoso. Messaggi pubblici. Puoi segnalare o eliminare i tuoi.",loginprompt:"Accedi per scrivere nella stanza.",login:"Accedi con Google",ph:"Scrivi un messaggio...",send:"Invia",empty:"Ancora nessun messaggio. Rompi il ghiaccio!",report:"Segnala",del:"Elimina",reported:"Segnalato. Grazie.",confirmdel:"Eliminare questo messaggio?",tooFast:"Aspetta un momento prima di inviarne un altro.",dup:"Quel messaggio è identico al precedente.",sending:"Invio...",loaderr:"Impossibile caricare i messaggi."},
+ de:{_t:"Cadence — Raum",room:"Raum",back:"← Community",title:"Öffentlicher Raum",subtitle:"Teile Musik, News oder alles mit der Community.",rules:"Sei respektvoll. Nachrichten sind öffentlich. Du kannst melden oder eigene löschen.",loginprompt:"Melde dich an, um im Raum zu schreiben.",login:"Mit Google anmelden",ph:"Nachricht schreiben...",send:"Senden",empty:"Noch keine Nachrichten. Brich das Eis!",report:"Melden",del:"Löschen",reported:"Gemeldet. Danke.",confirmdel:"Diese Nachricht löschen?",tooFast:"Warte kurz, bevor du wieder sendest.",dup:"Diese Nachricht ist mit der vorherigen identisch.",sending:"Senden...",loaderr:"Nachrichten konnten nicht geladen werden."},
+ ru:{_t:"Cadence — Комната",room:"Комната",back:"← Сообщество",title:"Публичная комната",subtitle:"Делитесь музыкой, новостями и чем угодно с сообществом.",rules:"Будьте вежливы. Сообщения публичны. Свои можно пожаловаться или удалить.",loginprompt:"Войдите, чтобы писать в комнате.",login:"Войти через Google",ph:"Напишите сообщение...",send:"Отправить",empty:"Сообщений пока нет. Начните первым!",report:"Пожаловаться",del:"Удалить",reported:"Отправлено. Спасибо.",confirmdel:"Удалить это сообщение?",tooFast:"Подождите немного перед следующим.",dup:"Это сообщение совпадает с предыдущим.",sending:"Отправка...",loaderr:"Не удалось загрузить сообщения."},
+ zh:{_t:"Cadence — 聊天室",room:"聊天室",back:"← 社区",title:"公开聊天室",subtitle:"与社区分享音乐、新闻或任何内容。",rules:"请保持尊重。消息公开。你可以举报或删除自己的消息。",loginprompt:"登录后即可在聊天室发言。",login:"使用 Google 登录",ph:"输入消息...",send:"发送",empty:"还没有消息。来打破沉默吧！",report:"举报",del:"删除",reported:"已举报，谢谢。",confirmdel:"删除这条消息？",tooFast:"请稍等再发送下一条。",dup:"该消息与上一条相同。",sending:"发送中...",loaderr:"无法加载消息。"},
+ ja:{_t:"Cadence — ルーム",room:"ルーム",back:"← コミュニティ",title:"公開ルーム",subtitle:"音楽・ニュースなどをコミュニティと共有。",rules:"礼儀を守って。メッセージは公開です。自分のものは報告・削除できます。",loginprompt:"ログインしてルームに書き込み。",login:"Google でログイン",ph:"メッセージを入力...",send:"送信",empty:"まだメッセージがありません。最初の一言を！",report:"報告",del:"削除",reported:"報告しました。ありがとう。",confirmdel:"このメッセージを削除しますか？",tooFast:"次の送信まで少し待ってください。",dup:"直前のメッセージと同じです。",sending:"送信中...",loaderr:"メッセージを読み込めませんでした。"},
+ ar:{_t:"Cadence — الغرفة",room:"الغرفة",back:"← المجتمع",title:"غرفة عامة",subtitle:"شارك الموسيقى والأخبار وأي شيء مع المجتمع.",rules:"كن محترماً. الرسائل علنية. يمكنك الإبلاغ أو حذف رسائلك.",loginprompt:"سجّل الدخول للكتابة في الغرفة.",login:"تسجيل الدخول عبر Google",ph:"اكتب رسالة...",send:"إرسال",empty:"لا رسائل بعد. ابدأ أنت!",report:"إبلاغ",del:"حذف",reported:"تم الإبلاغ. شكراً.",confirmdel:"حذف هذه الرسالة؟",tooFast:"انتظر لحظة قبل إرسال أخرى.",dup:"هذه الرسالة مطابقة للسابقة.",sending:"جارٍ الإرسال...",loaderr:"تعذّر تحميل الرسائل."}
+};
+const RTL=["ar"];
+function t(k){return (I18N[window._L]||I18N.es)[k]||k;}
+function setLang(lang){
+  window._L=lang; const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._t;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.textContent=d[k];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
+  document.getElementById('langsel').value=lang;
+  try{localStorage.setItem('cadence_lang',lang);}catch(e){}
+  if(window._rerender) window._rerender();
+}
+document.getElementById('langsel').addEventListener('change',e=>setLang(e.target.value));
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, query, orderBy, limit, onSnapshot, serverTimestamp, increment }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",
+  authDomain: "cadence-500901.firebaseapp.com",
+  projectId: "cadence-500901",
+  storageBucket: "cadence-500901.firebasestorage.app",
+  messagingSenderId: "995587221821",
+  appId: "1:995587221821:web:3567f36d6ef84a61863d54"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// 👉 Tu UID de dueño: te permite borrar cualquier mensaje (moderar). Ponlo cuando lo sepas.
+const OWNER_UID = "";
+
+const $=id=>document.getElementById(id);
+let me=null, msgs=[], lastText="", lastTime=0;
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function timeStr(ts){ if(!ts) return ""; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleString(); }
+
+function render(){
+  const box=$("messages"); box.innerHTML="";
+  if(!msgs.length){ const e=document.createElement("div"); e.style.color="var(--muted)"; e.textContent=t("empty"); box.appendChild(e); return; }
+  msgs.forEach(m=>{
+    const row=document.createElement("div"); row.className="msg";
+    const initial=(m.name||"?").trim().charAt(0).toUpperCase();
+    const av=m.photo?'<img src="'+esc(m.photo)+'" alt="">':esc(initial);
+    let actions='';
+    if(me){
+      if(m.uid===me.uid || me.uid===OWNER_UID) actions+='<button data-del="'+m.id+'">'+t("del")+'</button>';
+      if(m.uid!==me.uid) actions+='<button data-rep="'+m.id+'">'+t("report")+'</button>';
+    }
+    row.innerHTML='<div class="av">'+av+'</div>'+
+      '<div class="bubble"><div class="who" data-uid="'+esc(m.uid)+'">'+esc(m.name||"?")+'</div>'+
+      '<div class="txt">'+esc(m.text)+'</div>'+
+      '<div class="meta"><span>'+timeStr(m.createdAt)+'</span>'+actions+'</div></div>';
+    box.appendChild(row);
+  });
+  box.scrollTop=box.scrollHeight;
+}
+window._rerender=render;
+
+// Carga en tiempo real (últimos 100)
+const qy=query(collection(db,"room"), orderBy("createdAt","asc"), limit(100));
+onSnapshot(qy, snap=>{
+  msgs=[]; snap.forEach(d=>msgs.push({id:d.id, ...d.data()})); render();
+}, err=>{ const box=$("messages"); box.innerHTML=""; const e=document.createElement("div"); e.style.color="var(--muted)"; e.textContent=t("loaderr"); box.appendChild(e); });
+
+// Clicks: borrar, reportar, abrir perfil
+$("messages").addEventListener("click", async (e)=>{
+  const del=e.target.getAttribute("data-del");
+  const rep=e.target.getAttribute("data-rep");
+  const uid=e.target.getAttribute("data-uid");
+  if(del){ if(confirm(t("confirmdel"))){ try{ await deleteDoc(doc(db,"room",del)); }catch(_){}} }
+  else if(rep){ try{ await updateDoc(doc(db,"room",rep), { reports: increment(1) }); alert(t("reported")); }catch(_){} }
+  else if(uid){ window.location.href="app.html"; }
+});
+
+// Login
+$("loginBtn").addEventListener("click", async ()=>{ try{ await signInWithPopup(auth, provider); }catch(_){} });
+onAuthStateChanged(auth, user=>{
+  me=user;
+  $("loginbar").style.display = user ? "none" : "block";
+  $("composer").style.display = user ? "flex" : "none";
+  render();
+});
+
+// Enviar
+const input=$("input"), counter=$("counter"), sendBtn=$("sendBtn");
+input.addEventListener("input", ()=>{
+  counter.textContent=input.value.length+"/500";
+  input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,120)+"px";
+});
+async function send(){
+  const text=input.value.trim();
+  if(!text || !me) return;
+  const now=Date.now();
+  if(now-lastTime < 1500){ alert(t("tooFast")); return; }
+  if(text===lastText){ alert(t("dup")); return; }
+  sendBtn.disabled=true;
+  try{
+    await addDoc(collection(db,"room"), {
+      uid: me.uid, name: me.displayName||"?", photo: me.photoURL||"",
+      text: text.slice(0,500), createdAt: serverTimestamp(), reports: 0
+    });
+    lastText=text; lastTime=now; input.value=""; counter.textContent="0/500"; input.style.height="auto";
+  }catch(_){}
+  sendBtn.disabled=false;
+}
+sendBtn.addEventListener("click", send);
+input.addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); send(); } });
+</script>
+
+<script>
+let _s=null; try{_s=localStorage.getItem('cadence_lang');}catch(e){}
+const _n=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(_s||(I18N[_n]?_n:'es'));
+</script>
+</body>
+</html>
