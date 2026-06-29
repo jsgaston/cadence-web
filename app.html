@@ -136,8 +136,8 @@
 </div>
 
 <!-- Overlay de perfil de otro oyente -->
-<div id="profileOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(8,9,12,.86);
-  backdrop-filter:blur(6px);z-index:50;display:flex;align-items:flex-start;justify-content:center;
+<div id="profileOverlay" style="position:fixed;inset:0;background:rgba(8,9,12,.86);
+  backdrop-filter:blur(6px);z-index:50;display:none;align-items:flex-start;justify-content:center;
   padding:40px 16px;overflow-y:auto">
   <div class="card" style="max-width:520px;width:100%;margin:0">
     <div style="display:flex;align-items:center;gap:14px">
@@ -266,7 +266,7 @@ function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'
 let ovHistory=[], ovTab="musica";
 window.openProfile=async function(uid, fallbackName){
   const ov=document.getElementById("profileOverlay");
-  ov.classList.remove("hidden");
+  ov.style.display="flex";
   const safe=fallbackName||t('listener');
   document.getElementById("ovName").textContent=safe;
   document.getElementById("ovAvatar").textContent=safe.trim().charAt(0).toUpperCase();
@@ -342,8 +342,8 @@ function renderOvHistory(){
     cont.appendChild(d);
   });
 }
-document.getElementById("ovClose").addEventListener("click",()=>document.getElementById("profileOverlay").classList.add("hidden"));
-document.getElementById("profileOverlay").addEventListener("click",e=>{ if(e.target.id==="profileOverlay") e.currentTarget.classList.add("hidden"); });
+document.getElementById("ovClose").addEventListener("click",()=>document.getElementById("profileOverlay").style.display="none");
+document.getElementById("profileOverlay").addEventListener("click",e=>{ if(e.target.id==="profileOverlay") e.currentTarget.style.display="none"; });
 
 document.getElementById("loginBtn").addEventListener("click", async ()=>{
   loginStatus.textContent=t('m_opening');
