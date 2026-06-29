@@ -32,13 +32,13 @@
     padding:5px 11px;border-radius:999px}
   .lang-btn.active{background:var(--accent);color:#0b0d12}
 
-  .wrap{max-width:560px;margin:0 auto;padding:72px 24px 40px}
+  .wrap{max-width:600px;margin:0 auto;padding:72px 24px 60px}
   .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px}
   .brand img{width:44px;height:44px;object-fit:contain}
   .brand h1{font-family:var(--display);font-weight:500;font-size:1.8rem}
-  .sub{text-align:center;color:var(--muted);margin-bottom:36px}
+  .sub{text-align:center;color:var(--muted);margin-bottom:32px}
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;margin-bottom:20px}
   .hidden{display:none}
 
   .prompt{text-align:center;margin-bottom:22px;color:var(--muted)}
@@ -48,29 +48,38 @@
   .gbtn:hover{background:#eef1f7}
   .gbtn img{width:20px;height:20px}
 
-  .profile{display:flex;align-items:center;gap:16px;margin-bottom:8px}
-  .avatar{width:64px;height:64px;border-radius:50%;border:2px solid var(--line);object-fit:cover}
-  .pname{font-family:var(--display);font-weight:500;font-size:1.35rem;line-height:1.1}
-  .pmail{color:var(--muted);font-size:.9rem}
+  .profile{display:flex;align-items:center;gap:16px}
+  .avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;background:var(--accent);color:#0b0d12;font-weight:600;font-size:1.5rem}
+  .pname{font-family:var(--display);font-weight:500;font-size:1.3rem;line-height:1.1}
+  .pmail{color:var(--muted);font-size:.85rem}
 
-  label{display:block;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--accent);font-weight:600;margin:26px 0 10px}
-  .row{display:flex;gap:10px}
-  input[type=text]{flex:1;background:var(--surface-2);border:1px solid var(--line);
-    border-radius:12px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:1rem}
-  input[type=text]:focus{outline:none;border-color:var(--accent)}
-  .btn{padding:12px 20px;border-radius:12px;border:0;cursor:pointer;
+  label{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:22px 0 8px}
+  textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;color:var(--text);font-family:var(--body);
+    font-size:1rem;resize:vertical;min-height:80px}
+  textarea:focus{outline:none;border-color:var(--accent)}
+  .btn{padding:11px 20px;border-radius:12px;border:0;cursor:pointer;margin-top:10px;
     background:var(--accent);color:#0b0d12;font-family:var(--body);font-weight:600}
   .btn:hover{background:#93acff}
   .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);
     border-radius:999px;padding:9px 16px;font-weight:500;cursor:pointer;font-family:var(--body)}
   .btn-ghost:hover{border-color:var(--accent)}
+  .status{min-height:18px;margin-top:8px;font-size:.85rem;color:var(--muted)}
 
-  .status{min-height:20px;margin-top:14px;font-size:.9rem;color:var(--muted)}
-  .soon{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);
-    color:var(--muted);font-size:.9rem}
-  .soon b{color:var(--text);font-weight:600}
-  .foot{text-align:center;margin-top:24px}
+  h2{font-family:var(--display);font-weight:500;font-size:1.3rem;margin-bottom:4px}
+  .wall-sub{color:var(--muted);font-size:.88rem;margin-bottom:16px}
+  .feed-item{display:flex;align-items:center;gap:12px;padding:12px 0;
+    border-bottom:1px solid rgba(42,47,58,.5)}
+  .feed-item:last-child{border-bottom:0}
+  .fav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;background:var(--accent);color:#0b0d12;font-weight:600;flex-shrink:0}
+  .fname{color:var(--accent);font-size:.9rem}
+  .flabel{font-size:.95rem}
+  .ftime{color:var(--muted);font-size:.78rem}
+  .empty{color:var(--muted);text-align:center;padding:20px 0}
+  .signout{text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
@@ -90,7 +99,7 @@
   </div>
   <p class="sub" data-i18n="sub"></p>
 
-  <!-- VISTA: no conectado -->
+  <!-- No conectado -->
   <div id="loginView" class="card">
     <p class="prompt" data-i18n="prompt"></p>
     <button id="loginBtn" class="gbtn">
@@ -100,100 +109,95 @@
     <div id="loginStatus" class="status"></div>
   </div>
 
-  <!-- VISTA: conectado -->
+  <!-- Conectado: perfil -->
   <div id="profileView" class="card hidden">
     <div class="profile">
-      <img id="avatar" class="avatar" src="" alt="">
+      <div id="avatar" class="avatar"></div>
       <div>
         <div id="pname" class="pname"></div>
         <div id="pmail" class="pmail"></div>
       </div>
     </div>
-
-    <label for="np" data-i18n="np_label"></label>
-    <div class="row">
-      <input id="np" type="text" data-i18n-ph="np_ph">
-      <button id="saveBtn" class="btn" data-i18n="save_btn"></button>
-    </div>
-    <div id="status" class="status"></div>
-
-    <div class="soon" data-i18n="soon"></div>
-    <div class="foot">
+    <label data-i18n="bio_label"></label>
+    <textarea id="bio" maxlength="300" data-i18n-ph="bio_ph"></textarea>
+    <button id="saveBio" class="btn" data-i18n="save_bio"></button>
+    <div id="bioStatus" class="status"></div>
+    <div class="signout">
       <button id="logoutBtn" class="btn-ghost" data-i18n="logout_btn"></button>
     </div>
   </div>
+
+  <!-- Muro -->
+  <div id="wallView" class="card hidden">
+    <h2 data-i18n="wall_title"></h2>
+    <p class="wall-sub" data-i18n="wall_sub"></p>
+    <div id="feed"><p class="empty" data-i18n="wall_loading"></p></div>
+  </div>
 </div>
 
-<!-- ============ TEXTOS / TEXTS ============ -->
+<!-- ========= TEXTOS / TEXTS ========= -->
 <script>
 const I18N = {
   es: {
-    _title: "Cadence — Comunidad",
-    back: "← Inicio",
-    sub: "Comunidad de oyentes — versión inicial",
-    prompt: "Inicia sesión para crear tu perfil y empezar.",
-    login_btn: "Iniciar sesión con Google",
-    np_label: "¿Qué estás escuchando?",
-    np_ph: "Artista, canción, podcast...",
-    save_btn: "Guardar",
-    soon: "<b>Próximamente:</b> seguir a otros oyentes, ver qué escuchan, chat y descubrir música libre. Esto es solo el comienzo.",
-    logout_btn: "Cerrar sesión",
-    m_opening: "Abriendo Google...",
-    m_login_fail: "No se pudo iniciar sesión: ",
-    m_saving: "Guardando...",
-    m_saved: "Guardado ✓",
-    m_save_fail: "No se pudo guardar: ",
-    m_notice: "Aviso: ",
-    listener: "Oyente"
+    _title:"Cadence — Comunidad", back:"← Inicio",
+    sub:"Comunidad de oyentes", prompt:"Inicia sesión para ver la comunidad.",
+    login_btn:"Iniciar sesión con Google",
+    bio_label:"Sobre ti", bio_ph:"Cuenta algo sobre tus gustos musicales...",
+    save_bio:"Guardar biografía", logout_btn:"Cerrar sesión",
+    wall_title:"Muro", wall_sub:"Lo último que escucha la comunidad.",
+    wall_loading:"Cargando...", wall_empty:"Aún no hay actividad.",
+    m_opening:"Abriendo Google...", m_login_fail:"No se pudo iniciar sesión: ",
+    m_saving:"Guardando...", m_saved:"Biografía guardada ✓", m_save_fail:"No se pudo guardar: ",
+    listener:"Oyente",
+    t_now:"hace un momento", t_min:"hace # min", t_hour:"hace # h"
   },
   en: {
-    _title: "Cadence — Community",
-    back: "← Home",
-    sub: "A community of listeners — early version",
-    prompt: "Sign in to create your profile and get started.",
-    login_btn: "Sign in with Google",
-    np_label: "What are you listening to?",
-    np_ph: "Artist, song, podcast...",
-    save_btn: "Save",
-    soon: "<b>Coming soon:</b> follow other listeners, see what they play, chat, and discover free music. This is just the beginning.",
-    logout_btn: "Sign out",
-    m_opening: "Opening Google...",
-    m_login_fail: "Could not sign in: ",
-    m_saving: "Saving...",
-    m_saved: "Saved ✓",
-    m_save_fail: "Could not save: ",
-    m_notice: "Notice: ",
-    listener: "Listener"
+    _title:"Cadence — Community", back:"← Home",
+    sub:"A community of listeners", prompt:"Sign in to see the community.",
+    login_btn:"Sign in with Google",
+    bio_label:"About you", bio_ph:"Tell us about your taste in music...",
+    save_bio:"Save bio", logout_btn:"Sign out",
+    wall_title:"Wall", wall_sub:"What the community is listening to.",
+    wall_loading:"Loading...", wall_empty:"No activity yet.",
+    m_opening:"Opening Google...", m_login_fail:"Could not sign in: ",
+    m_saving:"Saving...", m_saved:"Bio saved ✓", m_save_fail:"Could not save: ",
+    listener:"Listener",
+    t_now:"just now", t_min:"# min ago", t_hour:"# h ago"
   }
 };
-let currentLang = "es";
-function t(k){ return (I18N[currentLang] || I18N.es)[k] || k; }
+let currentLang="es";
+function t(k){ return (I18N[currentLang]||I18N.es)[k] || k; }
 function setLang(lang){
-  currentLang = lang;
-  const d = I18N[lang] || I18N.es;
-  document.documentElement.lang = lang;
-  document.title = d._title;
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.innerHTML=d[k];});
-  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
-    const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
-  document.querySelectorAll('.lang-btn').forEach(b=>
-    b.classList.toggle('active', b.dataset.lang===lang));
-  try{ localStorage.setItem('cadence_lang', lang); }catch(e){}
+  currentLang=lang;
+  const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.title=d._title;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.innerHTML=d[k];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  try{ localStorage.setItem('cadence_lang',lang); }catch(e){}
+  if (window._renderFeed) window._renderFeed();
 }
-document.querySelectorAll('.lang-btn').forEach(b=>
-  b.addEventListener('click', ()=>setLang(b.dataset.lang)));
-let _saved=null; try{ _saved=localStorage.getItem('cadence_lang'); }catch(e){}
-const _auto=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es';
-setLang(_saved || _auto);
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+let _s=null; try{ _s=localStorage.getItem('cadence_lang'); }catch(e){}
+setLang(_s || ((navigator.language||'es').toLowerCase().startsWith('en')?'en':'es'));
+
+function timeAgo(date){
+  if(!date) return t('t_now');
+  const diff=(Date.now()-date.getTime())/1000;
+  if(diff<60) return t('t_now');
+  if(diff<3600) return t('t_min').replace('#', Math.floor(diff/60));
+  if(diff<86400) return t('t_hour').replace('#', Math.floor(diff/3600));
+  return date.toLocaleDateString(currentLang==='en'?'en-GB':'es-ES',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+}
 </script>
 
-<!-- ============ Firebase ============ -->
+<!-- ========= Firebase ========= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp,
+         collection, query, orderBy, limit, onSnapshot }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -204,60 +208,86 @@ const firebaseConfig = {
   messagingSenderId: "995587221821",
   appId: "1:995587221821:web:3567f36d6ef84a61863d54"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const loginView = document.getElementById("loginView");
-const profileView = document.getElementById("profileView");
-const loginStatus = document.getElementById("loginStatus");
-const status = document.getElementById("status");
-const npInput = document.getElementById("np");
+const loginView=document.getElementById("loginView");
+const profileView=document.getElementById("profileView");
+const wallView=document.getElementById("wallView");
+const loginStatus=document.getElementById("loginStatus");
+const bioStatus=document.getElementById("bioStatus");
+const bioBox=document.getElementById("bio");
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  loginStatus.textContent = t("m_opening");
-  try { await signInWithPopup(auth, provider); }
-  catch (e) { loginStatus.textContent = t("m_login_fail") + e.message; }
+let feedData=[];
+window._renderFeed=function(){
+  const cont=document.getElementById("feed");
+  if(!cont) return;
+  if(feedData.length===0){ cont.innerHTML='<p class="empty">'+t('wall_empty')+'</p>'; return; }
+  cont.innerHTML="";
+  feedData.forEach(it=>{
+    const row=document.createElement("div"); row.className="feed-item";
+    const initial=(it.name||t('listener')).trim().charAt(0).toUpperCase();
+    row.innerHTML =
+      '<div class="fav">'+initial+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="fname">'+escapeHtml(it.name||t('listener'))+'</div>'+
+        '<div class="flabel">'+escapeHtml(it.label||'—')+'</div>'+
+        '<div class="ftime">'+timeAgo(it.playedAt)+'</div>'+
+      '</div>';
+    cont.appendChild(row);
+  });
+};
+function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  loginStatus.textContent=t('m_opening');
+  try{ await signInWithPopup(auth, provider); }
+  catch(e){ loginStatus.textContent=t('m_login_fail')+e.message; }
+});
+document.getElementById("logoutBtn").addEventListener("click", ()=>signOut(auth));
+
+document.getElementById("saveBio").addEventListener("click", async ()=>{
+  const u=auth.currentUser; if(!u) return;
+  bioStatus.textContent=t('m_saving');
+  try{
+    await setDoc(doc(db,"users",u.uid),
+      { bio: bioBox.value.trim(), updatedAt: serverTimestamp() }, { merge:true });
+    bioStatus.textContent=t('m_saved');
+  }catch(e){ bioStatus.textContent=t('m_save_fail')+e.message; }
 });
 
-document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+// Muro en tiempo real.
+const feedQuery = query(collection(db,"feed"), orderBy("playedAt","desc"), limit(50));
+onSnapshot(feedQuery, snap=>{
+  feedData = snap.docs.map(d=>{
+    const x=d.data();
+    return { name:x.name, label:x.label, type:x.type,
+             playedAt: x.playedAt && x.playedAt.toDate ? x.playedAt.toDate() : null };
+  });
+  window._renderFeed();
+}, err=>{ console.error(err); });
 
-document.getElementById("saveBtn").addEventListener("click", async () => {
-  const user = auth.currentUser; if (!user) return;
-  status.textContent = t("m_saving");
-  try {
-    await setDoc(doc(db, "users", user.uid),
-      { nowPlaying: npInput.value.trim(), updatedAt: serverTimestamp() },
-      { merge: true });
-    status.textContent = t("m_saved");
-  } catch (e) { status.textContent = t("m_save_fail") + e.message; }
-});
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const ref = doc(db, "users", user.uid);
-    try {
-      await setDoc(ref, {
-        displayName: user.displayName || "",
-        email: user.email || "",
-        photoURL: user.photoURL || "",
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-      const snap = await getDoc(ref);
-      const data = snap.exists() ? snap.data() : {};
-      npInput.value = data.nowPlaying || "";
-    } catch (e) { status.textContent = t("m_notice") + e.message; }
-    document.getElementById("avatar").src = user.photoURL || "cadence-logo.png";
-    document.getElementById("pname").textContent = user.displayName || t("listener");
-    document.getElementById("pmail").textContent = user.email || "";
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    await setDoc(doc(db,"users",user.uid), {
+      displayName:user.displayName||"", email:user.email||"",
+      photoURL:user.photoURL||"", updatedAt:serverTimestamp()
+    }, { merge:true });
+    const snap=await getDoc(doc(db,"users",user.uid));
+    bioBox.value = (snap.exists()? snap.data().bio : "") || "";
+    document.getElementById("avatar").textContent=(user.displayName||"O").trim().charAt(0).toUpperCase();
+    document.getElementById("pname").textContent=user.displayName||t('listener');
+    document.getElementById("pmail").textContent=user.email||"";
     loginView.classList.add("hidden");
     profileView.classList.remove("hidden");
-  } else {
+    wallView.classList.remove("hidden");
+  }else{
     profileView.classList.add("hidden");
+    wallView.classList.add("hidden");
     loginView.classList.remove("hidden");
-    loginStatus.textContent = "";
+    loginStatus.textContent="";
   }
 });
 </script>
