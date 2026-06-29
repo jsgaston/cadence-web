@@ -107,7 +107,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp }
+import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey:"AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",
@@ -129,6 +129,14 @@ window.reportToWall = function(label){
     uid: fbUser.uid, name: fbUser.displayName || "Oyente",
     label: label, type: "musica", playedAt: serverTimestamp()
   }).catch(()=>{});
+  // historial del usuario
+  addDoc(collection(fbDb,"users",fbUser.uid,"history"), {
+    title: label, label: label, type: "musica", playedAt: serverTimestamp()
+  }).catch(()=>{});
+  // "sonando ahora"
+  setDoc(doc(fbDb,"users",fbUser.uid), {
+    nowPlaying: label, nowPlayingType: "musica", updatedAt: serverTimestamp()
+  }, { merge:true }).catch(()=>{});
 };
 </script>
 

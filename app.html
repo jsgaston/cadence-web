@@ -256,7 +256,7 @@ window._renderFeed=function(){
         '<div class="flabel">'+escapeHtml(it.label||'—')+'</div>'+
         '<div class="ftime">'+timeAgo(it.playedAt)+'</div>'+
       '</div>';
-    if(it.uid) row.addEventListener("click",()=>openProfile(it.uid));
+    if(it.uid) row.addEventListener("click",()=>openProfile(it.uid, it.name));
     cont.appendChild(row);
   });
 };
@@ -264,25 +264,35 @@ function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'
 
 // --- Perfil de otro oyente (sin email) ---
 let ovHistory=[], ovTab="musica";
-window.openProfile=async function(uid){
+window.openProfile=async function(uid, fallbackName){
   const ov=document.getElementById("profileOverlay");
   ov.classList.remove("hidden");
+  const safe=fallbackName||t('listener');
+  document.getElementById("ovName").textContent=safe;
+  document.getElementById("ovAvatar").textContent=safe.trim().charAt(0).toUpperCase();
   document.getElementById("ovBio").textContent="";
   document.getElementById("ovHistory").innerHTML="";
+  ovHistory=[]; ovTab="musica"; renderOvTabs(); renderOvHistory();
+  setupFollow(uid);
+  // Perfil (nombre + bio)
   try{
     const ps=await getDoc(doc(db,"users",uid));
-    const name=(ps.exists()&&ps.data().displayName)||t('listener');
-    document.getElementById("ovName").textContent=name;
-    document.getElementById("ovAvatar").textContent=name.trim().charAt(0).toUpperCase();
-    document.getElementById("ovBio").textContent=(ps.exists()&&ps.data().bio)||"";
+    if(ps.exists()){
+      const name=ps.data().displayName||fallbackName||t('listener');
+      document.getElementById("ovName").textContent=name;
+      document.getElementById("ovAvatar").textContent=name.trim().charAt(0).toUpperCase();
+      document.getElementById("ovBio").textContent=ps.data().bio||"";
+    }
+  }catch(e){}
+  // Historial
+  try{
     const hq=query(collection(db,"users",uid,"history"), orderBy("playedAt","desc"), limit(100));
     const hs=await getDocs(hq);
     ovHistory=hs.docs.map(d=>{const x=d.data();
       return {label:x.label||x.title||"—", type:x.type||"musica",
               playedAt:x.playedAt&&x.playedAt.toDate?x.playedAt.toDate():null};});
-    ovTab="musica"; renderOvTabs(); renderOvHistory();
-    setupFollow(uid);
-  }catch(e){ document.getElementById("ovHistory").innerHTML='<p class="empty">'+escapeHtml(e.message)+'</p>'; }
+  }catch(e){ ovHistory=[]; }
+  renderOvTabs(); renderOvHistory();
 };
 async function setupFollow(uid){
   const btn=document.getElementById("ovFollow");

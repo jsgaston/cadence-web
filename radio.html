@@ -125,7 +125,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
+import { getFirestore, collection, doc, setDoc, deleteDoc, addDoc, serverTimestamp, onSnapshot }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyCK00pCtwUbJRmxPb5aEwdUDX3KK4q0WIA",authDomain:"cadence-500901.firebaseapp.com",
   projectId:"cadence-500901",storageBucket:"cadence-500901.firebasestorage.app",
@@ -160,6 +160,16 @@ logoutBind();
 // API global para el script del mapa.
 window.isLoggedIn=()=>!!user;
 window.favId=(url)=>(url||"").replace(/[^A-Za-z0-9]/g,"-").slice(0,180)||"radio";
+// Registra una escucha (historial + muro + "sonando ahora").
+window.reportListen=function(label,type){
+  if(!user) return;
+  addDoc(collection(db,"users",user.uid,"history"),
+    {title:label,label:label,type:type,playedAt:serverTimestamp()}).catch(()=>{});
+  addDoc(collection(db,"feed"),
+    {uid:user.uid,name:user.displayName||"Oyente",label:label,type:type,playedAt:serverTimestamp()}).catch(()=>{});
+  setDoc(doc(db,"users",user.uid),
+    {nowPlaying:label,nowPlayingType:type,updatedAt:serverTimestamp()},{merge:true}).catch(()=>{});
+};
 window.toggleFavorite=async function(st){
   if(!user){ alert("Entra con Google para guardar favoritas."); return; }
   const id=window.favId(st.url);
@@ -281,7 +291,8 @@ window.refreshFavUI=function(){
 function playStation(url,name){
   document.getElementById("player").classList.add("show");
   document.getElementById("pTitle").textContent=name; document.getElementById("pState").textContent="Conectando...";
-  audio.src=url; audio.play().then(()=>{document.getElementById("pState").textContent="En directo";document.getElementById("playBtn").textContent="⏸";})
+  audio.src=url; audio.play().then(()=>{document.getElementById("pState").textContent="En directo";document.getElementById("playBtn").textContent="⏸";
+    if(window.reportListen)window.reportListen(name,"radio");})
     .catch(()=>document.getElementById("pState").textContent="No se pudo reproducir");
 }
 document.getElementById("playBtn").addEventListener("click",()=>{
