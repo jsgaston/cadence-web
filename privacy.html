@@ -8,7 +8,7 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0E1014; --surface:#16191F; --line:#2A2F3A;
@@ -31,6 +31,11 @@
     font-family:var(--body);font-size:.8rem;font-weight:600;letter-spacing:.04em;
     padding:4px 10px;border-radius:999px}
   .lang-btn.active{background:var(--accent);color:#0b0d12}
+  .langsel{background:var(--surface,#16191F);border:1px solid var(--line,#2A2F3A);color:var(--text,#E8EAF0);border-radius:999px;padding:6px 11px;font-family:var(--body);font-size:.82rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
   main{padding:48px 0 80px}
   h1{font-family:var(--display);font-weight:500;font-size:clamp(1.9rem,5vw,2.6rem);
     letter-spacing:-.01em;margin-bottom:6px}
@@ -53,8 +58,11 @@
     <div class="head-right">
       <a class="back" href="index.html" data-i18n="back"></a>
       <nav class="lang" aria-label="Idioma / Language">
-        <button class="lang-btn" data-lang="es">ES</button>
-        <button class="lang-btn" data-lang="en">EN</button>
+        <select class="langsel" id="langsel" aria-label="Idioma">
+          <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+          <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+          <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+        </select>
       </nav>
     </div>
   </div>
@@ -185,26 +193,298 @@ const I18N = {
     p_changes: "If the app changes in the future and handles data differently, we will update this page and its date.",
     h_contact: "Contact",
     p_contact: 'For any privacy questions, write to <a href="mailto:jsgastoniriartecabrera@gmail.com">jsgastoniriartecabrera@gmail.com</a>.'
+  },
+  pt: {
+    _title: "Política de privacidade — Cadence",
+    back: "← Início",
+    title: "Política de privacidade",
+    updated: "Última atualização: junho de 2026",
+    intro: "O Cadence é uma app Android para reproduzir música, audiolivros, podcasts e rádio. Esta política explica que informação a app trata e como. A ideia de fundo é simples: <strong>o Cadence não recolhe os seus dados pessoais nem os envia para nenhum servidor nosso</strong>, porque não temos servidores próprios.",
+    summary: "<strong>Em resumo:</strong> sem contas, sem anúncios, sem analíticas, sem rastreio. A música é reproduzida a partir do seu próprio dispositivo. Se ativar a cópia de segurança, esta é guardada no <strong>seu próprio Google Drive</strong>, sob o seu controlo.",
+    h_files: "A sua música e os seus ficheiros",
+    p_files: "Para reproduzir a sua música, o Cadence precisa de ler os ficheiros de áudio do seu dispositivo. Essa leitura ocorre <strong>apenas no seu telemóvel</strong>: a app não envia a sua música para lado nenhum, exceto se ativar a cópia no seu Drive (abaixo). Não partilhamos nem transmitimos os seus ficheiros.",
+    h_drive: "Cópia de segurança no Google Drive",
+    p_drive_intro: "Se optar por usar a cópia, o Cadence liga-se à <strong>sua</strong> conta do Google Drive com a permissão <code>drive.file</code>. Isto é importante:",
+    drive_li1: "O Cadence <strong>só pode ver e tocar nos ficheiros que a própria app cria</strong> (a pasta «Cadence» e o seu conteúdo). Não acede ao resto do seu Drive.",
+    drive_li2: "A cópia fica guardada no <strong>seu</strong> Drive, não num servidor do Cadence. Os ficheiros são seus e pode apagá-los quando quiser.",
+    drive_li3: "Essa informação <strong>não é partilhada</strong> connosco nem com terceiros, nem é usada para qualquer outro fim.",
+    p_drive_policy: "A utilização que o Cadence faz da informação recebida das APIs da Google cumpre a <a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Política de Dados do Utilizador dos Serviços da API Google</a>, incluindo os requisitos de <strong>Utilização Limitada</strong>.",
+    h_radio: "Rádio",
+    p_radio: "A secção de rádio reproduz estações públicas da internet. Para as encontrar, a app consulta o diretório aberto e comunitário Radio Browser. Nenhuma informação pessoal sua é enviada nessas consultas.",
+    h_pod: "Podcasts",
+    p_pod: "Os podcasts são obtidos de fontes públicas (os feeds RSS de cada programa). Se descarregar um episódio, o ficheiro é guardado <strong>localmente no seu dispositivo</strong>, no armazenamento privado da app.",
+    h_perms: "Permissões que a app pede",
+    perm1: "<strong>Acesso a áudio/armazenamento:</strong> para encontrar e reproduzir a sua música.",
+    perm2: "<strong>Internet:</strong> para a rádio, os podcasts e a cópia no Drive.",
+    perm3: "<strong>Reprodução em segundo plano:</strong> para a música continuar com o ecrã desligado.",
+    h_ads: "Anúncios, analíticas e contas",
+    p_ads: "O Cadence <strong>não</strong> mostra anúncios, <strong>não</strong> inclui analíticas nem rastreadores e <strong>não</strong> cria qualquer conta. Não vendemos nem partilhamos dados, porque não os recolhemos.",
+    h_don: "Donativos",
+    p_don: "O Cadence é gratuito e mantém-se com donativos voluntários através de serviços externos (Buy Me a Coffee e PayPal). Se doar, esses pagamentos são geridos por essas plataformas segundo as <em>suas</em> próprias políticas; o Cadence não recebe os dados do seu pagamento.",
+    h_minors: "Menores",
+    p_minors: "O Cadence não se destina a menores e não recolhe dados deles de forma consciente.",
+    h_changes: "Alterações a esta política",
+    p_changes: "Se no futuro a app mudar e tratar dados de forma diferente, atualizaremos esta página e a sua data.",
+    h_contact: "Contacto",
+    p_contact: "Para qualquer questão de privacidade, escreva para <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
+  },
+  fr: {
+    _title: "Politique de confidentialité — Cadence",
+    back: "← Accueil",
+    title: "Politique de confidentialité",
+    updated: "Dernière mise à jour : juin 2026",
+    intro: "Cadence est une application Android pour écouter musique, livres audio, podcasts et radio. Cette politique explique quelles informations l'app traite et comment. L'idée de fond est simple : <strong>Cadence ne collecte pas vos données personnelles et ne les envoie à aucun de nos serveurs</strong>, car nous n'avons pas de serveurs.",
+    summary: "<strong>En bref :</strong> pas de comptes, pas de publicité, pas d'analytique, pas de pistage. La musique est lue depuis votre propre appareil. Si vous activez la sauvegarde, elle est enregistrée sur <strong>votre propre Google Drive</strong>, sous votre contrôle.",
+    h_files: "Votre musique et vos fichiers",
+    p_files: "Pour lire votre musique, Cadence doit lire les fichiers audio de votre appareil. Cette lecture a lieu <strong>uniquement sur votre téléphone</strong> : l'app n'envoie votre musique nulle part sauf si vous activez la sauvegarde sur votre Drive (ci-dessous). Nous ne partageons ni ne transmettons vos fichiers.",
+    h_drive: "Sauvegarde sur Google Drive",
+    p_drive_intro: "Si vous utilisez la sauvegarde, Cadence se connecte à <strong>votre</strong> compte Google Drive avec l'autorisation <code>drive.file</code>. C'est important :",
+    drive_li1: "Cadence <strong>ne peut voir et toucher que les fichiers que l'app elle-même crée</strong> (le dossier « Cadence » et son contenu). Il n'accède pas au reste de votre Drive.",
+    drive_li2: "La sauvegarde est stockée sur <strong>votre</strong> Drive, pas sur un serveur Cadence. Ces fichiers vous appartiennent et vous pouvez les supprimer quand vous voulez.",
+    drive_li3: "Ces informations <strong>ne sont pas partagées</strong> avec nous ni avec des tiers, et ne servent à aucune autre fin.",
+    p_drive_policy: "L'utilisation par Cadence des informations reçues des API Google est conforme à la <a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Politique relative aux données utilisateur des services API Google</a>, y compris les exigences d'<strong>utilisation limitée</strong>.",
+    h_radio: "Radio",
+    p_radio: "La section radio diffuse des stations internet publiques. Pour les trouver, l'app interroge l'annuaire ouvert et communautaire Radio Browser. Aucune information personnelle vous concernant n'est envoyée dans ces requêtes.",
+    h_pod: "Podcasts",
+    p_pod: "Les podcasts proviennent de sources publiques (le flux RSS de chaque émission). Si vous téléchargez un épisode, le fichier est stocké <strong>localement sur votre appareil</strong>, dans le stockage privé de l'app.",
+    h_perms: "Autorisations demandées",
+    perm1: "<strong>Accès audio/stockage :</strong> pour trouver et lire votre musique.",
+    perm2: "<strong>Internet :</strong> pour la radio, les podcasts et la sauvegarde Drive.",
+    perm3: "<strong>Lecture en arrière-plan :</strong> pour que la musique continue écran éteint.",
+    h_ads: "Publicité, analytique et comptes",
+    p_ads: "Cadence n'affiche <strong>aucune</strong> publicité, n'inclut <strong>aucune</strong> analytique ni traceur, et ne crée <strong>aucun</strong> compte. Nous ne vendons ni ne partageons de données, car nous n'en collectons pas.",
+    h_don: "Dons",
+    p_don: "Cadence est gratuit et vit de dons volontaires via des services externes (Buy Me a Coffee et PayPal). Si vous faites un don, ces paiements sont gérés par ces plateformes selon <em>leurs</em> propres politiques ; Cadence ne reçoit pas vos données de paiement.",
+    h_minors: "Mineurs",
+    p_minors: "Cadence ne s'adresse pas aux mineurs et ne collecte pas sciemment leurs données.",
+    h_changes: "Modifications de cette politique",
+    p_changes: "Si l'app change à l'avenir et traite les données différemment, nous mettrons à jour cette page et sa date.",
+    h_contact: "Contact",
+    p_contact: "Pour toute question de confidentialité, écrivez à <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
+  },
+  it: {
+    _title: "Informativa sulla privacy — Cadence",
+    back: "← Home",
+    title: "Informativa sulla privacy",
+    updated: "Ultimo aggiornamento: giugno 2026",
+    intro: "Cadence è un'app Android per ascoltare musica, audiolibri, podcast e radio. Questa informativa spiega quali dati tratta l'app e come. L'idea di fondo è semplice: <strong>Cadence non raccoglie i tuoi dati personali né li invia a un nostro server</strong>, perché non abbiamo server propri.",
+    summary: "<strong>In breve:</strong> niente account, niente pubblicità, niente analitiche, niente tracciamento. La musica viene riprodotta dal tuo dispositivo. Se attivi il backup, viene salvato sul <strong>tuo Google Drive</strong>, sotto il tuo controllo.",
+    h_files: "La tua musica e i tuoi file",
+    p_files: "Per riprodurre la tua musica, Cadence deve leggere i file audio del dispositivo. Questa lettura avviene <strong>solo sul tuo telefono</strong>: l'app non carica la tua musica da nessuna parte, a meno che tu non attivi il backup sul tuo Drive (sotto). Non condividiamo né trasmettiamo i tuoi file.",
+    h_drive: "Backup su Google Drive",
+    p_drive_intro: "Se scegli di usare il backup, Cadence si collega al <strong>tuo</strong> account Google Drive con il permesso <code>drive.file</code>. È importante:",
+    drive_li1: "Cadence <strong>può vedere e toccare solo i file creati dall'app stessa</strong> (la cartella «Cadence» e il suo contenuto). Non accede al resto del tuo Drive.",
+    drive_li2: "Il backup è salvato sul <strong>tuo</strong> Drive, non su un server Cadence. Quei file sono tuoi e puoi eliminarli quando vuoi.",
+    drive_li3: "Quelle informazioni <strong>non vengono condivise</strong> con noi né con terzi, e non sono usate per altri scopi.",
+    p_drive_policy: "L'uso da parte di Cadence delle informazioni ricevute dalle API di Google rispetta la <a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Norma sui dati utente dei servizi API di Google</a>, inclusi i requisiti di <strong>uso limitato</strong>.",
+    h_radio: "Radio",
+    p_radio: "La sezione radio riproduce stazioni internet pubbliche. Per trovarle, l'app consulta la directory aperta e comunitaria Radio Browser. Nessuna tua informazione personale viene inviata in quelle richieste.",
+    h_pod: "Podcast",
+    p_pod: "I podcast provengono da fonti pubbliche (il feed RSS di ogni programma). Se scarichi un episodio, il file viene salvato <strong>localmente sul tuo dispositivo</strong>, nello spazio privato dell'app.",
+    h_perms: "Permessi richiesti dall'app",
+    perm1: "<strong>Accesso ad audio/memoria:</strong> per trovare e riprodurre la tua musica.",
+    perm2: "<strong>Internet:</strong> per radio, podcast e backup su Drive.",
+    perm3: "<strong>Riproduzione in background:</strong> perché la musica continui a schermo spento.",
+    h_ads: "Pubblicità, analitiche e account",
+    p_ads: "Cadence <strong>non</strong> mostra pubblicità, <strong>non</strong> include analitiche o tracker e <strong>non</strong> crea alcun account. Non vendiamo né condividiamo dati, perché non li raccogliamo.",
+    h_don: "Donazioni",
+    p_don: "Cadence è gratuita e si sostiene con donazioni volontarie tramite servizi esterni (Buy Me a Coffee e PayPal). Se doni, quei pagamenti sono gestiti da quelle piattaforme secondo le <em>loro</em> policy; Cadence non riceve i dati del tuo pagamento.",
+    h_minors: "Minori",
+    p_minors: "Cadence non è rivolta ai minori e non raccoglie consapevolmente i loro dati.",
+    h_changes: "Modifiche a questa informativa",
+    p_changes: "Se in futuro l'app cambia e tratta i dati diversamente, aggiorneremo questa pagina e la sua data.",
+    h_contact: "Contatti",
+    p_contact: "Per qualsiasi domanda sulla privacy, scrivi a <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
+  },
+  de: {
+    _title: "Datenschutzerklärung — Cadence",
+    back: "← Start",
+    title: "Datenschutzerklärung",
+    updated: "Zuletzt aktualisiert: Juni 2026",
+    intro: "Cadence ist eine Android-App zum Abspielen von Musik, Hörbüchern, Podcasts und Radio. Diese Erklärung beschreibt, welche Daten die App verarbeitet und wie. Die Grundidee ist einfach: <strong>Cadence erhebt deine personenbezogenen Daten nicht und sendet sie an keinen unserer Server</strong>, denn wir haben keine eigenen Server.",
+    summary: "<strong>Kurz gesagt:</strong> keine Konten, keine Werbung, keine Analytik, kein Tracking. Musik wird von deinem eigenen Gerät abgespielt. Wenn du das Backup aktivierst, wird es in <strong>deinem eigenen Google Drive</strong> gespeichert, unter deiner Kontrolle.",
+    h_files: "Deine Musik und Dateien",
+    p_files: "Zum Abspielen deiner Musik muss Cadence die Audiodateien auf deinem Gerät lesen. Das geschieht <strong>nur auf deinem Handy</strong>: Die App lädt deine Musik nirgendwo hoch, außer du aktivierst das Drive-Backup (unten). Wir teilen oder übertragen deine Dateien nicht.",
+    h_drive: "Backup in Google Drive",
+    p_drive_intro: "Wenn du das Backup nutzt, verbindet sich Cadence mit <strong>deinem</strong> Google-Drive-Konto über die Berechtigung <code>drive.file</code>. Das ist wichtig:",
+    drive_li1: "Cadence <strong>kann nur die Dateien sehen und bearbeiten, die die App selbst erstellt</strong> (den Ordner «Cadence» und seinen Inhalt). Es greift nicht auf den Rest deines Drive zu.",
+    drive_li2: "Das Backup liegt in <strong>deinem</strong> Drive, nicht auf einem Cadence-Server. Diese Dateien gehören dir und du kannst sie jederzeit löschen.",
+    drive_li3: "Diese Informationen werden <strong>nicht geteilt</strong> – weder mit uns noch mit Dritten – und für keinen anderen Zweck verwendet.",
+    p_drive_policy: "Die Verwendung von Informationen aus Google-APIs durch Cadence entspricht der <a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Google API Services User Data Policy</a>, einschließlich der Anforderungen zur <strong>eingeschränkten Nutzung</strong>.",
+    h_radio: "Radio",
+    p_radio: "Der Radiobereich spielt öffentliche Internetsender ab. Zum Finden fragt die App das offene, gemeinschaftliche Verzeichnis Radio Browser ab. Dabei werden keine persönlichen Daten von dir gesendet.",
+    h_pod: "Podcasts",
+    p_pod: "Podcasts stammen aus öffentlichen Quellen (dem RSS-Feed jeder Sendung). Lädst du eine Folge herunter, wird die Datei <strong>lokal auf deinem Gerät</strong> im privaten App-Speicher abgelegt.",
+    h_perms: "Von der App angeforderte Berechtigungen",
+    perm1: "<strong>Audio-/Speicherzugriff:</strong> um deine Musik zu finden und abzuspielen.",
+    perm2: "<strong>Internet:</strong> für Radio, Podcasts und das Drive-Backup.",
+    perm3: "<strong>Wiedergabe im Hintergrund:</strong> damit die Musik bei ausgeschaltetem Bildschirm weiterläuft.",
+    h_ads: "Werbung, Analytik und Konten",
+    p_ads: "Cadence zeigt <strong>keine</strong> Werbung, enthält <strong>keine</strong> Analytik oder Tracker und legt <strong>kein</strong> Konto für dich an. Wir verkaufen oder teilen keine Daten, weil wir keine erheben.",
+    h_don: "Spenden",
+    p_don: "Cadence ist kostenlos und lebt von freiwilligen Spenden über externe Dienste (Buy Me a Coffee und PayPal). Wenn du spendest, werden diese Zahlungen von diesen Plattformen nach <em>deren</em> eigenen Richtlinien abgewickelt; Cadence erhält deine Zahlungsdaten nicht.",
+    h_minors: "Minderjährige",
+    p_minors: "Cadence richtet sich nicht an Minderjährige und erhebt wissentlich keine Daten von ihnen.",
+    h_changes: "Änderungen dieser Erklärung",
+    p_changes: "Sollte die App sich künftig ändern und Daten anders verarbeiten, aktualisieren wir diese Seite und ihr Datum.",
+    h_contact: "Kontakt",
+    p_contact: "Bei Fragen zum Datenschutz schreibe an <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
+  },
+  ru: {
+    _title: "Политика конфиденциальности — Cadence",
+    back: "← Главная",
+    title: "Политика конфиденциальности",
+    updated: "Последнее обновление: июнь 2026",
+    intro: "Cadence — приложение для Android для прослушивания музыки, аудиокниг, подкастов и радио. Эта политика описывает, какие данные обрабатывает приложение и как. Главная идея проста: <strong>Cadence не собирает ваши персональные данные и не отправляет их ни на какой наш сервер</strong>, потому что у нас нет собственных серверов.",
+    summary: "<strong>Коротко:</strong> без аккаунтов, рекламы, аналитики и слежки. Музыка воспроизводится с вашего устройства. Если включить резервную копию, она сохраняется в <strong>вашем личном Google Диске</strong>, под вашим контролем.",
+    h_files: "Ваша музыка и файлы",
+    p_files: "Чтобы воспроизводить музыку, Cadence читает аудиофайлы на устройстве. Это происходит <strong>только на вашем телефоне</strong>: приложение никуда не загружает вашу музыку, если вы не включите копию на Диск (ниже). Мы не передаём и не публикуем ваши файлы.",
+    h_drive: "Резервная копия в Google Диске",
+    p_drive_intro: "Если вы используете резервную копию, Cadence подключается к <strong>вашему</strong> Google Диску с разрешением <code>drive.file</code>. Это важно:",
+    drive_li1: "Cadence <strong>видит и изменяет только файлы, которые создаёт само приложение</strong> (папку «Cadence» и её содержимое). Остальной Диск ему недоступен.",
+    drive_li2: "Копия хранится на <strong>вашем</strong> Диске, а не на сервере Cadence. Эти файлы ваши, и вы можете удалить их в любой момент.",
+    drive_li3: "Эти данные <strong>не передаются</strong> ни нам, ни третьим лицам и не используются для иных целей.",
+    p_drive_policy: "Использование Cadence данных, полученных от API Google, соответствует <a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Политике в отношении данных пользователей сервисов API Google</a>, включая требования <strong>ограниченного использования</strong>.",
+    h_radio: "Радио",
+    p_radio: "Раздел радио воспроизводит публичные интернет-станции. Для их поиска приложение обращается к открытому общественному каталогу Radio Browser. В этих запросах не отправляются ваши персональные данные.",
+    h_pod: "Подкасты",
+    p_pod: "Подкасты берутся из публичных источников (RSS-ленты каждой передачи). При загрузке выпуска файл сохраняется <strong>локально на вашем устройстве</strong>, в приватном хранилище приложения.",
+    h_perms: "Запрашиваемые разрешения",
+    perm1: "<strong>Доступ к аудио/хранилищу:</strong> чтобы находить и воспроизводить вашу музыку.",
+    perm2: "<strong>Интернет:</strong> для радио, подкастов и копии на Диск.",
+    perm3: "<strong>Фоновое воспроизведение:</strong> чтобы музыка играла при выключенном экране.",
+    h_ads: "Реклама, аналитика и аккаунты",
+    p_ads: "Cadence <strong>не</strong> показывает рекламу, <strong>не</strong> содержит аналитики и трекеров и <strong>не</strong> создаёт аккаунт. Мы не продаём и не передаём данные, потому что не собираем их.",
+    h_don: "Пожертвования",
+    p_don: "Cadence бесплатен и живёт на добровольные пожертвования через внешние сервисы (Buy Me a Coffee и PayPal). Если вы жертвуете, платежи обрабатывают эти платформы по <em>своим</em> правилам; Cadence не получает данные вашего платежа.",
+    h_minors: "Несовершеннолетние",
+    p_minors: "Cadence не предназначен для несовершеннолетних и сознательно не собирает их данные.",
+    h_changes: "Изменения этой политики",
+    p_changes: "Если приложение изменится и станет обрабатывать данные иначе, мы обновим эту страницу и её дату.",
+    h_contact: "Контакты",
+    p_contact: "По вопросам конфиденциальности пишите на <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
+  },
+  zh: {
+    _title: "隐私政策 — Cadence",
+    back: "← 首页",
+    title: "隐私政策",
+    updated: "最后更新：2026 年 6 月",
+    intro: "Cadence 是一款用于播放音乐、有声书、播客和电台的 Android 应用。本政策说明应用处理哪些信息以及如何处理。核心理念很简单：<strong>Cadence 不收集你的个人数据，也不会把它发送到我们的任何服务器</strong>，因为我们没有自己的服务器。",
+    summary: "<strong>简而言之：</strong>无账户、无广告、无分析、无追踪。音乐从你自己的设备播放。如果你启用备份，它会保存到<strong>你自己的 Google Drive</strong>，由你掌控。",
+    h_files: "你的音乐与文件",
+    p_files: "为播放音乐，Cadence 需要读取你设备上的音频文件。该读取<strong>仅在你的手机上</strong>进行：除非你启用 Drive 备份（见下），应用不会把你的音乐上传到任何地方。我们不分享也不传输你的文件。",
+    h_drive: "Google Drive 备份",
+    p_drive_intro: "若你选择使用备份，Cadence 会以 <code>drive.file</code> 权限连接到<strong>你的</strong> Google Drive 账户。这点很重要：",
+    drive_li1: "Cadence <strong>只能查看和操作应用自身创建的文件</strong>（「Cadence」文件夹及其内容）。它不会访问你 Drive 的其余部分。",
+    drive_li2: "备份保存在<strong>你的</strong> Drive，而非 Cadence 服务器。这些文件归你所有，你可随时删除。",
+    drive_li3: "这些信息<strong>不会被分享</strong>给我们或第三方，也不用于任何其他目的。",
+    p_drive_policy: "Cadence 对从 Google API 接收的信息的使用遵循<a href=\"https://developers.google.com/terms/api-services-user-data-policy\">《Google API 服务用户数据政策》</a>，包括<strong>有限使用</strong>要求。",
+    h_radio: "电台",
+    p_radio: "电台部分播放公开的互联网电台。为查找它们，应用会查询开放的社区目录 Radio Browser。这些查询中不会发送你的任何个人信息。",
+    h_pod: "播客",
+    p_pod: "播客来自公开来源（每个节目的 RSS 源）。若你下载某一集，文件会<strong>保存在你的本地设备上</strong>，位于应用的私有存储中。",
+    h_perms: "应用请求的权限",
+    perm1: "<strong>音频/存储访问：</strong>用于查找并播放你的音乐。",
+    perm2: "<strong>互联网：</strong>用于电台、播客和 Drive 备份。",
+    perm3: "<strong>后台播放：</strong>让音乐在熄屏时继续播放。",
+    h_ads: "广告、分析与账户",
+    p_ads: "Cadence <strong>不</strong>显示广告，<strong>不</strong>含分析或追踪器，也<strong>不</strong>为你创建账户。我们不出售也不分享数据，因为我们根本不收集。",
+    h_don: "捐赠",
+    p_don: "Cadence 免费，靠通过外部服务（Buy Me a Coffee 和 PayPal）的自愿捐赠维持。若你捐赠，这些付款由相应平台按<em>其</em>自有隐私政策处理；Cadence 不会收到你的付款数据。",
+    h_minors: "未成年人",
+    p_minors: "Cadence 不面向未成年人，也不会有意收集他们的数据。",
+    h_changes: "本政策的变更",
+    p_changes: "若未来应用发生变化并以不同方式处理数据，我们会更新本页及其日期。",
+    h_contact: "联系",
+    p_contact: "如有任何隐私问题，请写信至 <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>。"
+  },
+  ja: {
+    _title: "プライバシーポリシー — Cadence",
+    back: "← ホーム",
+    title: "プライバシーポリシー",
+    updated: "最終更新：2026 年 6 月",
+    intro: "Cadence は音楽・オーディオブック・ポッドキャスト・ラジオを再生する Android アプリです。本ポリシーは、アプリがどの情報をどう扱うかを説明します。根本の考え方はシンプルです。<strong>Cadence はあなたの個人データを収集せず、当方のいかなるサーバーにも送信しません</strong>。自前のサーバーを持たないからです。",
+    summary: "<strong>要するに：</strong>アカウントなし・広告なし・解析なし・追跡なし。音楽はあなた自身の端末から再生されます。バックアップを有効にすると、<strong>あなた自身の Google ドライブ</strong>に保存され、あなたの管理下に置かれます。",
+    h_files: "あなたの音楽とファイル",
+    p_files: "音楽を再生するため、Cadence は端末の音声ファイルを読み取る必要があります。その読み取りは<strong>あなたのスマホ内だけ</strong>で行われます。Drive バックアップ（下記）を有効にしない限り、アプリは音楽をどこにもアップロードしません。あなたのファイルを共有・送信することはありません。",
+    h_drive: "Google ドライブのバックアップ",
+    p_drive_intro: "バックアップを使う場合、Cadence は <code>drive.file</code> 権限で<strong>あなたの</strong> Google ドライブに接続します。これは重要です：",
+    drive_li1: "Cadence は<strong>アプリ自身が作成したファイルのみ</strong>（「Cadence」フォルダとその中身）を閲覧・操作できます。ドライブの他の部分にはアクセスしません。",
+    drive_li2: "バックアップは Cadence のサーバーではなく<strong>あなたの</strong>ドライブに保存されます。これらのファイルはあなたのもので、いつでも削除できます。",
+    drive_li3: "その情報は当方にも第三者にも<strong>共有されず</strong>、他の目的にも使用されません。",
+    p_drive_policy: "Cadence による Google API から受け取った情報の利用は、<strong>限定的使用</strong>の要件を含め、<a href=\"https://developers.google.com/terms/api-services-user-data-policy\">Google API サービスのユーザーデータに関するポリシー</a>に準拠します。",
+    h_radio: "ラジオ",
+    p_radio: "ラジオ部分は公開のインターネット放送局を再生します。検索のため、アプリはオープンでコミュニティ運営の Radio Browser ディレクトリに問い合わせます。これらの問い合わせにあなたの個人情報は送信されません。",
+    h_pod: "ポッドキャスト",
+    p_pod: "ポッドキャストは公開ソース（各番組の RSS フィード）から取得します。エピソードをダウンロードすると、ファイルはアプリの非公開ストレージ内の<strong>あなたの端末にローカル保存</strong>されます。",
+    h_perms: "アプリが要求する権限",
+    perm1: "<strong>音声／ストレージへのアクセス：</strong>音楽を見つけて再生するため。",
+    perm2: "<strong>インターネット：</strong>ラジオ・ポッドキャスト・Drive バックアップのため。",
+    perm3: "<strong>バックグラウンド再生：</strong>画面オフでも音楽を続けるため。",
+    h_ads: "広告・解析・アカウント",
+    p_ads: "Cadence は広告を<strong>表示せず</strong>、解析やトラッカーを<strong>含まず</strong>、アカウントも<strong>作成しません</strong>。データを収集しないので、販売も共有もしません。",
+    h_don: "寄付",
+    p_don: "Cadence は無料で、外部サービス（Buy Me a Coffee と PayPal）を通じた任意の寄付で運営されています。寄付の場合、その決済は各プラットフォームが<em>各自の</em>ポリシーに従って処理します。Cadence はあなたの決済データを受け取りません。",
+    h_minors: "未成年者",
+    p_minors: "Cadence は未成年者を対象としておらず、故意に未成年者のデータを収集しません。",
+    h_changes: "本ポリシーの変更",
+    p_changes: "将来アプリが変わりデータの扱いが変わる場合、このページと日付を更新します。",
+    h_contact: "お問い合わせ",
+    p_contact: "プライバシーに関するご質問は <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a> までご連絡ください。"
+  },
+  ar: {
+    _title: "سياسة الخصوصية — Cadence",
+    back: "← الرئيسية",
+    title: "سياسة الخصوصية",
+    updated: "آخر تحديث: يونيو 2026",
+    intro: "Cadence تطبيق أندرويد لتشغيل الموسيقى والكتب الصوتية والبودكاست والراديو. توضّح هذه السياسة أي معلومات يعالجها التطبيق وكيف. الفكرة الأساسية بسيطة: <strong>لا يجمع Cadence بياناتك الشخصية ولا يرسلها إلى أي خادم لدينا</strong>، لأننا لا نملك خوادم خاصة بنا.",
+    summary: "<strong>باختصار:</strong> بلا حسابات، بلا إعلانات، بلا تحليلات، بلا تتبّع. تُشغَّل الموسيقى من جهازك. وإذا فعّلت النسخ الاحتياطي، يُحفظ في <strong>Google Drive الخاص بك</strong>، تحت سيطرتك.",
+    h_files: "موسيقاك وملفاتك",
+    p_files: "لتشغيل موسيقاك، يحتاج Cadence إلى قراءة الملفات الصوتية على جهازك. تحدث هذه القراءة <strong>على هاتفك فقط</strong>: لا يرفع التطبيق موسيقاك إلى أي مكان إلا إذا فعّلت النسخ إلى Drive (بالأسفل). لا نشارك ملفاتك ولا ننقلها.",
+    h_drive: "النسخ الاحتياطي في Google Drive",
+    p_drive_intro: "إذا اخترت استخدام النسخ الاحتياطي، يتصل Cadence بحساب <strong>Google Drive الخاص بك</strong> بإذن <code>drive.file</code>. وهذا مهم:",
+    drive_li1: "يستطيع Cadence <strong>رؤية ولمس الملفات التي ينشئها التطبيق نفسه فقط</strong> (مجلد «Cadence» ومحتواه). ولا يصل إلى بقية Drive لديك.",
+    drive_li2: "يُحفظ النسخ في <strong>Drive الخاص بك</strong>، لا على خادم Cadence. هذه الملفات ملكك، ويمكنك حذفها متى شئت.",
+    drive_li3: "هذه المعلومات <strong>لا تُشارَك</strong> معنا ولا مع أي طرف ثالث، ولا تُستخدم لأي غرض آخر.",
+    p_drive_policy: "يلتزم استخدام Cadence للمعلومات الواردة من واجهات Google البرمجية بـ<a href=\"https://developers.google.com/terms/api-services-user-data-policy\">سياسة بيانات مستخدمي خدمات Google API</a>، بما في ذلك متطلبات <strong>الاستخدام المحدود</strong>.",
+    h_radio: "الراديو",
+    p_radio: "يشغّل قسم الراديو محطات إنترنت عامة. للعثور عليها، يستعلم التطبيق من دليل Radio Browser المفتوح والمجتمعي. لا تُرسَل أي معلومات شخصية عنك في تلك الاستعلامات.",
+    h_pod: "البودكاست",
+    p_pod: "يُجلب البودكاست من مصادر عامة (خلاصة RSS لكل برنامج). إذا نزّلت حلقة، يُحفظ الملف <strong>محلياً على جهازك</strong>، داخل التخزين الخاص بالتطبيق.",
+    h_perms: "الأذونات التي يطلبها التطبيق",
+    perm1: "<strong>الوصول إلى الصوت/التخزين:</strong> للعثور على موسيقاك وتشغيلها.",
+    perm2: "<strong>الإنترنت:</strong> للراديو والبودكاست والنسخ إلى Drive.",
+    perm3: "<strong>التشغيل في الخلفية:</strong> لتستمر الموسيقى والشاشة مطفأة.",
+    h_ads: "الإعلانات والتحليلات والحسابات",
+    p_ads: "Cadence <strong>لا</strong> يعرض إعلانات، و<strong>لا</strong> يتضمّن تحليلات أو متتبّعات، و<strong>لا</strong> ينشئ لك أي حساب. لا نبيع البيانات ولا نشاركها، لأننا لا نجمعها.",
+    h_don: "التبرعات",
+    p_don: "Cadence مجاني ويُموَّل بتبرعات طوعية عبر خدمات خارجية (Buy Me a Coffee وPayPal). إذا تبرّعت، تدير تلك المنصّات المدفوعات وفق <em>سياساتها</em> الخاصة؛ ولا يتلقّى Cadence بيانات دفعك.",
+    h_minors: "القُصَّر",
+    p_minors: "Cadence غير موجّه للقُصَّر ولا يجمع بياناتهم عن قصد.",
+    h_changes: "تغييرات هذه السياسة",
+    p_changes: "إذا تغيّر التطبيق مستقبلاً وعالج البيانات بطريقة مختلفة، فسنحدّث هذه الصفحة وتاريخها.",
+    h_contact: "التواصل",
+    p_contact: "لأي استفسار عن الخصوصية، راسلنا على <a href=\"mailto:jsgastoniriartecabrera@gmail.com\">jsgastoniriartecabrera@gmail.com</a>."
   }
 };
 
+const RTL=["ar"];
 function setLang(lang){
   const dict = I18N[lang] || I18N.es;
   document.documentElement.lang = lang;
+  document.documentElement.dir = RTL.includes(lang) ? "rtl" : "ltr";
   document.title = dict._title;
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k = el.getAttribute('data-i18n');
     if(dict[k] !== undefined) el.innerHTML = dict[k];
   });
-  document.querySelectorAll('.lang-btn').forEach(b=>
-    b.classList.toggle('active', b.dataset.lang === lang));
+  const sel=document.getElementById('langsel'); if(sel) sel.value=lang;
   try{ localStorage.setItem('cadence_lang', lang); }catch(e){}
 }
-document.querySelectorAll('.lang-btn').forEach(b=>
-  b.addEventListener('click', ()=>setLang(b.dataset.lang)));
+document.getElementById('langsel').addEventListener('change', e=>setLang(e.target.value));
 let saved=null; try{ saved=localStorage.getItem('cadence_lang'); }catch(e){}
-const auto=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es';
-setLang(saved || auto);
+const _n=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(saved || (I18N[_n]?_n:'es'));
 document.getElementById('y').textContent=new Date().getFullYear();
 </script>
 </body>

@@ -7,7 +7,7 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   :root{
@@ -21,6 +21,13 @@
   body::before{content:"";position:fixed;inset:0;z-index:-1;
     background:radial-gradient(1000px 500px at 50% -10%, rgba(124,154,255,.14), transparent 60%);}
   a{color:var(--accent);text-decoration:none}
+  .langsel{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 11px;font-family:var(--body);font-size:.82rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  .preset{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:7px 13px;cursor:pointer;font-family:var(--body);font-size:.85rem;margin:6px 6px 0 0}
+  .preset:hover{border-color:var(--accent)}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
   .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
   .topbar img{width:28px;height:28px}
   .topbar .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
@@ -69,49 +76,54 @@
 
 <div class="topbar">
   <img src="cadence-logo.png" alt=""><span class="name">Cadence · Música a medida</span>
-  <a class="back" href="index.html">← Inicio</a>
+  <select class="langsel" id="langsel" aria-label="Idioma" style="margin-left:auto">
+    <option value="es">Español</option><option value="en">English</option><option value="pt">Português</option>
+    <option value="fr">Français</option><option value="it">Italiano</option><option value="de">Deutsch</option>
+    <option value="ru">Русский</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
+  <a class="back" href="index.html" data-i18n="back" style="margin-left:14px">← Inicio</a>
 </div>
 
 <div class="wrap">
-  <p class="sub">Música que dura justo lo que tu trayecto o tu rato.</p>
+  <p class="sub" data-i18n="sub">Música que dura justo lo que tu trayecto o tu rato.</p>
 
   <div class="card" id="connectCard">
     <p style="text-align:center;color:var(--muted);margin-bottom:18px">
-      Conecta con tu Drive. Necesita el índice que creas desde la app
-      (Copia de seguridad → «Actualizar índice para la web»).</p>
-    <button id="connectBtn" class="gbtn">Conectar con mi Drive</button>
+<span data-i18n="connprompt">Conecta con tu Drive. Necesita el índice que creas desde la app (Copia de seguridad → «Actualizar índice para la web»).</span></p>
+    <button id="connectBtn" class="gbtn" data-i18n="connect">Conectar con mi Drive</button>
     <div id="connectStatus" class="status"></div>
   </div>
 
   <div id="tool" style="display:none">
     <!-- Tiempo -->
     <div class="card">
-      <h3>¿Cuánto tiempo?</h3>
+      <h3 data-i18n="howlong">¿Cuánto tiempo?</h3>
       <div class="seg" id="modeSeg">
-        <button data-mode="map" class="on">En el mapa</button>
-        <button data-mode="manual">Minutos</button>
-        <button data-mode="clock">Hasta una hora</button>
+        <button data-mode="manual" class="on" data-i18n="m_minutes">Minutos</button>
+        <button data-mode="clock" data-i18n="m_clock">Hasta una hora</button>
+        <button data-mode="map" data-i18n="m_map">En el mapa</button>
       </div>
 
-      <div class="modepane on" id="pane-map">
+      <div class="modepane" id="pane-map">
         <div id="map"></div>
         <div class="seg" id="vehSeg">
-          <button data-veh="walk" class="on">🚶 Andar</button>
-          <button data-veh="skate">🛼 Patín</button>
-          <button data-veh="bike">🚲 Bici</button>
-          <button data-veh="car">🚗 Coche</button>
+          <button data-veh="walk" class="on">🚶 <span data-i18n="v_walk">Andar</span></button>
+          <button data-veh="skate">🛼 <span data-i18n="v_skate">Patín</span></button>
+          <button data-veh="bike">🚲 <span data-i18n="v_bike">Bici</span></button>
+          <button data-veh="car">🚗 <span data-i18n="v_car">Coche</span></button>
         </div>
-        <p style="color:var(--muted);font-size:.85rem">Pincha en el mapa el punto de salida y luego el destino.</p>
+        <p style="color:var(--muted);font-size:.85rem" data-i18n="maphint">Pincha en el mapa el punto de salida y luego el destino.</p>
         <div class="est" id="mapEst">—</div>
       </div>
 
-      <div class="modepane" id="pane-manual">
-        <label>Minutos</label>
-        <input id="manualMin" type="number" min="1" max="600" value="25" placeholder="25">
+      <div class="modepane on" id="pane-manual">
+        <label data-i18n="minutes">Minutos</label>
+        <input id="manualMin" type="number" min="1" max="600" value="45" placeholder="45">
+        <div id="presets" style="margin-top:8px"></div>
       </div>
 
       <div class="modepane" id="pane-clock">
-        <label>Quiero que acabe a las…</label>
+        <label data-i18n="untiltime">Quiero que acabe a las…</label>
         <input id="clockTime" type="time">
         <div class="est" id="clockEst" style="margin-top:10px">—</div>
       </div>
@@ -119,31 +131,31 @@
 
     <!-- Filtros -->
     <div class="card">
-      <h3>A tu gusto (opcional)</h3>
+      <h3 data-i18n="taste">A tu gusto (opcional)</h3>
       <div class="row">
         <div>
-          <label>Ritmo (BPM)</label>
+          <label data-i18n="rhythm">Ritmo (BPM)</label>
           <select id="bpmSel">
-            <option value="any">Cualquiera</option>
-            <option value="calm">Tranquilo (&lt;90)</option>
-            <option value="mid">Medio (90–130)</option>
-            <option value="energy">Enérgico (&gt;130)</option>
+            <option value="any" data-i18n="any">Cualquiera</option>
+            <option value="calm" data-i18n="b_calm">Tranquilo (&lt;90)</option>
+            <option value="mid" data-i18n="b_mid">Medio (90–130)</option>
+            <option value="energy" data-i18n="b_energy">Enérgico (&gt;130)</option>
           </select>
         </div>
         <div>
-          <label>Estilo</label>
-          <select id="genreSel"><option value="any">Cualquiera</option></select>
+          <label data-i18n="style">Estilo</label>
+          <select id="genreSel"><option value="any" data-i18n="any">Cualquiera</option></select>
         </div>
       </div>
-      <button id="makeBtn" class="gbtn makebtn">Crear mi lista</button>
+      <button id="makeBtn" class="gbtn makebtn" data-i18n="make">Crear mi lista</button>
       <div id="makeStatus" class="status"></div>
     </div>
 
     <!-- Resultado -->
     <div class="card result" id="resultCard" style="display:none">
       <div class="summary">
-        <span>Tu lista: <b id="rCount">0</b> canciones</span>
-        <span>Duración: <b id="rDur">0:00</b> / objetivo <span id="rTarget">0:00</span></span>
+        <span><span data-i18n="yourlist">Tu lista:</span> <b id="rCount">0</b> <span data-i18n="songs">canciones</span></span>
+        <span><span data-i18n="duration">Duración:</span> <b id="rDur">0:00</b> / <span data-i18n="target">objetivo</span> <span id="rTarget">0:00</span></span>
       </div>
       <div id="resultList"></div>
     </div>
@@ -160,6 +172,36 @@
 </div>
 <audio id="audio"></audio>
 
+<script>
+const I18N={
+ es:{_t:"Cadence — Música a medida",back:"← Inicio",sub:"Música que dura justo lo que tu trayecto o tu rato.",connprompt:"Conecta con tu Drive. Necesita el índice que creas desde la app (Copia de seguridad → «Actualizar índice para la web»).",connect:"Conectar con mi Drive",howlong:"¿Cuánto tiempo?",m_minutes:"Minutos",m_clock:"Hasta una hora",m_map:"En el mapa",maphint:"Pincha en el mapa el punto de salida y luego el destino.",v_walk:"Andar",v_skate:"Patín",v_bike:"Bici",v_car:"Coche",minutes:"Minutos",untiltime:"Quiero que acabe a las…",taste:"A tu gusto (opcional)",rhythm:"Ritmo (BPM)",any:"Cualquiera",b_calm:"Tranquilo (<90)",b_mid:"Medio (90–130)",b_energy:"Enérgico (>130)",style:"Estilo",make:"Crear mi lista",yourlist:"Tu lista:",songs:"canciones",duration:"Duración:",target:"objetivo",reading:"Leyendo tu música...",nofolder:"No encuentro la carpeta «Cadence».",noindex:"No encuentro «cadence-index.json». Créalo desde la app.",inindex:" canciones en tu índice.",err:"Error: ",settime:"Primero fija el tiempo (minutos, hora o mapa).",nofilter:"No hay canciones con esos filtros. Prueba a aflojarlos.",trip:"Trayecto:",left:"Faltan",min:"min",loading:"Cargando...",playlist:"Reproducir la lista",playing:"Reproduciendo",start:"Salida",dest:"Destino"},
+ en:{_t:"Cadence — Made to measure",back:"← Home",sub:"Music that lasts exactly your trip or your break.",connprompt:"Connect your Drive. It needs the index you create from the app (Backup → «Update index for the web»).",connect:"Connect my Drive",howlong:"How long?",m_minutes:"Minutes",m_clock:"Until a time",m_map:"On the map",maphint:"Click your start point on the map, then the destination.",v_walk:"Walk",v_skate:"Skate",v_bike:"Bike",v_car:"Car",minutes:"Minutes",untiltime:"I want it to end at…",taste:"To your taste (optional)",rhythm:"Tempo (BPM)",any:"Any",b_calm:"Calm (<90)",b_mid:"Medium (90–130)",b_energy:"Energetic (>130)",style:"Style",make:"Create my list",yourlist:"Your list:",songs:"songs",duration:"Duration:",target:"target",reading:"Reading your music...",nofolder:"Can't find the «Cadence» folder.",noindex:"Can't find «cadence-index.json». Create it from the app.",inindex:" songs in your index.",err:"Error: ",settime:"First set the time (minutes, clock or map).",nofilter:"No songs with those filters. Try loosening them.",trip:"Trip:",left:"Time left",min:"min",loading:"Loading...",playlist:"Play the list",playing:"Playing",start:"Start",dest:"Destination"},
+ pt:{_t:"Cadence — Música à medida",back:"← Início",sub:"Música que dura exatamente o seu percurso ou o seu intervalo.",connprompt:"Ligue o seu Drive. Precisa do índice que cria na app (Cópia de segurança → «Atualizar índice para a web»).",connect:"Ligar o meu Drive",howlong:"Quanto tempo?",m_minutes:"Minutos",m_clock:"Até uma hora",m_map:"No mapa",maphint:"Clique no ponto de partida no mapa e depois no destino.",v_walk:"A pé",v_skate:"Patins",v_bike:"Bicicleta",v_car:"Carro",minutes:"Minutos",untiltime:"Quero que termine às…",taste:"Ao seu gosto (opcional)",rhythm:"Ritmo (BPM)",any:"Qualquer",b_calm:"Calmo (<90)",b_mid:"Médio (90–130)",b_energy:"Enérgico (>130)",style:"Estilo",make:"Criar a minha lista",yourlist:"A sua lista:",songs:"músicas",duration:"Duração:",target:"objetivo",reading:"A ler a sua música...",nofolder:"Não encontro a pasta «Cadence».",noindex:"Não encontro «cadence-index.json». Crie-o na app.",inindex:" músicas no seu índice.",err:"Erro: ",settime:"Defina primeiro o tempo (minutos, hora ou mapa).",nofilter:"Sem músicas com esses filtros. Tente afrouxar.",trip:"Percurso:",left:"Faltam",min:"min",loading:"A carregar...",playlist:"Reproduzir a lista",playing:"A reproduzir",start:"Partida",dest:"Destino"},
+ fr:{_t:"Cadence — Sur mesure",back:"← Accueil",sub:"De la musique qui dure exactement votre trajet ou votre pause.",connprompt:"Connectez votre Drive. Il faut l'index créé depuis l'app (Sauvegarde → « Mettre à jour l'index pour le web »).",connect:"Connecter mon Drive",howlong:"Combien de temps ?",m_minutes:"Minutes",m_clock:"Jusqu'à une heure",m_map:"Sur la carte",maphint:"Cliquez le point de départ sur la carte, puis la destination.",v_walk:"Marche",v_skate:"Roller",v_bike:"Vélo",v_car:"Voiture",minutes:"Minutes",untiltime:"Je veux que ça finisse à…",taste:"À votre goût (option)",rhythm:"Rythme (BPM)",any:"Indifférent",b_calm:"Calme (<90)",b_mid:"Moyen (90–130)",b_energy:"Énergique (>130)",style:"Style",make:"Créer ma liste",yourlist:"Votre liste :",songs:"titres",duration:"Durée :",target:"objectif",reading:"Lecture de votre musique...",nofolder:"Dossier « Cadence » introuvable.",noindex:"« cadence-index.json » introuvable. Créez-le depuis l'app.",inindex:" titres dans votre index.",err:"Erreur : ",settime:"Réglez d'abord le temps (minutes, heure ou carte).",nofilter:"Aucun titre avec ces filtres. Assouplissez-les.",trip:"Trajet :",left:"Reste",min:"min",loading:"Chargement...",playlist:"Lire la liste",playing:"Lecture",start:"Départ",dest:"Destination"},
+ it:{_t:"Cadence — Su misura",back:"← Home",sub:"Musica che dura esattamente il tuo tragitto o la tua pausa.",connprompt:"Collega il tuo Drive. Serve l'indice creato dall'app (Backup → «Aggiorna indice per il web»).",connect:"Collega il mio Drive",howlong:"Quanto tempo?",m_minutes:"Minuti",m_clock:"Fino a un'ora",m_map:"Sulla mappa",maphint:"Clicca sulla mappa il punto di partenza e poi la destinazione.",v_walk:"A piedi",v_skate:"Pattini",v_bike:"Bici",v_car:"Auto",minutes:"Minuti",untiltime:"Voglio che finisca alle…",taste:"A tuo gusto (facolt.)",rhythm:"Ritmo (BPM)",any:"Qualsiasi",b_calm:"Calmo (<90)",b_mid:"Medio (90–130)",b_energy:"Energico (>130)",style:"Genere",make:"Crea la mia lista",yourlist:"La tua lista:",songs:"brani",duration:"Durata:",target:"obiettivo",reading:"Lettura della tua musica...",nofolder:"Cartella «Cadence» non trovata.",noindex:"«cadence-index.json» non trovato. Crealo dall'app.",inindex:" brani nel tuo indice.",err:"Errore: ",settime:"Imposta prima il tempo (minuti, ora o mappa).",nofilter:"Nessun brano con quei filtri. Allentali.",trip:"Tragitto:",left:"Mancano",min:"min",loading:"Caricamento...",playlist:"Riproduci la lista",playing:"In riproduzione",start:"Partenza",dest:"Destinazione"},
+ de:{_t:"Cadence — Nach Maß",back:"← Start",sub:"Musik, die genau so lange dauert wie dein Weg oder deine Pause.",connprompt:"Verbinde dein Drive. Es braucht den Index aus der App (Backup → «Index für das Web aktualisieren»).",connect:"Mein Drive verbinden",howlong:"Wie lange?",m_minutes:"Minuten",m_clock:"Bis zu einer Uhrzeit",m_map:"Auf der Karte",maphint:"Klicke den Startpunkt auf der Karte, dann das Ziel.",v_walk:"Gehen",v_skate:"Skaten",v_bike:"Rad",v_car:"Auto",minutes:"Minuten",untiltime:"Soll enden um…",taste:"Nach Geschmack (optional)",rhythm:"Tempo (BPM)",any:"Beliebig",b_calm:"Ruhig (<90)",b_mid:"Mittel (90–130)",b_energy:"Energisch (>130)",style:"Stil",make:"Meine Liste erstellen",yourlist:"Deine Liste:",songs:"Titel",duration:"Dauer:",target:"Ziel",reading:"Lese deine Musik...",nofolder:"Ordner «Cadence» nicht gefunden.",noindex:"«cadence-index.json» nicht gefunden. Erstelle ihn in der App.",inindex:" Titel in deinem Index.",err:"Fehler: ",settime:"Lege zuerst die Zeit fest (Minuten, Uhrzeit oder Karte).",nofilter:"Keine Titel mit diesen Filtern. Lockere sie.",trip:"Weg:",left:"Verbleibend",min:"Min",loading:"Lädt...",playlist:"Liste abspielen",playing:"Wird abgespielt",start:"Start",dest:"Ziel"},
+ ru:{_t:"Cadence — По времени",back:"← Главная",sub:"Музыка ровно на время поездки или перерыва.",connprompt:"Подключите Диск. Нужен индекс, создаваемый в приложении (Резервная копия → «Обновить индекс для веба»).",connect:"Подключить Диск",howlong:"Сколько времени?",m_minutes:"Минуты",m_clock:"До времени",m_map:"На карте",maphint:"Нажмите точку старта на карте, затем место назначения.",v_walk:"Пешком",v_skate:"Ролики",v_bike:"Вело",v_car:"Авто",minutes:"Минуты",untiltime:"Хочу закончить к…",taste:"По вкусу (необяз.)",rhythm:"Темп (BPM)",any:"Любой",b_calm:"Спокойный (<90)",b_mid:"Средний (90–130)",b_energy:"Энергичный (>130)",style:"Жанр",make:"Создать список",yourlist:"Ваш список:",songs:"треков",duration:"Длительность:",target:"цель",reading:"Чтение вашей музыки...",nofolder:"Папка «Cadence» не найдена.",noindex:"«cadence-index.json» не найден. Создайте его в приложении.",inindex:" треков в индексе.",err:"Ошибка: ",settime:"Сначала задайте время (минуты, час или карта).",nofilter:"Нет треков с такими фильтрами. Ослабьте их.",trip:"Маршрут:",left:"Осталось",min:"мин",loading:"Загрузка...",playlist:"Воспроизвести список",playing:"Воспроизведение",start:"Старт",dest:"Назначение"},
+ zh:{_t:"Cadence — 定制音乐",back:"← 首页",sub:"时长正好等于你路程或休息时间的音乐。",connprompt:"连接你的 Drive。需要在应用中生成的索引（备份 → 「更新网页索引」）。",connect:"连接我的 Drive",howlong:"多长时间？",m_minutes:"分钟",m_clock:"到某时间",m_map:"在地图上",maphint:"在地图上点选起点，再点选终点。",v_walk:"步行",v_skate:"轮滑",v_bike:"骑行",v_car:"开车",minutes:"分钟",untiltime:"我想在此时结束…",taste:"按喜好（可选）",rhythm:"节奏 (BPM)",any:"任意",b_calm:"舒缓 (<90)",b_mid:"中等 (90–130)",b_energy:"动感 (>130)",style:"风格",make:"创建歌单",yourlist:"你的歌单：",songs:"首",duration:"时长：",target:"目标",reading:"正在读取你的音乐...",nofolder:"找不到「Cadence」文件夹。",noindex:"找不到「cadence-index.json」。请在应用中生成。",inindex:" 首歌曲（索引）。",err:"错误：",settime:"请先设置时间（分钟、时间或地图）。",nofilter:"没有符合筛选的歌曲。请放宽条件。",trip:"路程：",left:"还剩",min:"分钟",loading:"加载中...",playlist:"播放歌单",playing:"播放中",start:"起点",dest:"终点"},
+ ja:{_t:"Cadence — ぴったり音楽",back:"← ホーム",sub:"移動や休憩にちょうど合う長さの音楽。",connprompt:"Drive を接続。アプリで作る索引が必要です（バックアップ →「Web用の索引を更新」）。",connect:"Drive を接続",howlong:"どれくらい？",m_minutes:"分",m_clock:"指定時刻まで",m_map:"地図で",maphint:"地図で出発点、次に目的地をタップ。",v_walk:"徒歩",v_skate:"スケート",v_bike:"自転車",v_car:"車",minutes:"分",untiltime:"この時刻に終わってほしい…",taste:"お好みで（任意）",rhythm:"テンポ (BPM)",any:"指定なし",b_calm:"ゆったり (<90)",b_mid:"中間 (90–130)",b_energy:"アップ (>130)",style:"ジャンル",make:"リストを作成",yourlist:"あなたのリスト:",songs:"曲",duration:"長さ:",target:"目標",reading:"音楽を読み込み中...",nofolder:"「Cadence」フォルダが見つかりません。",noindex:"「cadence-index.json」が見つかりません。アプリで作成を。",inindex:" 曲（索引）。",err:"エラー: ",settime:"まず時間を設定（分・時刻・地図）。",nofilter:"その条件に合う曲がありません。緩めてください。",trip:"移動:",left:"残り",min:"分",loading:"読み込み中...",playlist:"リストを再生",playing:"再生中",start:"出発",dest:"目的地"},
+ ar:{_t:"Cadence — موسيقى على المقاس",back:"← الرئيسية",sub:"موسيقى تدوم تماماً بطول رحلتك أو استراحتك.",connprompt:"اربط Drive. يحتاج إلى الفهرس الذي تنشئه من التطبيق (النسخ الاحتياطي ← «تحديث الفهرس للويب»).",connect:"اربط Drive الخاص بي",howlong:"كم من الوقت؟",m_minutes:"دقائق",m_clock:"حتى وقت",m_map:"على الخريطة",maphint:"انقر نقطة البداية على الخريطة ثم الوجهة.",v_walk:"مشي",v_skate:"تزلج",v_bike:"دراجة",v_car:"سيارة",minutes:"دقائق",untiltime:"أريد أن تنتهي عند…",taste:"حسب ذوقك (اختياري)",rhythm:"الإيقاع (BPM)",any:"أيّ",b_calm:"هادئ (<90)",b_mid:"متوسط (90–130)",b_energy:"حيوي (>130)",style:"النمط",make:"أنشئ قائمتي",yourlist:"قائمتك:",songs:"أغنية",duration:"المدة:",target:"الهدف",reading:"جارٍ قراءة موسيقاك...",nofolder:"تعذّر إيجاد مجلد «Cadence».",noindex:"تعذّر إيجاد «cadence-index.json». أنشئه من التطبيق.",inindex:" أغنية في الفهرس.",err:"خطأ: ",settime:"حدّد الوقت أولاً (دقائق أو ساعة أو خريطة).",nofilter:"لا أغاني بهذه المرشّحات. خفّفها.",trip:"المسار:",left:"المتبقّي",min:"دقيقة",loading:"جارٍ التحميل...",playlist:"تشغيل القائمة",playing:"قيد التشغيل",start:"البداية",dest:"الوجهة"}
+};
+const RTL=["ar"];
+function t(k){return (I18N[window._L]||I18N.es)[k]||k;}
+function setLang(lang){
+  window._L=lang; const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._t;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.textContent=d[k];});
+  document.getElementById('langsel').value=lang;
+  try{localStorage.setItem('cadence_lang',lang);}catch(e){}
+}
+document.getElementById('langsel').addEventListener('change',e=>setLang(e.target.value));
+// Presets rápidos de minutos (útil para estar un rato en el ordenador)
+[15,30,45,60,90].forEach(m=>{const b=document.createElement('button');b.className='preset';b.textContent=m+'\u00A0min';b.onclick=()=>{document.getElementById('manualMin').value=m;};document.getElementById('presets').appendChild(b);});
+let _s=null; try{_s=localStorage.getItem('cadence_lang');}catch(e){}
+const _n=(navigator.language||'es').toLowerCase().slice(0,2);
+setLang(_s||(I18N[_n]?_n:'es'));
+</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -171,7 +213,7 @@ const DETOUR = 1.3; // las calles no van en línea recta
 let tokenClient=null, accessToken=null;
 let index=[];        // del cadence-index.json
 let fileMap={};      // "artist|album|file" -> fileId
-let mode="map", veh="walk";
+let mode="manual", veh="walk";
 let origin=null, dest=null, mapEstMin=0;
 let playlist=[], current=-1;
 
@@ -209,13 +251,13 @@ async function listChildren(parent,foldersOnly){
 }
 
 async function loadIndex(){
-  $("makeStatus").textContent="Leyendo tu música...";
+  $("makeStatus").textContent=t("reading");
   try{
     const cadenceId=await findFolder("Cadence",null);
-    if(!cadenceId){ $("makeStatus").textContent="No encuentro la carpeta «Cadence»."; return; }
+    if(!cadenceId){ $("makeStatus").textContent=t("nofolder"); return; }
     // 1) índice
     const idxId=await findFolder0("cadence-index.json",cadenceId);
-    if(!idxId){ $("makeStatus").textContent="No encuentro «cadence-index.json». Créalo desde la app."; return; }
+    if(!idxId){ $("makeStatus").textContent=t("noindex"); return; }
     const res=await fetch("https://www.googleapis.com/drive/v3/files/"+idxId+"?alt=media",{headers:{Authorization:"Bearer "+accessToken}});
     const data=await res.json();
     index=data.tracks||[];
@@ -225,8 +267,8 @@ async function loadIndex(){
     // 3) géneros
     const genres=[...new Set(index.map(t=>(t.genre||"").trim()).filter(Boolean))].sort();
     genres.forEach(g=>{ const o=document.createElement("option"); o.value=g; o.textContent=g; $("genreSel").appendChild(o); });
-    $("makeStatus").textContent=index.length+" canciones en tu índice.";
-  }catch(e){ $("makeStatus").textContent="Error: "+e.message; }
+    $("makeStatus").textContent=index.length+t("inindex");
+  }catch(e){ $("makeStatus").textContent=t("err")+e.message; }
 }
 // buscar un FICHERO (no carpeta) por nombre
 async function findFolder0(name,parent){
@@ -265,9 +307,9 @@ let oMarker=null,dMarker=null,line=null;
 map.on("click",e=>{
   if(!origin||dest){ origin=e.latlng; dest=null;
     if(dMarker){map.removeLayer(dMarker);dMarker=null;} if(line){map.removeLayer(line);line=null;}
-    if(oMarker)map.removeLayer(oMarker); oMarker=L.marker(origin).addTo(map).bindPopup("Salida").openPopup();
+    if(oMarker)map.removeLayer(oMarker); oMarker=L.marker(origin).addTo(map).bindPopup(t("start")).openPopup();
   } else { dest=e.latlng;
-    if(dMarker)map.removeLayer(dMarker); dMarker=L.marker(dest).addTo(map).bindPopup("Destino").openPopup();
+    if(dMarker)map.removeLayer(dMarker); dMarker=L.marker(dest).addTo(map).bindPopup(t("dest")).openPopup();
     line=L.polyline([origin,dest],{color:"#7C9AFF"}).addTo(map);
   }
   updateMapEst();
@@ -282,7 +324,7 @@ function updateMapEst(){
   if(!origin||!dest){ $("mapEst").innerHTML="—"; mapEstMin=0; return; }
   const km=haversine(origin,dest)*DETOUR;
   mapEstMin=Math.max(1,Math.round(km/SPEEDS[veh]*60));
-  $("mapEst").innerHTML="Trayecto: <b>"+mapEstMin+" min</b> ("+km.toFixed(1)+" km)";
+  $("mapEst").innerHTML=t("trip")+" <b>"+mapEstMin+" "+t("min")+"</b> ("+km.toFixed(1)+" km)";
 }
 
 // ---- Hora ----
@@ -292,7 +334,7 @@ $("clockTime").addEventListener("change",()=>{
   const target=new Date(); target.setHours(h,m,0,0);
   if(target<=now) target.setDate(target.getDate()+1);
   const min=Math.round((target-now)/60000);
-  $("clockEst").innerHTML="Faltan <b>"+min+" min</b>";
+  $("clockEst").innerHTML=t("left")+" <b>"+min+" "+t("min")+"</b>";
 });
 function targetMinutes(){
   if(mode==="map") return mapEstMin;
@@ -306,14 +348,14 @@ function targetMinutes(){
 // ---- Crear lista ----
 $("makeBtn").addEventListener("click",()=>{
   const tMin=targetMinutes();
-  if(tMin<=0){ $("makeStatus").textContent="Primero fija el tiempo (mapa, minutos u hora)."; return; }
+  if(tMin<=0){ $("makeStatus").textContent=t("settime"); return; }
   const targetMs=tMin*60000;
   const bpm=$("bpmSel").value, genre=$("genreSel").value;
   let pool=index.filter(t=>t.durationMs>0);
   if(genre!=="any") pool=pool.filter(t=>(t.genre||"")===genre);
   if(bpm!=="any") pool=pool.filter(t=>{ const b=t.bpm; if(b==null)return false;
     if(bpm==="calm")return b<90; if(bpm==="mid")return b>=90&&b<=130; return b>130; });
-  if(!pool.length){ $("makeStatus").textContent="No hay canciones con esos filtros. Prueba a aflojarlos."; return; }
+  if(!pool.length){ $("makeStatus").textContent=t("nofilter"); return; }
   // baraja y rellena hasta clavar el tiempo
   pool=pool.sort(()=>Math.random()-0.5);
   const chosen=[]; let total=0;
@@ -342,13 +384,13 @@ function fileIdFor(t){ return fileMap[(t.artistFolder||t.artist)+"|"+(t.albumFol
 async function playAt(i){
   if(i<0||i>=playlist.length)return; current=i; const t=playlist[i];
   $("player").classList.add("show"); $("pTitle").textContent=t.title+" — "+(t.artist||"");
-  $("pState").textContent="Cargando...";
+  $("pState").textContent=t("loading");
   const id=fileIdFor(t);
   if(!id){ $("pState").textContent="No encuentro el archivo en Drive (¿índice antiguo?)"; return; }
   try{
     const res=await fetch("https://www.googleapis.com/drive/v3/files/"+id+"?alt=media",{headers:{Authorization:"Bearer "+accessToken}});
     const blob=await res.blob(); audio.src=URL.createObjectURL(blob); await audio.play();
-    $("pState").textContent="Reproduciendo"; $("playBtn").textContent="⏸";
+    $("pState").textContent=t("playing"); $("playBtn").textContent="⏸";
   }catch(e){ $("pState").textContent="Error: "+e.message; }
 }
 $("playBtn").addEventListener("click",()=>{ if(audio.paused){audio.play();$("playBtn").textContent="⏸";}else{audio.pause();$("playBtn").textContent="▶";}});

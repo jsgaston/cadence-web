@@ -7,7 +7,7 @@
 <link rel="icon" href="cadence-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -27,6 +27,11 @@
   header .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
   header .right{margin-left:auto;display:flex;align-items:center;gap:14px}
   header .back{color:var(--muted);font-size:.9rem}
+  .langsel{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 10px;font-family:var(--body);font-size:.8rem;cursor:pointer}
+  .langsel:focus{outline:none;border-color:var(--accent)}
+  html[lang="zh"] body{font-family:"Noto Sans SC","Inter",sans-serif}
+  html[lang="ja"] body{font-family:"Noto Sans JP","Inter",sans-serif}
+  html[lang="ar"] body{font-family:"Noto Sans Arabic","Inter",sans-serif}
   .loginbtn{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
     border-radius:999px;padding:7px 14px;cursor:pointer;font-family:var(--body);font-size:.85rem}
   .loginbtn:hover{border-color:var(--accent)}
@@ -86,30 +91,35 @@
   <img src="cadence-logo.png" alt="Cadence">
   <span class="name">Cadence · Radio</span>
   <div class="right">
-    <button id="loginBtn" class="loginbtn">Entrar</button>
+    <button id="loginBtn" class="loginbtn" data-i18n="login">Entrar</button>
     <span id="userChip" class="userchip" style="display:none">
       <span id="userAv" class="userav"></span><span id="userName"></span>
     </span>
-    <a class="back" href="index.html">← Inicio</a>
+    <select class="langsel" id="langsel" aria-label="Idioma">
+      <option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option>
+      <option value="fr">FR</option><option value="it">IT</option><option value="de">DE</option>
+      <option value="ru">RU</option><option value="zh">中文</option><option value="ja">日本</option><option value="ar">عربي</option>
+    </select>
+    <a class="back" href="index.html" data-i18n="back">← Inicio</a>
   </div>
 </header>
 
 <div class="controls">
-  <input id="search" type="text" placeholder="Filtrar por país o género (ej. usa, jazz, reggae)... o vacío = mundo entero">
-  <button id="searchBtn" class="go">Buscar</button>
-  <button id="favViewBtn" class="favview">★ Mis favoritas</button>
+  <input id="search" type="text" data-i18n-ph="ph">
+  <button id="searchBtn" class="go" data-i18n="search">Buscar</button>
+  <button id="favViewBtn" class="favview" data-i18n="favbtn">★ Mis favoritas</button>
 </div>
 
 <div class="main">
   <div id="map"></div>
   <aside class="sidepanel">
-    <h3 id="sideTitle">Emisoras a la vista</h3>
-    <div class="sidehint" id="sideHint">Acércate al mapa para ver la lista.</div>
+    <h3 id="sideTitle" data-i18n="sidetitle">Emisoras a la vista</h3>
+    <div class="sidehint" id="sideHint" data-i18n="sidehint">Acércate al mapa para ver la lista.</div>
     <div class="sidelist" id="sideList"></div>
   </aside>
 </div>
 
-<div id="status" class="status">Cargando mapa...</div>
+<div id="status" class="status" data-i18n="loadmap">Cargando mapa...</div>
 
 <div id="player" class="player">
   <div class="pinfo"><div id="pTitle" class="ptitle">—</div><div id="pState" class="pstate"></div></div>
@@ -117,6 +127,38 @@
 </div>
 <audio id="audio"></audio>
 
+<script>
+const I18N={
+ es:{_t:"Cadence — Radio en el mapa",login:"Entrar",back:"← Inicio",ph:"Filtrar por país o género (ej. usa, jazz, reggae)… o vacío = mundo entero",search:"Buscar",favbtn:"★ Mis favoritas",sidetitle:"Emisoras a la vista",sidehint:"Acércate al mapa para ver la lista.",loadmap:"Cargando mapa...",listen:"Escuchar",live:"En directo",listener:"Oyente",station:"Emisora"},
+ en:{_t:"Cadence — Radio on the map",login:"Sign in",back:"← Home",ph:"Filter by country or genre (e.g. usa, jazz, reggae)… or empty = whole world",search:"Search",favbtn:"★ My favorites",sidetitle:"Stations in view",sidehint:"Zoom into the map to see the list.",loadmap:"Loading map...",listen:"Listen",live:"Live",listener:"Listener",station:"Station"},
+ pt:{_t:"Cadence — Rádio no mapa",login:"Entrar",back:"← Início",ph:"Filtrar por país ou género (ex. usa, jazz, reggae)… ou vazio = mundo inteiro",search:"Pesquisar",favbtn:"★ As minhas favoritas",sidetitle:"Estações à vista",sidehint:"Aproxime o mapa para ver a lista.",loadmap:"A carregar o mapa...",listen:"Ouvir",live:"Em direto",listener:"Ouvinte",station:"Estação"},
+ fr:{_t:"Cadence — La radio sur la carte",login:"Se connecter",back:"← Accueil",ph:"Filtrer par pays ou genre (ex. usa, jazz, reggae)… ou vide = monde entier",search:"Rechercher",favbtn:"★ Mes favorites",sidetitle:"Stations visibles",sidehint:"Zoomez sur la carte pour voir la liste.",loadmap:"Chargement de la carte...",listen:"Écouter",live:"En direct",listener:"Auditeur",station:"Station"},
+ it:{_t:"Cadence — La radio sulla mappa",login:"Accedi",back:"← Home",ph:"Filtra per paese o genere (es. usa, jazz, reggae)… o vuoto = tutto il mondo",search:"Cerca",favbtn:"★ Le mie preferite",sidetitle:"Stazioni in vista",sidehint:"Avvicina la mappa per vedere la lista.",loadmap:"Caricamento mappa...",listen:"Ascolta",live:"In diretta",listener:"Ascoltatore",station:"Stazione"},
+ de:{_t:"Cadence — Radio auf der Karte",login:"Anmelden",back:"← Start",ph:"Nach Land oder Genre filtern (z. B. usa, jazz, reggae)… oder leer = ganze Welt",search:"Suchen",favbtn:"★ Meine Favoriten",sidetitle:"Sender in Sicht",sidehint:"Zoome in die Karte, um die Liste zu sehen.",loadmap:"Karte wird geladen...",listen:"Hören",live:"Live",listener:"Hörer",station:"Sender"},
+ ru:{_t:"Cadence — Радио на карте",login:"Войти",back:"← Главная",ph:"Фильтр по стране или жанру (напр. usa, jazz, reggae)… пусто = весь мир",search:"Найти",favbtn:"★ Мои избранные",sidetitle:"Станции в зоне",sidehint:"Приблизьте карту, чтобы увидеть список.",loadmap:"Загрузка карты...",listen:"Слушать",live:"В эфире",listener:"Слушатель",station:"Станция"},
+ zh:{_t:"Cadence — 地图电台",login:"登录",back:"← 首页",ph:"按国家或风格筛选（如 usa、jazz、reggae）…留空＝全世界",search:"搜索",favbtn:"★ 我的收藏",sidetitle:"视野内的电台",sidehint:"放大地图以查看列表。",loadmap:"正在加载地图...",listen:"收听",live:"直播中",listener:"听众",station:"电台"},
+ ja:{_t:"Cadence — 地図でラジオ",login:"ログイン",back:"← ホーム",ph:"国やジャンルで絞り込み（例: usa, jazz, reggae）…空欄＝世界中",search:"検索",favbtn:"★ お気に入り",sidetitle:"表示中の放送局",sidehint:"地図を拡大するとリストが表示されます。",loadmap:"地図を読み込み中...",listen:"聴く",live:"ライブ",listener:"リスナー",station:"放送局"},
+ ar:{_t:"Cadence — الراديو على الخريطة",login:"دخول",back:"← الرئيسية",ph:"رشّح حسب البلد أو النوع (مثل usa، jazz، reggae)… أو فارغ = العالم كله",search:"بحث",favbtn:"★ مفضّلاتي",sidetitle:"المحطات الظاهرة",sidehint:"قرّب الخريطة لرؤية القائمة.",loadmap:"جارٍ تحميل الخريطة...",listen:"استمع",live:"مباشر",listener:"مستمع",station:"محطة"}
+};
+const RTL=["ar"];
+function t(k){return (I18N[window._L]||I18N.es)[k]||k;}
+function setLang(lang){
+  window._L=lang; const d=I18N[lang]||I18N.es;
+  document.documentElement.lang=lang; document.documentElement.dir=RTL.includes(lang)?"rtl":"ltr";
+  document.title=d._t;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(d[k]!==undefined) el.textContent=d[k];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph'); if(d[k]!==undefined) el.placeholder=d[k];});
+  const sel=document.getElementById('langsel'); if(sel) sel.value=lang;
+  try{localStorage.setItem('cadence_lang',lang);}catch(e){}
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  const sel=document.getElementById('langsel');
+  if(sel) sel.addEventListener('change',e=>setLang(e.target.value));
+  let _s=null; try{_s=localStorage.getItem('cadence_lang');}catch(e){}
+  const _n=(navigator.language||'es').toLowerCase().slice(0,2);
+  setLang(_s||(I18N[_n]?_n:'es'));
+});
+</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
@@ -143,7 +185,7 @@ onAuthStateChanged(auth,u=>{
   if(u){
     btn.style.display="none"; chip.style.display="flex";
     document.getElementById("userAv").textContent=(u.displayName||"O").trim().charAt(0).toUpperCase();
-    document.getElementById("userName").textContent=u.displayName||"Oyente";
+    document.getElementById("userName").textContent=u.displayName||t("listener");
     if(unsub)unsub();
     unsub=onSnapshot(collection(db,"users",u.uid,"radioFavorites"),snap=>{
       window.favorites.clear();
@@ -166,18 +208,18 @@ window.reportListen=function(label,type){
   addDoc(collection(db,"users",user.uid,"history"),
     {title:label,label:label,type:type,playedAt:serverTimestamp()}).catch(()=>{});
   addDoc(collection(db,"feed"),
-    {uid:user.uid,name:user.displayName||"Oyente",label:label,type:type,playedAt:serverTimestamp()}).catch(()=>{});
+    {uid:user.uid,name:user.displayName||t("listener"),label:label,type:type,playedAt:serverTimestamp()}).catch(()=>{});
   setDoc(doc(db,"users",user.uid),
     {nowPlaying:label,nowPlayingType:type,updatedAt:serverTimestamp()},{merge:true}).catch(()=>{});
 };
 window.toggleFavorite=async function(st){
-  if(!user){ alert("Entra con Google para guardar favoritas."); return; }
+  if(!user){ alert(t("needlogin_fav")); return; }
   const id=window.favId(st.url);
   if(window.favorites.has(id)){
     await deleteDoc(doc(db,"users",user.uid,"radioFavorites",id));
   }else{
     await setDoc(doc(db,"users",user.uid,"radioFavorites",id),{
-      name:st.name||"Emisora", url:st.url||"", country:st.country||"", tag:st.tag||"",
+      name:st.name||t("station"), url:st.url||"", country:st.country||"", tag:st.tag||"",
       lat:st.lat||null, lon:st.lon||null
     });
   }
@@ -203,7 +245,7 @@ const COUNTRY_CENTER={"US":[39,-98],"ES":[40,-3.7],"MX":[23,-102],"AR":[-34,-64]
 function jitter(v){ return v+(Math.random()-0.5)*4; }
 
 async function loadStations(params){
-  setStatus("Cargando emisoras..."); cluster.clearLayers(); allStations=[]; favView=false;
+  setStatus(t("loadstations")); cluster.clearLayers(); allStations=[]; favView=false;
   document.getElementById("favViewBtn").classList.remove("on");
   try{
     const url=API+"/stations/search?"+params+"&hidebroken=true&limit=5000&order=clickcount&reverse=true";
@@ -212,22 +254,22 @@ async function loadStations(params){
     data.filter(s=>s.url_resolved).forEach(s=>{
       let lat=parseFloat(s.geo_lat),lon=parseFloat(s.geo_long);
       if(!lat||!lon){ const c=COUNTRY_CENTER[s.countrycode]; if(!c)return; lat=jitter(c[0]); lon=jitter(c[1]); }
-      const st={uuid:s.stationuuid,name:s.name||"Emisora",country:s.country||"",tag:(s.tags||"").split(",")[0],url:s.url_resolved,lat,lon};
+      const st={uuid:s.stationuuid,name:s.name||t("station"),country:s.country||"",tag:(s.tags||"").split(",")[0],url:s.url_resolved,lat,lon};
       allStations.push(st);
       const m=L.marker([lat,lon],{icon:radioIcon()}); st._marker=m;
       m.bindPopup(popupHtml(st)); m.on("popupopen",()=>bindPopup(st)); batch.push(m);
     });
     cluster.addLayers(batch);
-    setStatus(allStations.length+" emisoras. Acércate y mira la lista de la derecha.");
+    setStatus(allStations.length+t("stationsright"));
     updateSideList();
-  }catch(e){ setStatus("Error cargando emisoras: "+e.message); }
+  }catch(e){ setStatus(t("errload")+e.message); }
 }
 
 function popupHtml(st){
   const fav=window.favorites&&window.favorites.has(window.favId(st.url));
   return '<div class="popup-name">'+esc(st.name)+'</div>'+
     '<div style="color:#9AA3B2;font-size:.8rem;margin-bottom:8px">'+esc(st.country+(st.tag?" · "+st.tag:""))+'</div>'+
-    '<div class="popup-row"><button class="popup-btn" id="pp-play">▶ Escuchar</button>'+
+    '<div class="popup-row"><button class="popup-btn" id="pp-play">▶ '+t('listen')+'</button>'+
     '<button class="popup-star'+(fav?' on':'')+'" id="pp-star">★</button></div>';
 }
 function bindPopup(st){
@@ -240,13 +282,13 @@ function updateSideList(){
   const list=document.getElementById("sideList"),hint=document.getElementById("sideHint"),title=document.getElementById("sideTitle");
   const b=map.getBounds();
   let visible=allStations.filter(s=>b.contains([s.lat,s.lon]));
-  if(visible.length>400){ list.innerHTML=""; title.textContent="Emisoras a la vista";
-    hint.textContent="Acércate más para ver la lista ("+visible.length+" a la vista)."; return; }
-  if(visible.length===0){ list.innerHTML=""; hint.textContent="No hay emisoras en esta zona."; return; }
+  if(visible.length>400){ list.innerHTML=""; title.textContent=t("sidetitle");
+    hint.textContent=t("zoomin1")+visible.length+t("zoomin2"); return; }
+  if(visible.length===0){ list.innerHTML=""; hint.textContent=t("noneanvista"); return; }
   hint.textContent="";
   const seen=new Set();
   const uniq=visible.filter(s=>{const k=(s.name+"|"+s.url).toLowerCase(); if(seen.has(k))return false; seen.add(k);return true;});
-  title.textContent=uniq.length+" emisoras aquí";
+  title.textContent=uniq.length+t("stationshere");
   list.innerHTML="";
   uniq.slice(0,400).forEach(s=>renderSideItem(list,s));
 }
@@ -264,7 +306,7 @@ map.on("moveend zoomend",()=>{ if(!favView)updateSideList(); });
 
 // Ver solo favoritas: las pinta en el mapa desde Firebase.
 document.getElementById("favViewBtn").addEventListener("click",()=>{
-  if(!window.isLoggedIn()){ alert("Entra con Google para ver tus favoritas."); return; }
+  if(!window.isLoggedIn()){ alert(t("needlogin_view")); return; }
   favView=!favView;
   document.getElementById("favViewBtn").classList.toggle("on",favView);
   if(favView){
@@ -275,8 +317,8 @@ document.getElementById("favViewBtn").addEventListener("click",()=>{
       allStations.push(s);
       const m=L.marker([s.lat,s.lon],{icon:radioIcon()}); m.bindPopup(popupHtml(s)); m.on("popupopen",()=>bindPopup(s)); cluster.addLayer(m);
     });
-    setStatus(allStations.length+" favoritas en el mapa.");
-    document.getElementById("sideTitle").textContent="Mis favoritas";
+    setStatus(allStations.length+t("favsmap"));
+    document.getElementById("sideTitle").textContent=t("myfavs");
     const list=document.getElementById("sideList"); list.innerHTML=""; document.getElementById("sideHint").textContent="";
     allStations.forEach(s=>renderSideItem(list,s));
   }else{ loadStations("order=clickcount&reverse=true"); }
@@ -290,10 +332,10 @@ window.refreshFavUI=function(){
 
 function playStation(url,name){
   document.getElementById("player").classList.add("show");
-  document.getElementById("pTitle").textContent=name; document.getElementById("pState").textContent="Conectando...";
-  audio.src=url; audio.play().then(()=>{document.getElementById("pState").textContent="En directo";document.getElementById("playBtn").textContent="⏸";
+  document.getElementById("pTitle").textContent=name; document.getElementById("pState").textContent=t("connecting");
+  audio.src=url; audio.play().then(()=>{document.getElementById("pState").textContent=t("live");document.getElementById("playBtn").textContent="⏸";
     if(window.reportListen)window.reportListen(name,"radio");})
-    .catch(()=>document.getElementById("pState").textContent="No se pudo reproducir");
+    .catch(()=>document.getElementById("pState").textContent=t("failed"));
 }
 document.getElementById("playBtn").addEventListener("click",()=>{
   if(audio.paused){audio.play();document.getElementById("playBtn").textContent="⏸";}else{audio.pause();document.getElementById("playBtn").textContent="▶";}});
