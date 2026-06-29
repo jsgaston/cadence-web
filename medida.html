@@ -248,7 +248,15 @@ async function findFolder(name,parent){
 async function listChildren(parent,foldersOnly){
   let q="'"+parent+"' in parents and trashed=false";
   if(foldersOnly) q+=" and mimeType='application/vnd.google-apps.folder'";
-  const r=await drive("files?q="+encodeURIComponent(q)+"&fields=files(id,name,mimeType)&pageSize=500"); return r.files||[];
+  let out=[], pageToken=null;
+  do{
+    let url="files?q="+encodeURIComponent(q)+"&fields=nextPageToken,files(id,name,mimeType)&pageSize=1000";
+    if(pageToken) url+="&pageToken="+pageToken;
+    const r=await drive(url);
+    if(r.files) out=out.concat(r.files);
+    pageToken=r.nextPageToken||null;
+  } while(pageToken);
+  return out;
 }
 
 async function loadIndex(){

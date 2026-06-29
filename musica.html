@@ -229,8 +229,16 @@ async function findFolder(name, parentId){
 async function listChildren(parentId, foldersOnly){
   let q = "'" + parentId + "' in parents and trashed=false";
   if (foldersOnly) q += " and mimeType='application/vnd.google-apps.folder'";
-  const r = await drive("files?q=" + encodeURIComponent(q) + "&fields=files(id,name,mimeType)&orderBy=name&pageSize=200");
-  return r.files || [];
+  let out = [], pageToken = null;
+  do {
+    let url = "files?q=" + encodeURIComponent(q) +
+      "&fields=nextPageToken,files(id,name,mimeType)&orderBy=name&pageSize=1000";
+    if (pageToken) url += "&pageToken=" + pageToken;
+    const r = await drive(url);
+    if (r.files) out = out.concat(r.files);
+    pageToken = r.nextPageToken || null;
+  } while (pageToken);
+  return out;
 }
 
 async function loadMusic(){
