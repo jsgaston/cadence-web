@@ -281,6 +281,7 @@ async function listChildren(parentId, foldersOnly){
 async function loadMusic(){
   setStatus(t("searching"));
   listEl().innerHTML = ""; queue = [];
+  window._extCount = {};
   try {
     const cadenceId = await findFolder("Cadence", null);
     if (!cadenceId) return setStatus(t("nofolder"));
@@ -299,12 +300,14 @@ async function loadMusic(){
         const alEl = document.createElement("div");
         alEl.innerHTML = '<div class="album">' + esc(album.name) + '</div>';
         listEl().appendChild(alEl);
-        const tracks = dedupByFormat((await listChildren(album.id, false))
-          .filter(t => t.mimeType !== "application/vnd.google-apps.folder"));
+        const rawFiles = (await listChildren(album.id, false))
+          .filter(t => t.mimeType !== "application/vnd.google-apps.folder");
+        rawFiles.forEach(f => { const e = (f.name.split('.').pop() || '?').toLowerCase(); window._extCount[e] = (window._extCount[e] || 0) + 1; });
+        const tracks = dedupByFormat(rawFiles);
         tracks.forEach(t => {
           const label = cleanName(t.name) + " — " + artist.name;
           const idx = queue.length;
-          queue.push({ id: t.id, name: cleanName(t.name), label });
+          queue.push({ id: t.id, name: cleanName(t.name), file: t.name, label });
           const row = document.createElement("div");
           row.className = "track"; row.dataset.idx = idx;
           row.innerHTML = '<span class="dot"></span><span>' + esc(cleanName(t.name)) +
@@ -312,13 +315,14 @@ async function loadMusic(){
           row.addEventListener("click", () => playIndex(idx));
           row.querySelector(".addbtn").addEventListener("click", (e) => {
             e.stopPropagation();
-            addToPlaylist({ id: t.id, name: cleanName(t.name), label: cleanName(t.name) + " — " + artist.name });
+            addToPlaylist({ id: t.id, name: cleanName(t.name), file: t.name, label: cleanName(t.name) + " — " + artist.name });
           });
           listEl().appendChild(row);
         });
       }
     }
-    setStatus(queue.length + t("count"));
+    const desglose = Object.entries(window._extCount).map(([e, n]) => n + " " + e).join(", ");
+    setStatus(queue.length + t("count") + (desglose ? "  ·  En Drive: " + desglose : ""));
     document.getElementById("plBar").style.display = "flex";
   } catch (e) { setStatus(t("err") + e.message); }
 }
@@ -337,14 +341,27 @@ async function playIndex(idx){
       headers: { Authorization: "Bearer " + accessToken }
     });
     if (!res.ok) throw new Error("Drive " + res.status);
-    const blob = await res.blob();
+    let blob = await res.blob();
+    // Le decimos al navegador qué tipo de audio es (Drive a veces no lo indica),
+    // para que reproduzca bien el m4a, mp3, etc.
+    const fname = (track.file || track.name || "").toLowerCase();
+    let mime = "";
+    if (/\.(m4a|m4b|aac|mp4)$/.test(fname)) mime = "audio/mp4";
+    else if (/\.mp3$/.test(fname)) mime = "audio/mpeg";
+    else if (/\.ogg$/.test(fname)) mime = "audio/ogg";
+    else if (/\.flac$/.test(fname)) mime = "audio/flac";
+    else if (/\.wav$/.test(fname)) mime = "audio/wav";
+    if (mime && blob.type !== mime) blob = blob.slice(0, blob.size, mime);
     audio.src = URL.createObjectURL(blob);
     await audio.play();
     document.getElementById("pState").textContent = "Reproduciendo";
     document.getElementById("playBtn").textContent = "⏸";
     if (window.reportToWall) window.reportToWall(track.label);
   } catch (e) {
-    document.getElementById("pState").textContent = "Error: " + e.message;
+    const isM4a = /\.(m4a|m4b|aac)$/.test((track.file || track.name || "").toLowerCase());
+    document.getElementById("pState").textContent = isM4a
+      ? "Este navegador no pudo reproducir el m4a (prueba en Chrome o Safari)."
+      : "Error: " + e.message;
   }
 }
 // ---- Mis listas (guardadas en este navegador) ----
@@ -396,7 +413,7 @@ function playPlaylist(name){
   const lists = plGet();
   const items = lists[name] || [];
   if (!items.length) return;
-  queue = items.map(x => ({ id: x.id, name: x.name, label: x.label }));
+  queue = items.map(x => ({ id: x.id, name: x.name, file: x.file || x.name, label: x.label }));
   // Pinta la lista en pantalla
   listEl().innerHTML = '<div class="album">♫ ' + esc(name) + '</div>';
   queue.forEach((tr, idx) => {
@@ -421,6 +438,11 @@ document.getElementById("playBtn").addEventListener("click", () => {
 document.getElementById("nextBtn").addEventListener("click", () => playIndex(current + 1));
 document.getElementById("prevBtn").addEventListener("click", () => playIndex(current - 1));
 let repeatMode = 0; // 0 = no repetir · 1 = repetir todo · 2 = repetir una
+audio.addEventListener("error", () => {
+  const tr = queue[current];
+  if (tr && /\.(m4a|m4b|aac)$/.test((tr.file || tr.name || "").toLowerCase()))
+    document.getElementById("pState").textContent = "Este navegador no pudo reproducir el m4a (prueba en Chrome o Safari).";
+});
 audio.addEventListener("ended", () => {
   if (repeatMode === 2) { audio.currentTime = 0; audio.play(); return; }
   if (current + 1 < queue.length) playIndex(current + 1);
