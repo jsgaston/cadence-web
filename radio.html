@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Radio en el mapa</title>
+<link rel="icon" href="cadence-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root{
+    --ink:#0E1014; --surface:#16191F; --surface-2:#1E222B; --line:#2A2F3A;
+    --accent:#7C9AFF; --text:#E8EAF0; --muted:#9AA3B2;
+    --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--body);height:100vh;
+    display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  header{display:flex;align-items:center;gap:12px;padding:12px 18px;
+    border-bottom:1px solid var(--line);flex-shrink:0}
+  header img{width:30px;height:30px}
+  header .name{font-family:var(--display);font-size:1.2rem;font-weight:500}
+  header .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .controls{padding:10px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);flex-shrink:0}
+  input,select{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:9px 12px;color:var(--text);font-family:var(--body);font-size:.92rem}
+  input{flex:1;min-width:140px}
+  input:focus,select:focus{outline:none;border-color:var(--accent)}
+  button.go{background:var(--accent);color:#0b0d12;border:0;border-radius:10px;
+    padding:9px 16px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  #map{flex:1;background:var(--surface)}
+  .leaflet-popup-content-wrapper{background:var(--surface);color:var(--text);
+    border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--surface)}
+  .popup-name{font-weight:600;margin-bottom:6px}
+  .popup-btn{background:var(--accent);color:#0b0d12;border:0;border-radius:8px;
+    padding:6px 12px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  .status{padding:6px 18px;font-size:.85rem;color:var(--muted);flex-shrink:0}
+  /* barra de reproducción */
+  .player{background:rgba(22,25,31,.97);border-top:1px solid var(--line);
+    padding:12px 18px;display:none;align-items:center;gap:14px;flex-shrink:0}
+  .player.show{display:flex}
+  .player .pinfo{flex:1;min-width:0}
+  .ptitle{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pstate{font-size:.78rem;color:var(--muted)}
+  .pbtn{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;
+    background:var(--accent);color:#0b0d12;font-size:1.1rem}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="cadence-logo.png" alt="Cadence">
+  <span class="name">Cadence · Radio</span>
+  <a class="back" href="index.html">← Inicio</a>
+</header>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Buscar emisora, país o género... (ej. jazz, España)">
+  <button id="searchBtn" class="go">Buscar</button>
+</div>
+
+<div id="map"></div>
+<div id="status" class="status">Cargando mapa...</div>
+
+<div id="player" class="player">
+  <div class="pinfo">
+    <div id="pTitle" class="ptitle">—</div>
+    <div id="pState" class="pstate"></div>
+  </div>
+  <button id="playBtn" class="pbtn">⏸</button>
+</div>
+<audio id="audio"></audio>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const API = "https://all.api.radio-browser.info/json";
+const map = L.map("map", { worldCopyJump:true, minZoom:2 }).setView([30, 5], 2.4);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+let markers = L.layerGroup().addTo(map);
+const audio = document.getElementById("audio");
+const setStatus = m => document.getElementById("status").textContent = m;
+
+function radioIcon(){
+  return L.divIcon({
+    className:"", html:'<div style="width:12px;height:12px;border-radius:50%;background:#7C9AFF;border:2px solid #0E1014;box-shadow:0 0 6px rgba(124,154,255,.8)"></div>',
+    iconSize:[12,12]
+  });
+}
+
+async function loadStations(params){
+  setStatus("Buscando emisoras...");
+  markers.clearLayers();
+  try {
+    const url = API + "/stations/search?" + params + "&has_geo_info=true&hidebroken=true&limit=600&order=clickcount&reverse=true";
+    const res = await fetch(url, { headers:{ "User-Agent":"Cadence/1.0" } });
+    const data = await res.json();
+    const withGeo = data.filter(s => s.geo_lat && s.geo_long && s.url_resolved);
+    if (!withGeo.length){ setStatus("No se encontraron emisoras con ubicación. Prueba otra búsqueda."); return; }
+    withGeo.forEach(s => {
+      const m = L.marker([s.geo_lat, s.geo_long], { icon: radioIcon() });
+      const safeName = (s.name||"Emisora").replace(/"/g,"&quot;");
+      m.bindPopup(
+        '<div class="popup-name">' + escapeHtml(s.name||"Emisora") + '</div>' +
+        '<div style="color:#9AA3B2;font-size:.8rem;margin-bottom:8px">' +
+          escapeHtml((s.country||"") + (s.tags ? " · " + s.tags.split(",")[0] : "")) + '</div>' +
+        '<button class="popup-btn" onclick="playStation(\'' +
+          encodeURIComponent(s.url_resolved) + '\',\'' + encodeURIComponent(s.name||"Emisora") + '\')">▶ Escuchar</button>'
+      );
+      m.addTo(markers);
+    });
+    setStatus(withGeo.length + " emisoras en el mapa. Pincha un punto.");
+  } catch(e){ setStatus("Error cargando emisoras: " + e.message); }
+}
+
+window.playStation = function(urlEnc, nameEnc){
+  const url = decodeURIComponent(urlEnc), name = decodeURIComponent(nameEnc);
+  document.getElementById("player").classList.add("show");
+  document.getElementById("pTitle").textContent = name;
+  document.getElementById("pState").textContent = "Conectando...";
+  audio.src = url;
+  audio.play()
+    .then(()=>{ document.getElementById("pState").textContent="En directo"; document.getElementById("playBtn").textContent="⏸"; })
+    .catch(e=>{ document.getElementById("pState").textContent="No se pudo reproducir"; });
+};
+
+document.getElementById("playBtn").addEventListener("click", ()=>{
+  if(audio.paused){ audio.play(); document.getElementById("playBtn").textContent="⏸"; document.getElementById("pState").textContent="En directo"; }
+  else { audio.pause(); document.getElementById("playBtn").textContent="▶"; document.getElementById("pState").textContent="En pausa"; }
+});
+
+document.getElementById("searchBtn").addEventListener("click", doSearch);
+document.getElementById("search").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
+function doSearch(){
+  const q = document.getElementById("search").value.trim();
+  if(!q){ loadStations("countrycode=ES"); return; }
+  // Busca por nombre, etiqueta y país a la vez.
+  loadStations("name=" + encodeURIComponent(q) + "&tag=" + encodeURIComponent(q));
+}
+
+function escapeHtml(s){ return (s||"").replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// Carga inicial: emisoras de España.
+loadStations("countrycode=ES");
+</script>
+</body>
+</html>
